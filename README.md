@@ -94,7 +94,7 @@ npm run dev
 ```
 3. Open http://localhost:3000.
 
-4. ## Use of AI
+## Use of AI
 I used Claude (by Anthropic) as an AI assistant while building this site. It helped me:
 
 - plan the milestones and the order of my commits
