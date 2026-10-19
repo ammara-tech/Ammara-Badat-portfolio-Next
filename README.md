@@ -8,8 +8,11 @@ who are hiring junior developers, plus anyone reviewing my work from the
 IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 
 ## The role I want
-**Junior Full Stack Developer**: building complete web applications from interface to
-database, with a front-end focus in React / Next.js and a back end in Python, SQL and Supabase.
+**Junior Full Stack Developer**: building complete web applications from interface to database.
+
+- **Front end:** HTML, CSS and JavaScript, plus React and Next.js, building responsive, interactive interfaces
+- **Back end and data:** Python, SQL and Supabase
+- **Tools:** Git and GitHub, Vercel and AI prompting
 
 ## Pages
 | Page | Route | What it shows |
