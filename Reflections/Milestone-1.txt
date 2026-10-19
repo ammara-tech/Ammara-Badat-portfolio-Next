@@ -1,0 +1,1 @@
+I’m aiming for a Junior Full Stack Developer role, with a front-end focus in React and Next.js and a back end in Python, SQL and Supabase. One design decision I made was to move from my original single scrolling page to separate routes for Home, About, Projects and Contact, so each page has one job and a recruiter can go straight to my projects.
