@@ -47,7 +47,7 @@ insert into public.projects (title, summary, live_url, repo_url, tags, sort_orde
 ('MyFlix',
  'A movie & TV browsing app with a searchable catalogue.',
  'https://myflix-lemon.vercel.app/',
- null,
+ 'https://github.com/ammara-tech/myflix',
  '{JavaScript,HTML,CSS}', 2),
 ('F1 Race Hub',
  'A dashboard for browsing Formula 1 race data and results.',
