@@ -94,6 +94,22 @@ npm run dev
 ```
 3. Open http://localhost:3000.
 
+4. ## Use of AI
+I used Claude (by Anthropic) as an AI assistant while building this site. It helped me:
+
+- plan the milestones and the order of my commits
+- generate the wireframe images in `Docs/` from the layout I described, based on my first portfolio
+- write the Next.js starter files, the navbar, the placeholder pages, the Supabase connection,
+  the Projects page and the `/admin` page
+- write the SQL for the `projects` table and the owner-only RLS policies
+- debug my Vercel deployment (a wrongly formatted Supabase URL in the environment variables)
+- draft parts of this README and my reflections
+
+I made the decisions about the site's audience, role, pages and design, chose which projects to
+include and how to describe them, set up GitHub, Supabase and Vercel myself, tested every feature,
+ran the RLS test and checked the results. I went through the AI-written code and text and edited
+it so I understand it and can explain it.
+
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
 [live site](https://ammara-badat-portfolio.vercel.app)
