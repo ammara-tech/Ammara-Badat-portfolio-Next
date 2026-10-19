@@ -20,9 +20,9 @@ database, with a front-end focus in React / Next.js and a back end in Python, SQ
 | Contact | `/contact` | Email, GitHub and LinkedIn, plus a contact form |
 
 ## Wireframes
-- [Home](docs/wireframe-home.png)
-- [Projects](docs/wireframe-projects.png)
-- [Contact](docs/wireframe-contact.png)
+- [Home](Docs/wireframe-home.png)
+- [Projects](Docs/wireframe-projects.png)
+- [Contact](Docs/wireframe-contact.png)
 
 ## Tech stack
 Next.js (App Router) · TypeScript · Tailwind CSS · deployed on Vercel
