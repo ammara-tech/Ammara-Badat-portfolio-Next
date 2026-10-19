@@ -100,7 +100,7 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - generate the wireframe images in `Docs/` from the layout I described, based on my first portfolio
 - assisted in creating and editing the Next.js starter files, the navbar, the placeholder pages, the Supabase connection,
   the Projects page and the `/admin` page with code i previously used for a project that also used a similar stack to this
-- write the SQL for the `projects` table and the owner-only RLS policies
+- write the SQL for the `projects` table
 - draft parts of this README
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to
