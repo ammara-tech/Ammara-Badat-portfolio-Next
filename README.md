@@ -56,6 +56,8 @@ RLS is enabled on `projects` with four policies:
 | Owner can update projects | `authenticated` | only if `auth.uid()` is my user ID |
 | Owner can delete projects | `authenticated` | only if `auth.uid()` is my user ID |
 
+Screenshot: [Policies in Supabase](Docs/rls-policies.png)
+
 Public sign-ups are turned off in Supabase Auth, so mine is the only account. Even if another
 account existed, the policies check my exact user ID, so "any signed-in user" still cannot write.
 
