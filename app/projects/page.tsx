@@ -3,13 +3,22 @@ import { publicClient, type Project } from "@/lib/supabase";
 // Always fetch fresh data, so changes from /admin show up straight away
 export const dynamic = "force-dynamic";
 
-export default async function Projects() {
-  const { data, error } = await publicClient()
-    .from("projects")
-    .select("*")
-    .order("sort_order", { ascending: true });
+async function loadProjects(): Promise<{ projects: Project[]; error: string | null }> {
+  try {
+    const { data, error } = await publicClient()
+      .from("projects")
+      .select("*")
+      .order("sort_order", { ascending: true });
 
-  const projects = (data ?? []) as Project[];
+    if (error) return { projects: [], error: error.message };
+    return { projects: (data ?? []) as Project[], error: null };
+  } catch (err) {
+    return { projects: [], error: err instanceof Error ? err.message : "Unknown error" };
+  }
+}
+
+export default async function Projects() {
+  const { projects, error } = await loadProjects();
 
   return (
     <section>
@@ -18,7 +27,7 @@ export default async function Projects() {
 
       {error && (
         <p className="mt-8 rounded border border-red-500/40 bg-red-500/10 p-4 text-red-300">
-          Couldn&apos;t load projects right now. Please try again later.
+        Couldn&apos;t load projects right now. ({error})
         </p>
       )}
 

@@ -1,18 +1,34 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Reads the two settings from Vercel. Throws a clear message if either is missing.
+function getConfig() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
-if (!url || !key) {
-  throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set");
+  if (!key) throw new Error("NEXT_PUBLIC_SUPABASE_ANON_KEY is not set");
+  if (!url.startsWith("https://")) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL must start with https://");
+  }
+
+  return { url, key };
+}
+
+// Used on the server (public pages). Never signed in, so it reads as a visitor.
+export function publicClient(): SupabaseClient {
+  const { url, key } = getConfig();
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
 // Used in the browser (admin page). Remembers who is signed in.
-export const supabase = createClient(url, key);
+let browserClient: SupabaseClient | null = null;
 
-// Used on the server (public pages). Never signed in, so it reads as a visitor.
-export function publicClient() {
-  return createClient(url!, key!, { auth: { persistSession: false } });
+export function getBrowserClient(): SupabaseClient {
+  if (!browserClient) {
+    const { url, key } = getConfig();
+    browserClient = createClient(url, key);
+  }
+  return browserClient;
 }
 
 export type Project = {
