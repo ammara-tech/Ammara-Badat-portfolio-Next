@@ -75,11 +75,21 @@ export function SmartLink({
   className?: string;
   children: React.ReactNode;
 }) {
-  if (href.startsWith("/")) {
+  // Pages on this site use Next.js routing; files like /case-study/demo.mp4 and
+  // anchors like #demo are plain links.
+  const isPage = href.startsWith("/") && !/\.[a-z0-9]+$/i.test(href);
+  if (isPage) {
     return (
       <Link href={href} className={className}>
         {children}
       </Link>
+    );
+  }
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
     );
   }
   return (

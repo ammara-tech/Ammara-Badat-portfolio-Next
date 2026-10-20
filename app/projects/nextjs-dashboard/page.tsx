@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   description: "Capstone case study: the problem, my role, the stack, screenshots and what's next.",
 };
 
+// A video file in /public plays on the page; anything else (YouTube, Loom) is a link.
+const isVideoFile = /\.(mp4|webm)$/i.test(caseStudy.videoUrl);
+
 const sections = [
+  ...(isVideoFile ? [{ id: "demo", label: "Demo video" }] : []),
   { id: "problem", label: "The problem" },
   { id: "role", label: "My role" },
   { id: "stack", label: "The stack" },
@@ -47,7 +51,7 @@ export default function CaseStudy() {
             GitHub repo
           </SmartLink>
           {cs.videoUrl && (
-            <SmartLink href={cs.videoUrl} className={btnGhost}>
+            <SmartLink href={isVideoFile ? "#demo" : cs.videoUrl} className={btnGhost}>
               ▶ Watch the demo
             </SmartLink>
           )}
@@ -92,6 +96,33 @@ export default function CaseStudy() {
         </nav>
 
         <div className="max-w-3xl space-y-16">
+          {isVideoFile && (
+            <section>
+              <SectionTitle id="demo">
+                Demo <Accent>video</Accent>
+              </SectionTitle>
+              <figure className="mt-6">
+                <video
+                  controls
+                  preload="metadata"
+                  playsInline
+                  poster={cs.videoPoster || undefined}
+                  className="aspect-video w-full rounded-lg border border-line bg-black"
+                >
+                  <source src={cs.videoUrl} type="video/mp4" />
+                  Your browser can&apos;t play this video.{" "}
+                  <a href={cs.videoUrl} className="text-teal underline">
+                    Download it instead
+                  </a>
+                  .
+                </video>
+                {cs.videoCaption && (
+                  <figcaption className="mt-3 font-mono text-xs text-mist">{cs.videoCaption}</figcaption>
+                )}
+              </figure>
+            </section>
+          )}
+
           <section>
             <SectionTitle id="problem">
               The <Accent>problem</Accent>

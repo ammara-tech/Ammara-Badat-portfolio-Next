@@ -11,16 +11,18 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 **Junior Full Stack Developer**: building complete web applications from interface to database.
 
 - **Front end:** HTML, CSS and JavaScript, plus React and Next.js, building responsive, interactive interfaces
-- **Back end and data:**  SQL and Supabase
+- **Back end and data:** SQL and Supabase (Auth, Row Level Security)
 - **Tools:** Git and GitHub, Vercel and AI prompting
 
 ## Pages
 | Page | Route | What it shows |
 |------|-------|---------------|
-| Home | `/` | Intro, role, "open to work" status, key skills, links to Projects and Contact |
-| About | `/about` | My background, how I like to work, and education (ITProg26, Unicollege) |
-| Projects | `/projects` | Project cards loaded live from Supabase: Personal Portfolio, MyFlix, F1 Race Hub, Fish-bones, Neon Arcade, Next.js Dashboard and this site |
-| Contact | `/contact` | Email, GitHub and LinkedIn, plus a contact form |
+| Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
+| About | `/about` | A 30-second intro: who I am, the role I want, and my education (ITProg26, Unicollege) |
+| Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
+| Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
+| Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
+| Contact | `/contact` | Email, phone, GitHub and LinkedIn |
 | Admin | `/admin` | Owner-only: sign in, then add, edit and delete projects (not linked in the navbar) |
 
 ## Wireframes
@@ -41,10 +43,21 @@ One table, `projects`, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
 | `summary` | text | One-line description |
 | `live_url` | text | Link to the live site |
 | `repo_url` | text | Link to the GitHub repo |
-| `image_url` | text | Screenshot or thumbnail |
+| `image_url` | text | Screenshot (files live in `public/projects/`) |
+| `video_url` | text | Optional demo video (the capstone's lives in `public/case-study/demo.mp4`) |
+| `case_study_url` | text | Link to a case study page (set for the capstone) |
 | `tags` | text[] | Tech used, shown as tags |
 | `sort_order` | int | Order on the Projects page |
 | `created_at` | timestamptz | When the row was added |
+
+`video_url` and `case_study_url` were added in Milestone 3 by
+[`Supabase/003-screenshots-video-case-study.sql`](Supabase/003-screenshots-video-case-study.sql).
+
+## Content
+The page text lives in the `content/` folder, separate from the code:
+`content/about.ts` (About, Home and Contact), `content/case-study.ts` (capstone case study) and
+`content/skills.ts` (skills and their evidence links). Every skill must have at least one evidence
+link, or the site will not build, so I can't list a skill I can't back up.
 
 ## Security: Row Level Security
 RLS is enabled on `projects` with four policies:
@@ -103,6 +116,9 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - write the SQL for the `projects` table
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
+- build the Milestone 3 pages (Skills, case study, About, Contact), find evidence links for each
+  skill in my public repos, and draft the one-line skill descriptions
+- compress my own screen recording of the clinic platform so it plays on the case study page
 - write the case study and About text, based on my own README, demo notes and presentation
   speech for the clinic platform; I checked and edited it so it is accurate and sounds like me
 

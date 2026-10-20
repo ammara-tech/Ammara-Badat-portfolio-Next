@@ -18,8 +18,11 @@ export const caseStudy = {
 
   liveUrl: "https://nextjs-dashoard-psi.vercel.app",
   repoUrl: "https://github.com/ammara-tech/nextjs-dashoard",
-  // Optional: a YouTube / Loom / Google Drive link to a short demo video. Leave "" if none.
-  videoUrl: "",
+  // Demo video: a file in public/case-study/ (plays on the page), or a YouTube/Loom link. "" for none.
+  videoUrl: "/case-study/demo.mp4",
+  videoPoster: "/case-study/demo-poster.jpg",
+  videoCaption:
+    "A 5-minute walkthrough of the live platform: admin sign-in, the growth and no-show charts, booking and editing appointments, patient records, then the patient portal and joining a Care Plan.",
 
   year: "2026",
   context: "ITProg26 capstone, Unicollege",
