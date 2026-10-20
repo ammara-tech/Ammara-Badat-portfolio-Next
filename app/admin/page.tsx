@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserClient, type Project } from "@/lib/supabase";
+import Inbox from "@/components/Inbox";
 
 type FormState = {
   title: string;
@@ -102,12 +103,12 @@ function SignIn() {
           />
         </label>
 
-        {error && <p className="text-sm text-racing">{error}</p>}
+        {error && <p className="text-sm text-racing-text">{error}</p>}
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded bg-racing px-4 py-2 font-medium text-snow disabled:opacity-50"
+          className="w-full rounded bg-racing px-4 py-2 font-medium text-white disabled:opacity-50"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
@@ -258,6 +259,9 @@ function Dashboard({ email }: { email: string }) {
         </p>
       )}
 
+      {/* Contact form messages (owner only) */}
+      <Inbox />
+
       {/* Add / edit form */}
       <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-5">
         <h2 className="text-xl font-semibold">{editingId ? "Edit project" : "Add a project"}</h2>
@@ -361,7 +365,7 @@ function Dashboard({ email }: { email: string }) {
           <button
             type="submit"
             disabled={busy}
-            className="rounded bg-racing px-4 py-2 font-medium text-snow disabled:opacity-50"
+            className="rounded bg-racing px-4 py-2 font-medium text-white disabled:opacity-50"
           >
             {busy ? "Saving…" : editingId ? "Save changes" : "Add project"}
           </button>
@@ -397,7 +401,7 @@ function Dashboard({ email }: { email: string }) {
               </button>
               <button
                 onClick={() => handleDelete(project)}
-                className="rounded border border-racing/50 px-3 py-1 text-sm text-racing"
+                className="rounded border border-racing/50 px-3 py-1 text-sm text-racing-text"
               >
                 Delete
               </button>

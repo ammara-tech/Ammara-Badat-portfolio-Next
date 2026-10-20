@@ -3,7 +3,7 @@ import Link from "next/link";
 /* Shared building blocks so every page uses the same v1 look. */
 
 export const btnPrimary =
-  "group/btn inline-flex items-center gap-2 rounded bg-racing px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow shadow-lg shadow-racing/20 transition hover:-translate-y-0.5 hover:bg-racing/90 hover:shadow-racing/40";
+  "group/btn inline-flex items-center gap-2 rounded bg-racing px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-white shadow-lg shadow-racing/20 transition hover:-translate-y-0.5 hover:bg-racing/90 hover:shadow-racing/40";
 
 export const btnGhost =
   "group/btn inline-flex items-center gap-2 rounded border border-line-strong px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow transition hover:-translate-y-0.5 hover:border-teal hover:text-teal";

@@ -59,5 +59,7 @@ export const about = {
     github: "https://github.com/ammara-tech",
     // Leave empty ("") until you have a LinkedIn profile.
     linkedin: "",
+    // My CV, downloadable from the navbar, Home, About and Contact pages (file in public/cv/).
+    cv: "/cv/Ammara-Badat-CV.pdf",
   },
 };

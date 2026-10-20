@@ -42,18 +42,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable} ${titillium.variable}`}>
       <body className="min-h-screen overflow-x-clip bg-ink font-sans text-snow antialiased">
+        {/* Keyboard users can jump straight past the navbar */}
+        <a
+          href="#main"
+          className="fixed left-4 top-3 z-[70] -translate-y-20 rounded bg-teal px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest text-ink transition-transform focus:translate-y-0"
+        >
+          Skip to content
+        </a>
+
         {/* Reading progress bar and background glow (see globals.css) */}
         <div aria-hidden="true" className="fx-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-linear-to-r from-racing to-teal" />
         <div aria-hidden="true" className="site-backdrop" />
 
         <Navbar />
-        <main className="mx-auto max-w-6xl px-4 py-16 sm:px-8">{children}</main>
+        <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-16 outline-none sm:px-8">
+          {children}
+        </main>
 
         <footer className="border-t border-line">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-8">
             <div>
               <p className="font-display text-lg font-black uppercase tracking-wide">
-                Ammara Badat<span className="text-racing">.</span>
+                Ammara Badat<span className="text-racing-text">.</span>
               </p>
               <p className="font-mono text-xs text-mist">
                 © {new Date().getFullYear()} · Built with Next.js, Tailwind CSS and Supabase

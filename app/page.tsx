@@ -24,7 +24,7 @@ const tech = [
 // The code card, one line at a time. Each part: [text, colour class]
 type Part = [string, string?];
 const codeLines: Part[][] = [
-  [["const", "text-racing"], [" developer = {"]],
+  [["const", "text-racing-text"], [" developer = {"]],
   [["  name: "], [`"${about.name}"`, "text-teal"], [","]],
   [["  role: "], [`"${about.role}"`, "text-teal"], [","]],
   [["  stack: ["], ['"Next.js"', "text-teal"], [", "], ['"TypeScript"', "text-teal"], [", "], ['"Supabase"', "text-teal"], ["],"]],
@@ -85,6 +85,10 @@ export default function Home() {
             <Link href="/contact" className={btnGhost}>
               Get in touch
             </Link>
+            <a href={about.contact.cv} download className={btnGhost}>
+              <Icon name="download" className="h-4 w-4" />
+              Download CV
+            </a>
           </div>
         </div>
 

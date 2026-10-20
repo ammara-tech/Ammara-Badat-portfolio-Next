@@ -22,8 +22,9 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
-| Contact | `/contact` | Email, phone, GitHub and LinkedIn |
-| Admin | `/admin` | Owner-only: sign in, then add, edit and delete projects (not linked in the navbar) |
+| Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn and CV download |
+| CV | [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | One-page CV (PDF), linked from the navbar, Home, About and Contact |
+| Admin | `/admin` | Owner-only: sign in, read contact form messages, and add, edit and delete projects (not linked in the navbar) |
 
 ## Wireframes
 - [Home](Docs/wireframe-home.png)
@@ -88,6 +89,77 @@ every operation against the live database:
 
 Screenshot: [RLS test in the browser console](Docs/rls-test-console.png)
 
+## Contact form (Milestone 4)
+Messages from `/contact` are saved to a `messages` table, defined in
+[`Supabase/004-messages-contact-form.sql`](Supabase/004-messages-contact-form.sql).
+
+| Column | Type | Purpose |
+|--------|------|---------|
+| `id` | uuid | Primary key |
+| `name` | text | Sender's name (1–100 characters) |
+| `email` | text | Sender's email (checked format) |
+| `message` | text | The message (10–3000 characters) |
+| `ip_hash` | text | One-way hash of the sender's IP, used only for the rate limit (the IP itself is never stored) |
+| `is_read` | boolean | Whether I've read it in `/admin` |
+| `created_at` | timestamptz | When it was sent |
+
+### Who can do what (RLS)
+| Policy | Who | Rule |
+|--------|-----|------|
+| Anyone can send a message | `anon`, `authenticated` | `insert` only, and it must arrive unread |
+| Owner can read messages | `authenticated` | only if `auth.uid()` is my user ID |
+| Owner can update messages | `authenticated` | only if `auth.uid()` is my user ID (mark as read) |
+| Owner can delete messages | `authenticated` | only if `auth.uid()` is my user ID |
+
+Visitors can add a message but can never read, change or delete one, including their own.
+The inbox is on the `/admin` page, which only my account can use.
+
+### Spam protection: honeypot + rate limit
+I chose a **honeypot** and a **rate limit**, so real visitors never have to solve a CAPTCHA:
+
+1. **Honeypot:** the form has a hidden "website" field that people never see and keyboard users
+   can't reach. Bots fill in every field, so if it has a value the message is dropped.
+2. **Speed check:** a person takes more than 3 seconds to fill in the form; bots submit instantly.
+   Bots caught by 1 or 2 get a fake "sent" reply so they don't learn what gave them away
+   ([`app/api/contact/route.ts`](app/api/contact/route.ts)).
+3. **Rate limit in the database:** a trigger allows at most **3 messages per email address or per
+   visitor every 10 minutes**, and 30 messages per hour in total. Because it runs inside Supabase,
+   it also stops anyone who skips my form and calls the database directly.
+
+### How I tested it
+Before running the SQL on Supabase, I tested it on a local PostgreSQL set up like Supabase:
+
+| Test | Result |
+|------|--------|
+| Visitor sends a message | ✅ Saved |
+| Visitor reads messages | ❌ 0 rows |
+| Visitor marks as read / deletes | ❌ 0 rows changed |
+| Visitor sends a bad email or a 2-character message | ❌ Rejected by the column checks |
+| 4th message from the same email or visitor within 10 minutes | ❌ "Too many messages. Please try again in a few minutes." |
+| Another signed-in account reads messages | ❌ 0 rows |
+| My account reads, marks as read and deletes | ✅ Works |
+
+The form itself: a filled-in honeypot or a 1-second submission is silently dropped, bad input shows a
+friendly error, and the rate limit shows this message to the visitor:
+[screenshot](Docs/contact-form-rate-limit.png).
+
+## Responsive and accessibility checks (Milestone 4)
+Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and 1440px (desktop)**.
+
+- **Layout:** no page scrolls sideways or cuts off text at any of those widths.
+  [Home](Docs/responsive-home.png) · [Projects](Docs/responsive-projects.png) · [Contact](Docs/responsive-contact.png)
+- **Keyboard:** every link, button and form field can be reached with Tab, in a sensible order, with a
+  visible teal focus outline. A "Skip to content" link appears on the first Tab press, the phone menu
+  closes with Escape, and the hidden honeypot field is skipped.
+- **Contrast:** every piece of text was measured against its background and passes WCAG AA
+  (4.5:1 for normal text, 3:1 for large text). Fixes: the dim grey went from `#63667a` (3.0:1) to
+  `#868a9c` (4.7:1 or better), small red text uses a brighter red `#ff3b5c`, and the red buttons use
+  white text (4.32:1 → 4.70:1). My racing red is kept for large headings, where it passes.
+- **Worst layout bug fixed:** on phones the Home page scrolled sideways, because the long line in the
+  `developer.ts` code card forced the hero column wider than the screen. I fixed it by limiting the
+  grid column (`grid-cols-1` = `minmax(0, 1fr)`), letting the role line wrap, and making the code
+  smaller on phones.
+
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
 (git-ignored). Values are never committed.
@@ -118,13 +190,11 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
 - build the Milestone 3 pages (Skills, case study, About, Contact)
-- write the case study, About text and one-line skill descriptions, based on my own README, demo
-  notes and presentation speech for the clinic platform; I checked and edited them so they are
-  accurate and sound like me
-- turn my certificate PDFs into web images and build the Certifications section
 - build the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
   the share preview image, keeping my first portfolio's colours and fonts
 - compress my own screen recording of the clinic platform so it plays on the case study page
+- build the Milestone 4 contact form, API route, inbox and messages SQL, lay out my CV from my portfolio
+  content, and run the responsive, keyboard and contrast checks
 
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to

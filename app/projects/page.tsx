@@ -47,7 +47,7 @@ function ProjectCard({ project }: { project: Project }) {
           className="transition duration-700 group-hover:scale-[1.04]"
         />
         {isCapstone && (
-          <span className="absolute left-3 top-3 rounded bg-racing px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-snow">
+          <span className="absolute left-3 top-3 rounded bg-racing px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-white">
             Capstone
           </span>
         )}

@@ -11,8 +11,9 @@
   --color-panel-alt: #20202e;
   --color-snow: #f5f5f7;
   --color-mist: #9497a6;
-  --color-mist-dim: #63667a;
-  --color-racing: #e8002d;
+  --color-mist-dim: #868a9c; /* lightened from #63667a so small text passes WCAG AA (4.5:1) */
+  --color-racing: #e8002d; /* racing red: big headings, buttons, lines */
+  --color-racing-text: #ff3b5c; /* brighter red for small text, passes WCAG AA on every background */
   --color-teal: #27f4d2;
   --color-line: rgb(245 245 247 / 0.09);
   --color-line-strong: rgb(245 245 247 / 0.16);

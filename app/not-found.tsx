@@ -37,12 +37,12 @@ export default function NotFound() {
         </div>
         <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-7 text-snow">
           <code>
-            <span className="text-racing">const</span> page = <span className="text-teal">undefined</span>;{"\n"}
+            <span className="text-racing-text">const</span> page = <span className="text-teal">undefined</span>;{"\n"}
             {"\n"}
-            <span className="text-racing">if</span> (!page) {"{"}
+            <span className="text-racing-text">if</span> (!page) {"{"}
             {"\n"}
             {"  "}
-            <span className="text-racing">return</span> <span className="text-teal">&quot;page not found&quot;</span>;{"\n"}
+            <span className="text-racing-text">return</span> <span className="text-teal">&quot;page not found&quot;</span>;{"\n"}
             {"}"}
             <span aria-hidden="true" className="fx-cursor ml-1 inline-block h-4 w-2 translate-y-0.5 bg-teal" />
           </code>

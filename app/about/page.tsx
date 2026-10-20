@@ -45,6 +45,10 @@ export default function About() {
             <a href="#certifications" className={btnGhost}>
               Certifications
             </a>
+            <a href={about.contact.cv} download className={btnGhost}>
+              <Icon name="download" className="h-4 w-4" />
+              Download CV
+            </a>
           </div>
         </div>
 

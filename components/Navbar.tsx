@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Icon from "@/components/Icon";
+import { about } from "@/content/about";
 
 const links = [
   { href: "/", label: "Home" },
@@ -25,6 +27,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Escape closes the phone menu
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   // "/projects/nextjs-dashboard" should still highlight "Projects"
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -36,10 +46,10 @@ export default function Navbar() {
         scrolled || open ? "border-line bg-ink/90" : "border-transparent bg-ink/50"
       }`}
     >
-      <nav className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8">
+      <nav aria-label="Main" className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8">
         <Link href="/" className="group font-display text-lg font-black uppercase tracking-wide">
           Ammara Badat
-          <span className="inline-block text-racing transition-transform duration-300 group-hover:scale-150">.</span>
+          <span className="inline-block text-racing-text transition-transform duration-300 group-hover:scale-150">.</span>
         </Link>
 
         <button
@@ -47,6 +57,7 @@ export default function Navbar() {
           onClick={() => setOpen(!open)}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
+          aria-controls="site-menu"
         >
           {/* Three lines that turn into an X */}
           <span
@@ -61,6 +72,7 @@ export default function Navbar() {
         </button>
 
         <ul
+          id="site-menu"
           className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:flex md:w-auto md:flex-row md:gap-9 md:border-0 md:bg-transparent md:p-0`}
         >
           {links.map(({ href, label }) => {
@@ -80,6 +92,17 @@ export default function Navbar() {
               </li>
             );
           })}
+          <li>
+            <a
+              href={about.contact.cv}
+              download
+              onClick={() => setOpen(false)}
+              className="inline-flex items-center gap-1.5 rounded border border-racing/60 px-3 py-1.5 text-snow transition hover:border-racing hover:bg-racing/15"
+            >
+              <Icon name="download" className="h-3.5 w-3.5" />
+              CV
+            </a>
+          </li>
         </ul>
       </nav>
     </header>
