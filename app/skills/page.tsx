@@ -42,7 +42,7 @@ export default function Skills() {
               {group.skills.map((skill) => (
                 <li
                   key={skill.name}
-                  className={`${card} fx-reveal group relative overflow-hidden p-5 transition duration-300 hover:-translate-y-0.5 hover:border-teal/50 hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.45)]`}
+                  className={`${card} spotlight fx-reveal group relative overflow-hidden p-5 transition duration-300 hover:-translate-y-0.5 hover:border-teal/50 hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.45)]`}
                 >
                   <span
                     aria-hidden="true"

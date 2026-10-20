@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { caseStudy } from "@/content/case-study";
 import Screenshot from "@/components/Screenshot";
+import { LightboxTrigger, type LightboxImage } from "@/components/Lightbox";
 import Icon from "@/components/Icon";
 import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
 
@@ -27,6 +28,8 @@ const sections = [
 export default function CaseStudy() {
   const cs = caseStudy;
   const [heroShot, ...otherShots] = cs.screenshots;
+  // All screenshots in one list for the full-screen viewer
+  const gallery: LightboxImage[] = cs.screenshots.map((shot) => ({ src: shot.src, alt: shot.alt, caption: shot.caption }));
 
   return (
     <article>
@@ -81,7 +84,15 @@ export default function CaseStudy() {
 
       {heroShot && (
         <figure className="fx-reveal mt-12">
-          <Screenshot src={heroShot.src} alt={heroShot.alt} />
+          <LightboxTrigger
+            images={gallery}
+            index={0}
+            label={`Enlarge screenshot: ${heroShot.alt}`}
+            className="group relative block w-full overflow-hidden rounded-lg text-left"
+          >
+            <Screenshot src={heroShot.src} alt={heroShot.alt} className="transition duration-700 group-hover:scale-[1.02]" />
+            <ZoomHint />
+          </LightboxTrigger>
           <figcaption className="mt-3 font-mono text-xs text-mist">{heroShot.caption}</figcaption>
         </figure>
       )}
@@ -112,7 +123,7 @@ export default function CaseStudy() {
                   preload="metadata"
                   playsInline
                   poster={cs.videoPoster || undefined}
-                  className="h-auto w-full rounded-lg border border-line bg-black"
+                  className="h-auto w-full rounded-lg border border-line bg-black text-white"
                 >
                   <source src={cs.videoUrl} type="video/mp4" />
                   Your browser can&apos;t play this video.{" "}
@@ -154,7 +165,7 @@ export default function CaseStudy() {
               {cs.stack.map((item) => (
                 <li
                   key={item.name}
-                  className={`${card} fx-reveal p-4 transition hover:-translate-y-0.5 hover:border-teal/50`}
+                  className={`${card} spotlight fx-reveal p-4 transition hover:-translate-y-0.5 hover:border-teal/50`}
                 >
                   <p className="font-mono text-sm font-bold text-teal">{item.name}</p>
                   <p className="mt-1 text-sm text-mist">{item.use}</p>
@@ -182,15 +193,21 @@ export default function CaseStudy() {
               <Accent>Screenshots</Accent>
             </SectionTitle>
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              {otherShots.map((shot) => (
-                <figure key={shot.src} className="fx-reveal group">
-                  <div className="overflow-hidden rounded-lg">
+              {otherShots.map((shot, i) => (
+                <figure key={shot.src} className="fx-reveal">
+                  <LightboxTrigger
+                    images={gallery}
+                    index={i + 1}
+                    label={`Enlarge screenshot: ${shot.alt}`}
+                    className="group relative block w-full overflow-hidden rounded-lg text-left"
+                  >
                     <Screenshot
                       src={shot.src}
                       alt={shot.alt}
                       className="transition duration-700 group-hover:scale-[1.04]"
                     />
-                  </div>
+                    <ZoomHint />
+                  </LightboxTrigger>
                   <figcaption className="mt-2 font-mono text-xs text-mist">{shot.caption}</figcaption>
                 </figure>
               ))}
@@ -247,5 +264,18 @@ export default function CaseStudy() {
         </div>
       </div>
     </article>
+  );
+}
+
+/** Small "click to enlarge" badge that shows on hover and keyboard focus */
+function ZoomHint() {
+  return (
+    <span
+      aria-hidden="true"
+      className="absolute right-3 top-3 flex items-center gap-1.5 rounded bg-black/70 px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-white opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100"
+    >
+      <Icon name="expand" className="h-3.5 w-3.5" />
+      Enlarge
+    </span>
   );
 }

@@ -85,7 +85,7 @@ export default function About() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`${card} fx-reveal group relative overflow-hidden p-6 transition hover:border-teal/50`}
+            className={`${card} spotlight fx-reveal group relative overflow-hidden p-6 transition hover:border-teal/50`}
           >
             <span
               aria-hidden="true"

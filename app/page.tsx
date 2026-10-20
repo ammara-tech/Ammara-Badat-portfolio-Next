@@ -3,6 +3,7 @@ import { about } from "@/content/about";
 import { caseStudy } from "@/content/case-study";
 import Icon from "@/components/Icon";
 import Screenshot from "@/components/Screenshot";
+import Terminal from "@/components/Terminal";
 import { Accent, Divider, Eyebrow, Para, SmartLink, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
 
 // Tech shown in the scrolling strip
@@ -19,19 +20,6 @@ const tech = [
   "CSS",
   "Vercel",
   "Git & GitHub",
-];
-
-// The code card, one line at a time. Each part: [text, colour class]
-type Part = [string, string?];
-const codeLines: Part[][] = [
-  [["const", "text-racing-text"], [" developer = {"]],
-  [["  name: "], [`"${about.name}"`, "text-teal"], [","]],
-  [["  role: "], [`"${about.role}"`, "text-teal"], [","]],
-  [["  stack: ["], ['"Next.js"', "text-teal"], [", "], ['"TypeScript"', "text-teal"], [", "], ['"Supabase"', "text-teal"], ["],"]],
-  [["  status: "], ['"open to work"', "text-teal"], [","]],
-  [["  // see what I've built", "text-mist-dim"]],
-  [["  next: "], ['"/projects"', "text-teal"], [","]],
-  [["};"]],
 ];
 
 export default function Home() {
@@ -92,36 +80,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* The code card from my first portfolio, now typing itself out */}
+        {/* The code card from my first portfolio, now an interactive terminal */}
         <div className="fx-rise relative" style={{ animationDelay: "300ms" }}>
           <div
             aria-hidden="true"
             className="fx-glow absolute -inset-6 -z-10 rounded-[2rem] bg-linear-to-br from-racing/30 via-transparent to-teal/25 blur-3xl"
           />
-          <div className="overflow-hidden rounded-xl border border-line-strong bg-panel/90 shadow-2xl shadow-black/50 backdrop-blur">
-            <div className="flex items-center gap-2 border-b border-line bg-panel-alt px-4 py-3">
-              <span className="h-3 w-3 rounded-full bg-racing" />
-              <span className="h-3 w-3 rounded-full bg-mist-dim" />
-              <span className="h-3 w-3 rounded-full bg-teal" />
-              <span className="ml-3 font-mono text-xs text-mist">developer.ts</span>
-            </div>
-            <pre className="overflow-x-auto p-4 font-mono text-[11px] leading-6 text-snow sm:p-5 sm:text-[13px] sm:leading-7" aria-label="Code card describing me">
-              <code>
-                {codeLines.map((line, i) => (
-                  <span key={i} className="fx-type block" style={{ animationDelay: `${700 + i * 220}ms` }}>
-                    {line.map(([text, colour], j) => (
-                      <span key={j} className={colour}>
-                        {text}
-                      </span>
-                    ))}
-                    {i === codeLines.length - 1 && (
-                      <span aria-hidden="true" className="fx-cursor ml-1 inline-block h-4 w-2 translate-y-0.5 bg-teal" />
-                    )}
-                  </span>
-                ))}
-              </code>
-            </pre>
-          </div>
+          <Terminal />
         </div>
       </section>
 
@@ -153,7 +118,7 @@ export default function Home() {
         </div>
         <Link
           href="/projects/nextjs-dashboard"
-          className="fx-reveal group mt-2 grid items-center gap-8 overflow-hidden rounded-2xl border border-racing/40 bg-panel p-5 transition hover:border-racing hover:shadow-[0_0_60px_-15px_rgb(232_0_45/0.45)] sm:p-7 md:grid-cols-[1.15fr_1fr]"
+          className="spotlight spotlight-red fx-reveal group mt-2 grid items-center gap-8 overflow-hidden rounded-2xl border border-racing/40 bg-panel p-5 transition hover:border-racing hover:shadow-[0_0_60px_-15px_rgb(232_0_45/0.45)] sm:p-7 md:grid-cols-[1.15fr_1fr]"
         >
           <div className="overflow-hidden rounded-lg">
             <Screenshot

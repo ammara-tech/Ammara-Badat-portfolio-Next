@@ -160,6 +160,35 @@ Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and
   grid column (`grid-cols-1` = `minmax(0, 1fr)`), letting the role line wrap, and making the code
   smaller on phones.
 
+## Upgrade pack 2 (improves Milestones 1–4)
+| Feature | Where | What it shows |
+|---|---|---|
+| Interactive terminal | Home | The `developer.ts` card from my first portfolio now takes commands: `help`, `about`, `skills`, `projects`, `certs`, `contact`, `cv`, `open <page>`, `theme`, `clear`. ↑/↓ repeat commands, Tab finishes a word, and quick buttons work on phones. |
+| Spotlight cards | Projects, Skills, About, case study, admin | A glow and a bright edge follow the mouse. One listener for the whole site (`components/Spotlight.tsx`); does nothing on touch screens. |
+| Project filters | Projects | Filter by tech. Tags come from the database, the choice is kept in the address (`?tag=Next.js`) so it can be shared, and cards slide into place with the View Transitions API. |
+| Lightbox | About (certificates), case study | Full-screen viewer built on the native `<dialog>`: Escape closes it, focus is trapped and returns to the button, arrow keys and swiping move between images. |
+| Image upload | /admin | Drop a screenshot into the form and it uploads to Supabase Storage, then fills in the image URL. Checks type and size (5 MB) first. |
+| Admin overview | /admin | Cards for projects, unread messages and messages this week, plus a 7-day bar chart. |
+| Light / dark mode | Navbar | Sun/moon button. The choice is saved in `localStorage` and applied before the page paints, so there's no flash. Every colour in light mode was checked for WCAG AA contrast. |
+| Search engine extras | `app/sitemap.ts`, `app/robots.ts`, `app/layout.tsx` | `/sitemap.xml`, `/robots.txt` (keeps `/admin` and `/api` out of search), and JSON-LD structured data describing me, my job title and certifications. |
+
+### Storage security (RLS on files)
+`Supabase/005-project-images-storage.sql` creates a public `project-images` bucket (images only,
+5 MB max) and four policies on `storage.objects`:
+
+| Who | View image by URL | Upload | List / replace / delete |
+|---|---|---|---|
+| Visitor (anon) | ✅ | ❌ | ❌ |
+| Another signed-in user | ✅ | ❌ | ❌ |
+| My account (owner) | ✅ | ✅ | ✅ |
+
+I tested the policies on a local Postgres copy: a visitor and another user were blocked with
+"new row violates row-level security policy", a visitor listed 0 files, another user's delete
+removed 0 rows, and only the owner could upload, rename and delete.
+
+After the upgrade the responsive (360–1440px), keyboard and contrast checks were run again in
+**both** themes, and everything still passes.
+
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
 (git-ignored). Values are never committed.
@@ -195,6 +224,9 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - compress my own screen recording of the clinic platform so it plays on the case study page
 - build the Milestone 4 contact form, API route
   content
+- build upgrade pack 2: the interactive terminal, spotlight cards, project filters, the lightbox,
+  image upload to Supabase Storage (and its SQL policies), the admin overview, light/dark mode and
+  the sitemap, robots and structured data
 
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to

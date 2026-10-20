@@ -1,8 +1,17 @@
 import { certificationGroups } from "@/content/certifications";
 import { Accent, SectionTitle } from "@/components/ui";
 import Icon from "@/components/Icon";
+import { LightboxTrigger, type LightboxImage } from "@/components/Lightbox";
 
 const total = certificationGroups.reduce((n, g) => n + g.certificates.length, 0);
+
+// Every certificate in one list, so the viewer can arrow through all of them
+const allCerts = certificationGroups.flatMap((g) => g.certificates);
+const images: LightboxImage[] = allCerts.map((cert) => ({
+  src: cert.image,
+  alt: `${cert.name} certificate`,
+  caption: `${cert.name} · ${cert.date}`,
+}));
 
 /** "Current certifications" list, grouped by issuer, in the v1 portfolio style. */
 export default function Certifications() {
@@ -20,7 +29,7 @@ export default function Certifications() {
 
       <div className="mt-6 space-y-6">
         {certificationGroups.map((group) => (
-          <div key={group.issuer} className="fx-reveal rounded-xl border border-line bg-panel p-5 transition hover:border-line-strong sm:p-7">
+          <div key={group.issuer} className="spotlight fx-reveal rounded-xl border border-line bg-panel p-5 transition hover:border-line-strong sm:p-7">
             <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-teal">
               <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-racing" />
               {group.issuer}
@@ -30,12 +39,11 @@ export default function Certifications() {
             <ul className="mt-4 divide-y divide-line border-t border-line">
               {group.certificates.map((cert) => (
                 <li key={cert.name} className="group flex flex-wrap items-center gap-x-5 gap-y-3 py-4">
-                  <a
-                    href={cert.image}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 overflow-hidden rounded border border-line transition hover:border-teal"
-                    aria-label={`View the ${cert.name} certificate`}
+                  <LightboxTrigger
+                    images={images}
+                    index={allCerts.indexOf(cert)}
+                    label={`View the ${cert.name} certificate`}
+                    className="relative shrink-0 overflow-hidden rounded border border-line transition hover:border-teal"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -44,7 +52,7 @@ export default function Certifications() {
                       loading="lazy"
                       className="h-14 w-22 object-cover object-top transition duration-500 group-hover:scale-110"
                     />
-                  </a>
+                  </LightboxTrigger>
 
                   <div className="min-w-0 flex-1">
                     <p className="text-lg text-snow">{cert.name}</p>
@@ -57,14 +65,15 @@ export default function Certifications() {
                   </div>
 
                   <div className="flex gap-2">
-                    <a
-                      href={cert.image}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded border border-line-strong px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-teal transition hover:border-teal hover:bg-teal/10"
+                    <LightboxTrigger
+                      images={images}
+                      index={allCerts.indexOf(cert)}
+                      label={`View the ${cert.name} certificate`}
+                      className="inline-flex items-center gap-1.5 rounded border border-line-strong px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-teal transition hover:border-teal hover:bg-teal/10"
                     >
-                      View ↗
-                    </a>
+                      <Icon name="expand" className="h-3.5 w-3.5" />
+                      View
+                    </LightboxTrigger>
                     {cert.verifyUrl && (
                       <a
                         href={cert.verifyUrl}

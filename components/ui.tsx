@@ -113,7 +113,7 @@ export function Divider() {
       className="my-4 h-13"
       style={{
         background:
-          "linear-gradient(105deg, transparent 49.4%, rgb(245 245 247 / 0.16) 49.4%, rgb(245 245 247 / 0.16) 50.1%, transparent 50.1%)",
+          "linear-gradient(105deg, transparent 49.4%, var(--color-line-strong) 49.4%, var(--color-line-strong) 50.1%, transparent 50.1%)",
       }}
     />
   );

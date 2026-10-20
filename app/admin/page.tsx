@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserClient, type Project } from "@/lib/supabase";
 import Inbox from "@/components/Inbox";
+import Icon from "@/components/Icon";
+import AdminOverview from "@/components/AdminOverview";
+import ImageUpload from "@/components/ImageUpload";
 
 type FormState = {
   title: string;
@@ -30,7 +33,7 @@ const emptyForm: FormState = {
 };
 
 const inputClass =
-  "w-full rounded border border-line-strong bg-ink px-3 py-2 text-snow focus:border-teal focus:outline-none";
+  "w-full rounded border border-line-strong bg-ink px-3 py-2 text-snow focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal";
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -127,6 +130,8 @@ function Dashboard({ email }: { email: string }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  // Bumped when messages change, so the overview cards reload
+  const [statsKey, setStatsKey] = useState(0);
 
   const loadProjects = useCallback(async () => {
     const { data, error } = await supabase
@@ -259,8 +264,11 @@ function Dashboard({ email }: { email: string }) {
         </p>
       )}
 
+      {/* Totals at a glance */}
+      <AdminOverview projects={projects} refreshKey={statsKey} />
+
       {/* Contact form messages (owner only) */}
-      <Inbox />
+      <Inbox onChange={() => setStatsKey((k) => k + 1)} />
 
       {/* Add / edit form */}
       <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-5">
@@ -307,15 +315,19 @@ function Dashboard({ email }: { email: string }) {
           </label>
         </div>
 
-        <label className="block">
-          <span className="text-sm text-mist">Image URL</span>
-          <input
-            value={form.image_url}
-            onChange={(e) => updateField("image_url", e.target.value)}
-            placeholder="https://… or /projects/myflix.png"
-            className={`mt-1 ${inputClass}`}
-          />
-        </label>
+        <fieldset className="space-y-3">
+          <legend className="text-sm text-mist">Project image</legend>
+          <ImageUpload value={form.image_url} onChange={(url) => updateField("image_url", url)} />
+          <label className="block">
+            <span className="text-sm text-mist">Image URL (filled in by the upload, or paste one)</span>
+            <input
+              value={form.image_url}
+              onChange={(e) => updateField("image_url", e.target.value)}
+              placeholder="https://… or /projects/myflix.png"
+              className={`mt-1 ${inputClass}`}
+            />
+          </label>
+        </fieldset>
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
@@ -385,12 +397,27 @@ function Dashboard({ email }: { email: string }) {
             key={project.id}
             className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel p-4"
           >
-            <div>
-              <p className="font-medium">
-                <span className="mr-2 text-mist-dim">{project.sort_order}.</span>
-                {project.title}
-              </p>
-              {project.summary && <p className="mt-1 text-sm text-mist">{project.summary}</p>}
+            <div className="flex min-w-0 flex-1 items-center gap-4">
+              {project.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={project.image_url}
+                  alt=""
+                  loading="lazy"
+                  className="hidden h-12 w-20 shrink-0 rounded border border-line object-cover object-top sm:block"
+                />
+              ) : (
+                <span className="hidden h-12 w-20 shrink-0 items-center justify-center rounded border border-dashed border-line-strong sm:flex">
+                  <Icon name="photo" className="h-5 w-5 text-mist-dim" />
+                </span>
+              )}
+              <div className="min-w-0">
+                <p className="font-medium">
+                  <span className="mr-2 text-mist-dim">{project.sort_order}.</span>
+                  {project.title}
+                </p>
+                {project.summary && <p className="mt-1 text-sm text-mist">{project.summary}</p>}
+              </div>
             </div>
             <div className="flex gap-2">
               <button

@@ -13,7 +13,8 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" });
 }
 
-export default function Inbox() {
+/** onChange lets the admin overview cards refresh when a message is read or deleted */
+export default function Inbox({ onChange }: { onChange?: () => void }) {
   const supabase = getBrowserClient();
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,10 @@ export default function Inbox() {
   async function setRead(msg: Message, isRead: boolean) {
     const { error } = await supabase.from("messages").update({ is_read: isRead }).eq("id", msg.id);
     if (error) setError(error.message);
-    else setMessages((list) => list.map((m) => (m.id === msg.id ? { ...m, is_read: isRead } : m)));
+    else {
+      setMessages((list) => list.map((m) => (m.id === msg.id ? { ...m, is_read: isRead } : m)));
+      onChange?.();
+    }
   }
 
   async function open(msg: Message) {
@@ -51,7 +55,10 @@ export default function Inbox() {
     if (!window.confirm(`Delete the message from ${msg.name}?`)) return;
     const { error } = await supabase.from("messages").delete().eq("id", msg.id);
     if (error) setError(error.message);
-    else setMessages((list) => list.filter((m) => m.id !== msg.id));
+    else {
+      setMessages((list) => list.filter((m) => m.id !== msg.id));
+      onChange?.();
+    }
   }
 
   const unread = messages.filter((m) => !m.is_read).length;
@@ -66,7 +73,12 @@ export default function Inbox() {
             <span className="rounded-full bg-racing px-2 py-0.5 font-mono text-xs text-white">{unread} new</span>
           )}
         </h2>
-        <button onClick={load} className="rounded border border-line-strong px-3 py-1 text-sm hover:border-teal hover:text-teal">
+        <button
+          onClick={() => {
+            load();
+            onChange?.();
+          }}
+          className="rounded border border-line-strong px-3 py-1 text-sm hover:border-teal hover:text-teal">
           Refresh
         </button>
       </div>

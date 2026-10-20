@@ -1,9 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
+import Lightbox from "@/components/Lightbox";
+import Spotlight from "@/components/Spotlight";
 import { about } from "@/content/about";
+import { certificationGroups } from "@/content/certifications";
+import { themeScript } from "@/lib/theme";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
@@ -25,6 +29,20 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
   description,
+  applicationName: "Ammara Badat Portfolio",
+  authors: [{ name: about.name, url: siteUrl }],
+  creator: about.name,
+  keywords: [
+    "Ammara Badat",
+    "junior full stack developer",
+    "junior front-end developer",
+    "Next.js developer",
+    "React developer",
+    "Supabase",
+    "South Africa",
+    "Gauteng",
+    "portfolio",
+  ],
   openGraph: {
     title,
     description,
@@ -36,11 +54,63 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title, description },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#15151e",
+};
+
+/*
+  Structured data (JSON-LD). Search engines read this to understand that the
+  site is about a person, what she does and where to find her.
+  https://schema.org/Person
+*/
+const certificates = certificationGroups.flatMap((g) => g.certificates.map((c) => ({ name: c.name, issuer: g.issuer })));
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Ammara Badat",
+      description,
+      inLanguage: "en-ZA",
+      author: { "@id": `${siteUrl}/#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#person`,
+      name: about.name,
+      jobTitle: about.role,
+      url: siteUrl,
+      email: `mailto:${about.contact.email}`,
+      image: `${siteUrl}/opengraph-image.png`,
+      address: { "@type": "PostalAddress", addressRegion: "Gauteng", addressCountry: "ZA" },
+      sameAs: [about.contact.github, about.contact.linkedin].filter(Boolean),
+      knowsAbout: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS", "SQL", "PostgreSQL", "Supabase"],
+      hasCredential: certificates.map((c) => ({
+        "@type": "EducationalOccupationalCredential",
+        name: c.name,
+        recognizedBy: { "@type": "Organization", name: c.issuer },
+      })),
+    },
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const { email, github, linkedin } = about.contact;
 
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrains.variable} ${titillium.variable}`}>
+    // suppressHydrationWarning: the theme script below may add data-theme="light" before React loads
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrains.variable} ${titillium.variable}`}>
+      <head>
+        {/* Applies the saved light/dark choice before the page paints (no flash) */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
+      </head>
       <body className="min-h-screen overflow-x-clip bg-ink font-sans text-snow antialiased">
         {/* Keyboard users can jump straight past the navbar */}
         <a
@@ -54,6 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div aria-hidden="true" className="fx-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-linear-to-r from-racing to-teal" />
         <div aria-hidden="true" className="site-backdrop" />
 
+        <Spotlight />
         <Navbar />
         <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-16 outline-none sm:px-8">
           {children}
@@ -100,6 +171,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </footer>
+
+        {/* Full-screen image viewer, opened by any LightboxTrigger */}
+        <Lightbox />
       </body>
     </html>
   );

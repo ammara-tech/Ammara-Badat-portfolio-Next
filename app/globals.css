@@ -19,6 +19,36 @@
   --color-line-strong: rgb(245 245 247 / 0.16);
 }
 
+/*
+  Light mode (upgrade pack). The toggle in the navbar sets data-theme="light"
+  on <html>, which swaps every colour token above. Every pair was checked
+  for WCAG AA contrast, the same as the dark theme.
+*/
+:root {
+  color-scheme: dark;
+  --grid-line: rgb(245 245 247 / 0.028);
+  --glow-red: rgb(232 0 45 / 0.12);
+  --glow-teal: rgb(39 244 210 / 0.07);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f4f4f7;
+  --color-panel: #ffffff;
+  --color-panel-alt: #ebedf2;
+  --color-snow: #15151e;
+  --color-mist: #4d5062;
+  --color-mist-dim: #585b6c;
+  --color-racing: #d70029;
+  --color-racing-text: #c00026;
+  --color-teal: #00796b;
+  --color-line: rgb(21 21 30 / 0.1);
+  --color-line-strong: rgb(21 21 30 / 0.18);
+  --grid-line: rgb(21 21 30 / 0.045);
+  --glow-red: rgb(215 0 41 / 0.08);
+  --glow-teal: rgb(0 121 107 / 0.08);
+}
+
 /* The font files are loaded in app/layout.tsx with next/font */
 @theme inline {
   --font-display: var(--font-titillium), "Titillium Web", sans-serif;
@@ -37,7 +67,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #27f4d2;
+    outline: 2px solid var(--color-teal);
     outline-offset: 3px;
   }
 
@@ -68,10 +98,10 @@
   z-index: -10;
   pointer-events: none;
   background-image:
-    radial-gradient(55rem 28rem at 88% -8%, rgb(232 0 45 / 0.12), transparent 60%),
-    radial-gradient(45rem 28rem at -8% 35%, rgb(39 244 210 / 0.07), transparent 60%),
-    linear-gradient(rgb(245 245 247 / 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(245 245 247 / 0.028) 1px, transparent 1px);
+    radial-gradient(55rem 28rem at 88% -8%, var(--glow-red), transparent 60%),
+    radial-gradient(45rem 28rem at -8% 35%, var(--glow-teal), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: auto, auto, 48px 48px, 48px 48px;
   mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
 }
@@ -144,7 +174,81 @@
   }
 }
 
+/* ===================================================================
+   Upgrade pack 2
+   =================================================================== */
+
+/* Spotlight cards: a soft glow and a bright edge follow the mouse.
+   components/Spotlight.tsx sets --mx and --my as the pointer moves. */
+@layer components {
+  .spotlight {
+    --spot: var(--color-teal);
+    position: relative;
+  }
+
+  .spotlight-red {
+    --spot: var(--color-racing);
+  }
+
+  .spotlight::before,
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* the glow inside the card */
+  .spotlight::after {
+    background: radial-gradient(26rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot) 9%, transparent), transparent 65%);
+  }
+
+  /* the bright edge: the same gradient, masked so only a 1px ring shows */
+  .spotlight::before {
+    padding: 1px;
+    background: radial-gradient(16rem circle at var(--mx, 50%) var(--my, 50%), var(--spot), transparent 70%);
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  .spotlight:hover::before,
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Project filters: cards slide to their new place (View Transitions API).
+   The class is only on <html> while a filter change is animating. */
+html.filter-vt .vt-card {
+  view-transition-name: var(--vt);
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Theme switch: the new theme grows out of the button as a circle */
+html.theme-vt::view-transition-old(root),
+html.theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Lightbox opening */
+@keyframes fx-zoom {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.fx-zoom { animation: fx-zoom 0.25s ease-out both; }
+
 @media (prefers-reduced-motion: reduce) {
+  .fx-zoom,
   .fx-rise,
   .fx-type,
   .fx-cursor,
