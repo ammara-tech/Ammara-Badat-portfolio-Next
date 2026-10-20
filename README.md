@@ -116,11 +116,8 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - write the SQL for the `projects` table
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
-- build the Milestone 3 pages (Skills, case study, About, Contact), find evidence links for each
-  skill in my public repos, and draft the one-line skill descriptions
+- build the Milestone 3 pages (Skills, case study, About, Contact)
 - compress my own screen recording of the clinic platform so it plays on the case study page
-- write the case study and About text, based on my own README, demo notes and presentation
-  speech for the clinic platform; I checked and edited it so it is accurate and sounds like me
 
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to
