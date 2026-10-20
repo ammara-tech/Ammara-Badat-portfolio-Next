@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { publicClient, type Project } from "@/lib/supabase";
 import Screenshot from "@/components/Screenshot";
-import { Accent, Eyebrow, PageTitle, SmartLink, Tag, btnGhost, btnPrimary } from "@/components/ui";
+import Icon from "@/components/Icon";
+import { Accent, Eyebrow, PageTitle, SmartLink, Tag, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
 
 // Always fetch fresh data, so changes from /admin show up straight away
 export const dynamic = "force-dynamic";
@@ -33,14 +34,18 @@ function ProjectCard({ project }: { project: Project }) {
 
   return (
     <article
-      className={`group rounded-xl border bg-panel p-5 transition hover:-translate-y-1 ${
+      className={`fx-reveal group rounded-xl border bg-panel p-5 transition duration-300 hover:-translate-y-1 ${
         isCapstone
-          ? "border-racing/50 hover:border-racing md:col-span-2 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-8"
-          : "flex flex-col border-line hover:border-teal/60"
+          ? "border-racing/50 hover:border-racing hover:shadow-[0_0_60px_-15px_rgb(232_0_45/0.45)] md:col-span-2 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-8"
+          : "flex flex-col border-line hover:border-teal/60 hover:shadow-[0_0_50px_-18px_rgb(39_244_210/0.4)]"
       }`}
     >
-      <div className="relative">
-        <Screenshot src={project.image_url} alt={`Screenshot of ${project.title}`} />
+      <div className="relative overflow-hidden rounded-lg">
+        <Screenshot
+          src={project.image_url}
+          alt={`Screenshot of ${project.title}`}
+          className="transition duration-700 group-hover:scale-[1.04]"
+        />
         {isCapstone && (
           <span className="absolute left-3 top-3 rounded bg-racing px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-widest text-snow">
             Capstone
@@ -67,22 +72,27 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="mt-auto flex flex-wrap gap-3 pt-6">
           {project.case_study_url && (
             <SmartLink href={project.case_study_url} className={`${btnPrimary} ${small}`}>
-              Read case study →
+              <Icon name="document" className="h-4 w-4" />
+              Read case study
+              <Icon name="arrow-right" className={`h-4 w-4 ${btnIcon}`} />
             </SmartLink>
           )}
           {project.live_url && (
             <SmartLink href={project.live_url} className={`${isCapstone ? btnGhost : btnPrimary} ${small}`}>
-              Live site ↗
+              Live site
+              <Icon name="arrow-up-right" className={`h-3.5 w-3.5 ${btnIcon}`} />
             </SmartLink>
           )}
           {project.repo_url && (
             <SmartLink href={project.repo_url} className={`${btnGhost} ${small}`}>
+              <Icon name="github" className="h-4 w-4" />
               GitHub
             </SmartLink>
           )}
           {project.video_url && (
             <SmartLink href={project.video_url} className={`${btnGhost} ${small}`}>
-              ▶ Video
+              <Icon name="play" className="h-4 w-4" />
+              Video
             </SmartLink>
           )}
         </div>

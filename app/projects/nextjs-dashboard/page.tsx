@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { caseStudy } from "@/content/case-study";
 import Screenshot from "@/components/Screenshot";
-import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnPrimary, card } from "@/components/ui";
+import Icon from "@/components/Icon";
+import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: `${caseStudy.title} — Case study — Ammara Badat`,
@@ -29,8 +30,9 @@ export default function CaseStudy() {
 
   return (
     <article>
-      <Link href="/projects" className="font-mono text-xs uppercase tracking-widest text-mist hover:text-teal">
-        ← All projects
+      <Link href="/projects" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-mist hover:text-teal">
+        <Icon name="arrow-left" className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
+        All projects
       </Link>
 
       {/* Header */}
@@ -45,20 +47,23 @@ export default function CaseStudy() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <SmartLink href={cs.liveUrl} className={btnPrimary}>
-            Live site ↗
+            Live site
+            <Icon name="arrow-up-right" className={`h-3.5 w-3.5 ${btnIcon}`} />
           </SmartLink>
           <SmartLink href={cs.repoUrl} className={btnGhost}>
+            <Icon name="github" className="h-4 w-4" />
             GitHub repo
           </SmartLink>
           {cs.videoUrl && (
             <SmartLink href={isVideoFile ? "#demo" : cs.videoUrl} className={btnGhost}>
-              ▶ Watch the demo
+              <Icon name="play" className="h-4 w-4" />
+              Watch the demo
             </SmartLink>
           )}
         </div>
 
         {/* Quick facts */}
-        <dl className="mt-10 grid gap-4 sm:grid-cols-3">
+        <dl className="fx-rise mt-10 grid gap-4 sm:grid-cols-3" style={{ animationDelay: "300ms" }}>
           <div className={`${card} p-5`}>
             <dt className="font-mono text-xs uppercase tracking-widest text-teal">When</dt>
             <dd className="mt-1 text-snow">
@@ -75,7 +80,7 @@ export default function CaseStudy() {
       </header>
 
       {heroShot && (
-        <figure className="mt-12">
+        <figure className="fx-reveal mt-12">
           <Screenshot src={heroShot.src} alt={heroShot.alt} />
           <figcaption className="mt-3 font-mono text-xs text-mist">{heroShot.caption}</figcaption>
         </figure>
@@ -101,7 +106,7 @@ export default function CaseStudy() {
               <SectionTitle id="demo">
                 Demo <Accent>video</Accent>
               </SectionTitle>
-              <figure className="mt-6">
+              <figure className="fx-reveal mt-6">
                 <video
                   controls
                   preload="metadata"
@@ -147,7 +152,10 @@ export default function CaseStudy() {
             </SectionTitle>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {cs.stack.map((item) => (
-                <li key={item.name} className={`${card} p-4`}>
+                <li
+                  key={item.name}
+                  className={`${card} fx-reveal p-4 transition hover:-translate-y-0.5 hover:border-teal/50`}
+                >
                   <p className="font-mono text-sm font-bold text-teal">{item.name}</p>
                   <p className="mt-1 text-sm text-mist">{item.use}</p>
                 </li>
@@ -161,7 +169,7 @@ export default function CaseStudy() {
             </SectionTitle>
             <ul className="mt-6 space-y-3">
               {cs.features.map((feature) => (
-                <li key={feature} className="flex gap-3 text-mist">
+                <li key={feature} className="fx-reveal flex gap-3 text-mist">
                   <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-racing" />
                   {feature}
                 </li>
@@ -175,8 +183,14 @@ export default function CaseStudy() {
             </SectionTitle>
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               {otherShots.map((shot) => (
-                <figure key={shot.src}>
-                  <Screenshot src={shot.src} alt={shot.alt} />
+                <figure key={shot.src} className="fx-reveal group">
+                  <div className="overflow-hidden rounded-lg">
+                    <Screenshot
+                      src={shot.src}
+                      alt={shot.alt}
+                      className="transition duration-700 group-hover:scale-[1.04]"
+                    />
+                  </div>
                   <figcaption className="mt-2 font-mono text-xs text-mist">{shot.caption}</figcaption>
                 </figure>
               ))}
@@ -216,12 +230,16 @@ export default function CaseStudy() {
           </section>
 
           <div className={`${card} flex flex-wrap items-center justify-between gap-4 p-6`}>
-            <p className="font-display text-xl font-black uppercase">See it for yourself</p>
+            <p className="font-display text-xl font-black uppercase">
+              See it for <Accent>yourself</Accent>
+            </p>
             <div className="flex flex-wrap gap-3">
               <SmartLink href={cs.liveUrl} className={btnPrimary}>
-                Live site ↗
+                Live site
+                <Icon name="arrow-up-right" className={`h-3.5 w-3.5 ${btnIcon}`} />
               </SmartLink>
               <SmartLink href={cs.repoUrl} className={btnGhost}>
+                <Icon name="github" className="h-4 w-4" />
                 GitHub repo
               </SmartLink>
             </div>

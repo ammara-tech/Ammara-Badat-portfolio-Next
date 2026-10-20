@@ -1,5 +1,6 @@
 import { certificationGroups } from "@/content/certifications";
 import { Accent, SectionTitle } from "@/components/ui";
+import Icon from "@/components/Icon";
 
 const total = certificationGroups.reduce((n, g) => n + g.certificates.length, 0);
 
@@ -11,12 +12,15 @@ export default function Certifications() {
         <SectionTitle>
           Current <Accent>certifications</Accent>
         </SectionTitle>
-        <p className="font-mono text-xs uppercase tracking-widest text-mist">{total} certificates</p>
+        <p className="fx-reveal flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-mist">
+          <Icon name="badge" className="h-4 w-4 text-teal" />
+          {total} certificates
+        </p>
       </div>
 
       <div className="mt-6 space-y-6">
         {certificationGroups.map((group) => (
-          <div key={group.issuer} className="rounded-xl border border-line bg-panel p-5 sm:p-7">
+          <div key={group.issuer} className="fx-reveal rounded-xl border border-line bg-panel p-5 transition hover:border-line-strong sm:p-7">
             <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-teal">
               <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-racing" />
               {group.issuer}
@@ -25,7 +29,7 @@ export default function Certifications() {
 
             <ul className="mt-4 divide-y divide-line border-t border-line">
               {group.certificates.map((cert) => (
-                <li key={cert.name} className="flex flex-wrap items-center gap-x-5 gap-y-3 py-4">
+                <li key={cert.name} className="group flex flex-wrap items-center gap-x-5 gap-y-3 py-4">
                   <a
                     href={cert.image}
                     target="_blank"
@@ -34,7 +38,12 @@ export default function Certifications() {
                     aria-label={`View the ${cert.name} certificate`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={cert.image} alt="" loading="lazy" className="h-14 w-22 object-cover object-top" />
+                    <img
+                      src={cert.image}
+                      alt=""
+                      loading="lazy"
+                      className="h-14 w-22 object-cover object-top transition duration-500 group-hover:scale-110"
+                    />
                   </a>
 
                   <div className="min-w-0 flex-1">

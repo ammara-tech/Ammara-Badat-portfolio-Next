@@ -53,3 +53,109 @@
     }
   }
 }
+
+/* ===================================================================
+   Motion & atmosphere (upgrade pack)
+   Every effect switches off for visitors who ask for reduced motion,
+   and scroll effects only run in browsers that support them.
+   =================================================================== */
+
+/* Soft red/teal glows and a faint grid behind every page */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-image:
+    radial-gradient(55rem 28rem at 88% -8%, rgb(232 0 45 / 0.12), transparent 60%),
+    radial-gradient(45rem 28rem at -8% 35%, rgb(39 244 210 / 0.07), transparent 60%),
+    linear-gradient(rgb(245 245 247 / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(245 245 247 / 0.028) 1px, transparent 1px);
+  background-size: auto, auto, 48px 48px, 48px 48px;
+  mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+}
+
+@keyframes fx-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-type {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fx-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes fx-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes fx-marquee {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fx-glow {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate(-4%, 6%) scale(1.08); opacity: 0.8; }
+}
+
+/* Plays once on page load. Add a delay with style={{ animationDelay: "200ms" }} */
+.fx-rise { animation: fx-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Code card lines "type" in from left to right */
+.fx-type { animation: fx-type 0.55s steps(24, end) both; }
+
+.fx-cursor { animation: fx-blink 1s steps(1) infinite; }
+
+/* Underline that draws itself under the hero heading */
+.fx-underline { transform-origin: left; animation: fx-grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both; }
+
+.fx-glow { animation: fx-glow 9s ease-in-out infinite; }
+
+/* Tech strip on the Home page scrolls sideways and pauses on hover */
+.fx-marquee { animation: fx-marquee 38s linear infinite; }
+.fx-marquee-wrap:hover .fx-marquee { animation-play-state: paused; }
+.fx-marquee-wrap {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Reading progress bar at the very top of the page */
+.fx-progress { display: none; transform-origin: left; }
+
+@supports (animation-timeline: scroll()) {
+  .fx-progress {
+    display: block;
+    animation: fx-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* Sections and cards fade up as they scroll into view */
+@supports (animation-timeline: view()) {
+  .fx-reveal {
+    animation: fx-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-rise,
+  .fx-type,
+  .fx-cursor,
+  .fx-underline,
+  .fx-glow,
+  .fx-marquee,
+  .fx-progress,
+  .fx-reveal {
+    animation: none !important;
+  }
+
+  .fx-progress {
+    display: none !important;
+  }
+}

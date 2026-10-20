@@ -3,17 +3,20 @@ import Link from "next/link";
 /* Shared building blocks so every page uses the same v1 look. */
 
 export const btnPrimary =
-  "inline-flex items-center gap-2 rounded bg-racing px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow transition hover:-translate-y-0.5 hover:bg-racing/90";
+  "group/btn inline-flex items-center gap-2 rounded bg-racing px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow shadow-lg shadow-racing/20 transition hover:-translate-y-0.5 hover:bg-racing/90 hover:shadow-racing/40";
 
 export const btnGhost =
-  "inline-flex items-center gap-2 rounded border border-line-strong px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow transition hover:-translate-y-0.5 hover:border-teal hover:text-teal";
+  "group/btn inline-flex items-center gap-2 rounded border border-line-strong px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-snow transition hover:-translate-y-0.5 hover:border-teal hover:text-teal";
+
+/** Put this on an icon inside a button so it slides when the button is hovered */
+export const btnIcon = "transition-transform group-hover/btn:translate-x-0.5";
 
 export const card = "rounded-xl border border-line bg-panel";
 
 /** Small uppercase label with the red line in front, like v1's ".eyebrow" */
 export function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-teal">
+    <p className="fx-rise mb-4 flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.18em] text-teal">
       <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-racing" />
       {children}
     </p>
@@ -23,7 +26,10 @@ export function Eyebrow({ children }: { children: React.ReactNode }) {
 /** Big uppercase page heading. Wrap a word in <Accent> to make it red. */
 export function PageTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="font-display text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl">
+    <h1
+      className="fx-rise font-display text-4xl font-black uppercase leading-none tracking-tight sm:text-5xl"
+      style={{ animationDelay: "90ms" }}
+    >
       {children}
     </h1>
   );
@@ -31,7 +37,7 @@ export function PageTitle({ children }: { children: React.ReactNode }) {
 
 export function SectionTitle({ id, children }: { id?: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="scroll-mt-24 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+    <h2 id={id} className="fx-reveal scroll-mt-24 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
       {children}
     </h2>
   );
@@ -96,5 +102,19 @@ export function SmartLink({
     <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
       {children}
     </a>
+  );
+}
+
+/** The slanted line between sections, from my first portfolio */
+export function Divider() {
+  return (
+    <div
+      aria-hidden="true"
+      className="my-4 h-13"
+      style={{
+        background:
+          "linear-gradient(105deg, transparent 49.4%, rgb(245 245 247 / 0.16) 49.4%, rgb(245 245 247 / 0.16) 50.1%, transparent 50.1%)",
+      }}
+    />
   );
 }
