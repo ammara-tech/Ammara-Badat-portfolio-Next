@@ -102,6 +102,10 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
   the Projects page and the `/admin` page with code i previously used for a project that also used a similar stack to this
 - write the SQL for the `projects` table
 - draft parts of this README
+- switch the site to my v1 portfolio colours and fonts
+- write the case study and About text, based on my own README, demo notes and presentation
+  speech for the clinic platform; I checked and edited it so it is accurate and sounds like me
+
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to
 include and how to describe them, set up GitHub, Supabase and Vercel myself, tested every feature,
