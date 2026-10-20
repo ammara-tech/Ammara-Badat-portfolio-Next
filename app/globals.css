@@ -1,1 +1,55 @@
 @import "tailwindcss";
+
+/*
+  Colours and fonts carried over from my first portfolio (v1).
+  Use them as Tailwind classes, for example:
+  bg-ink, bg-panel, text-snow, text-mist, text-racing, text-teal, border-line, font-display
+*/
+@theme {
+  --color-ink: #15151e;
+  --color-panel: #1b1b26;
+  --color-panel-alt: #20202e;
+  --color-snow: #f5f5f7;
+  --color-mist: #9497a6;
+  --color-mist-dim: #63667a;
+  --color-racing: #e8002d;
+  --color-teal: #27f4d2;
+  --color-line: rgb(245 245 247 / 0.09);
+  --color-line-strong: rgb(245 245 247 / 0.16);
+}
+
+/* The font files are loaded in app/layout.tsx with next/font */
+@theme inline {
+  --font-display: var(--font-titillium), "Titillium Web", sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: #e8002d;
+    color: #f5f5f7;
+  }
+
+  :focus-visible {
+    outline: 2px solid #27f4d2;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -10,6 +10,8 @@ type FormState = {
   live_url: string;
   repo_url: string;
   image_url: string;
+  video_url: string;
+  case_study_url: string;
   tags: string;
   sort_order: string;
 };
@@ -20,12 +22,14 @@ const emptyForm: FormState = {
   live_url: "",
   repo_url: "",
   image_url: "",
+  video_url: "",
+  case_study_url: "",
   tags: "",
   sort_order: "0",
 };
 
 const inputClass =
-  "w-full rounded border border-white/15 bg-neutral-900 px-3 py-2 text-neutral-100 focus:border-emerald-400 focus:outline-none";
+  "w-full rounded border border-line-strong bg-ink px-3 py-2 text-snow focus:border-teal focus:outline-none";
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -46,7 +50,7 @@ export default function AdminPage() {
     return () => data.subscription.unsubscribe();
   }, []);
 
-  if (checking) return <p className="text-neutral-400">Loading…</p>;
+  if (checking) return <p className="text-mist">Loading…</p>;
   if (!session) return <SignIn />;
   return <Dashboard email={session.user.email ?? ""} />;
 }
@@ -72,12 +76,12 @@ function SignIn() {
 
   return (
     <section className="mx-auto max-w-sm">
-      <h1 className="text-3xl font-bold">Admin sign in</h1>
-      <p className="mt-2 text-neutral-400">This area is for the site owner only.</p>
+      <h1 className="font-display text-3xl font-black uppercase">Admin sign in</h1>
+      <p className="mt-2 text-mist">This area is for the site owner only.</p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <label className="block">
-          <span className="text-sm text-neutral-300">Email</span>
+          <span className="text-sm text-mist">Email</span>
           <input
             type="email"
             required
@@ -88,7 +92,7 @@ function SignIn() {
         </label>
 
         <label className="block">
-          <span className="text-sm text-neutral-300">Password</span>
+          <span className="text-sm text-mist">Password</span>
           <input
             type="password"
             required
@@ -98,12 +102,12 @@ function SignIn() {
           />
         </label>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-racing">{error}</p>}
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded bg-emerald-500 px-4 py-2 font-medium text-neutral-950 disabled:opacity-50"
+          className="w-full rounded bg-racing px-4 py-2 font-medium text-snow disabled:opacity-50"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
@@ -149,6 +153,8 @@ function Dashboard({ email }: { email: string }) {
       live_url: project.live_url ?? "",
       repo_url: project.repo_url ?? "",
       image_url: project.image_url ?? "",
+      video_url: project.video_url ?? "",
+      case_study_url: project.case_study_url ?? "",
       tags: project.tags.join(", "),
       sort_order: String(project.sort_order),
     });
@@ -179,6 +185,8 @@ function Dashboard({ email }: { email: string }) {
       live_url: form.live_url.trim() || null,
       repo_url: form.repo_url.trim() || null,
       image_url: form.image_url.trim() || null,
+      video_url: form.video_url.trim() || null,
+      case_study_url: form.case_study_url.trim() || null,
       tags: form.tags
         .split(",")
         .map((tag) => tag.trim())
@@ -230,10 +238,10 @@ function Dashboard({ email }: { email: string }) {
     <section>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Admin</h1>
-          <p className="mt-1 text-sm text-neutral-400">Signed in as {email}</p>
+          <h1 className="font-display text-3xl font-black uppercase">Admin</h1>
+          <p className="mt-1 text-sm text-mist">Signed in as {email}</p>
         </div>
-        <button onClick={handleSignOut} className="rounded border border-white/20 px-4 py-2 text-sm">
+        <button onClick={handleSignOut} className="rounded border border-line-strong px-4 py-2 text-sm">
           Sign out
         </button>
       </div>
@@ -242,8 +250,8 @@ function Dashboard({ email }: { email: string }) {
         <p
           className={`mt-6 rounded border p-3 text-sm ${
             message.type === "ok"
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-              : "border-red-500/40 bg-red-500/10 text-red-300"
+              ? "border-teal/40 bg-teal/10 text-teal"
+              : "border-racing/40 bg-racing/10 text-snow"
           }`}
         >
           {message.text}
@@ -251,11 +259,11 @@ function Dashboard({ email }: { email: string }) {
       )}
 
       {/* Add / edit form */}
-      <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-white/10 bg-white/5 p-5">
+      <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-5">
         <h2 className="text-xl font-semibold">{editingId ? "Edit project" : "Add a project"}</h2>
 
         <label className="block">
-          <span className="text-sm text-neutral-300">Title *</span>
+          <span className="text-sm text-mist">Title *</span>
           <input
             value={form.title}
             onChange={(e) => updateField("title", e.target.value)}
@@ -264,7 +272,7 @@ function Dashboard({ email }: { email: string }) {
         </label>
 
         <label className="block">
-          <span className="text-sm text-neutral-300">Summary</span>
+          <span className="text-sm text-mist">Summary</span>
           <textarea
             rows={3}
             value={form.summary}
@@ -275,7 +283,7 @@ function Dashboard({ email }: { email: string }) {
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block">
-            <span className="text-sm text-neutral-300">Live site URL</span>
+            <span className="text-sm text-mist">Live site URL</span>
             <input
               type="url"
               value={form.live_url}
@@ -285,7 +293,7 @@ function Dashboard({ email }: { email: string }) {
           </label>
 
           <label className="block">
-            <span className="text-sm text-neutral-300">GitHub URL</span>
+            <span className="text-sm text-mist">GitHub URL</span>
             <input
               type="url"
               value={form.repo_url}
@@ -296,7 +304,7 @@ function Dashboard({ email }: { email: string }) {
         </div>
 
         <label className="block">
-          <span className="text-sm text-neutral-300">Image URL</span>
+          <span className="text-sm text-mist">Image URL</span>
           <input
             value={form.image_url}
             onChange={(e) => updateField("image_url", e.target.value)}
@@ -305,9 +313,31 @@ function Dashboard({ email }: { email: string }) {
           />
         </label>
 
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="text-sm text-mist">Video URL (optional)</span>
+            <input
+              value={form.video_url}
+              onChange={(e) => updateField("video_url", e.target.value)}
+              placeholder="YouTube, Loom or Google Drive link"
+              className={`mt-1 ${inputClass}`}
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm text-mist">Case study page (optional)</span>
+            <input
+              value={form.case_study_url}
+              onChange={(e) => updateField("case_study_url", e.target.value)}
+              placeholder="/projects/nextjs-dashboard"
+              className={`mt-1 ${inputClass}`}
+            />
+          </label>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-[1fr_8rem]">
           <label className="block">
-            <span className="text-sm text-neutral-300">Tags (comma separated)</span>
+            <span className="text-sm text-mist">Tags (comma separated)</span>
             <input
               value={form.tags}
               onChange={(e) => updateField("tags", e.target.value)}
@@ -317,7 +347,7 @@ function Dashboard({ email }: { email: string }) {
           </label>
 
           <label className="block">
-            <span className="text-sm text-neutral-300">Order</span>
+            <span className="text-sm text-mist">Order</span>
             <input
               type="number"
               value={form.sort_order}
@@ -331,12 +361,12 @@ function Dashboard({ email }: { email: string }) {
           <button
             type="submit"
             disabled={busy}
-            className="rounded bg-emerald-500 px-4 py-2 font-medium text-neutral-950 disabled:opacity-50"
+            className="rounded bg-racing px-4 py-2 font-medium text-snow disabled:opacity-50"
           >
             {busy ? "Saving…" : editingId ? "Save changes" : "Add project"}
           </button>
           {editingId && (
-            <button type="button" onClick={cancelEdit} className="rounded border border-white/20 px-4 py-2">
+            <button type="button" onClick={cancelEdit} className="rounded border border-line-strong px-4 py-2">
               Cancel
             </button>
           )}
@@ -349,25 +379,25 @@ function Dashboard({ email }: { email: string }) {
         {projects.map((project) => (
           <li
             key={project.id}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 p-4"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel p-4"
           >
             <div>
               <p className="font-medium">
-                <span className="mr-2 text-neutral-500">{project.sort_order}.</span>
+                <span className="mr-2 text-mist-dim">{project.sort_order}.</span>
                 {project.title}
               </p>
-              {project.summary && <p className="mt-1 text-sm text-neutral-400">{project.summary}</p>}
+              {project.summary && <p className="mt-1 text-sm text-mist">{project.summary}</p>}
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => startEdit(project)}
-                className="rounded border border-white/20 px-3 py-1 text-sm"
+                className="rounded border border-line-strong px-3 py-1 text-sm"
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(project)}
-                className="rounded border border-red-500/40 px-3 py-1 text-sm text-red-300"
+                className="rounded border border-racing/50 px-3 py-1 text-sm text-racing"
               >
                 Delete
               </button>

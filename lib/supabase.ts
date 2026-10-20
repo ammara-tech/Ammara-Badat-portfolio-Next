@@ -38,6 +38,8 @@ export type Project = {
   live_url: string | null;
   repo_url: string | null;
   image_url: string | null;
+  video_url: string | null;
+  case_study_url: string | null;
   tags: string[];
   sort_order: number;
   created_at: string;
