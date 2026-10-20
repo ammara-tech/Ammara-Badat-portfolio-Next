@@ -193,7 +193,7 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - build the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
   the share preview image, keeping my first portfolio's colours and fonts
 - compress my own screen recording of the clinic platform so it plays on the case study page
-- build the Milestone 4 contact form, API route, lay out my CV from my portfolio
+- build the Milestone 4 contact form, API route
   content
 
 
