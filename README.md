@@ -18,7 +18,7 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, and my education (ITProg26, Unicollege) |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
@@ -56,7 +56,8 @@ One table, `projects`, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
 ## Content
 The page text lives in the `content/` folder, separate from the code:
 `content/about.ts` (About, Home and Contact), `content/case-study.ts` (capstone case study) and
-`content/skills.ts` (skills and their evidence links). Every skill must have at least one evidence
+`content/skills.ts` (skills and their evidence links) and `content/certifications.ts` (my certificates,
+shown on the About page; the images are in `public/certificates/`). Every skill must have at least one evidence
 link, or the site will not build, so I can't list a skill I can't back up.
 
 ## Security: Row Level Security
@@ -117,6 +118,10 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
 - build the Milestone 3 pages (Skills, case study, About, Contact)
+- write the case study, About text and one-line skill descriptions, based on my own README, demo
+  notes and presentation speech for the clinic platform; I checked and edited them so they are
+  accurate and sound like me
+- turn my certificate PDFs into web images and build the Certifications section
 - compress my own screen recording of the clinic platform so it plays on the case study page
 
 

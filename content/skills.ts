@@ -8,6 +8,8 @@
   ✍️ The "note" lines are short descriptions — check they're true and in your words.
 */
 
+import { certificateLink as cert } from "@/content/certifications";
+
 export type Evidence = { label: string; href: string };
 
 export type Skill = {
@@ -32,6 +34,8 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "Neon Arcade: index.html", href: `${gh}/Neon-Arcade/blob/main/index.html` },
           { label: "Neon Arcade (live)", href: "https://neon-arcade-nu.vercel.app/" },
+          cert("certiport-html-css", "Certiport HTML and CSS"),
+          cert("certiport-html5-app-dev", "Certiport HTML5 App Development"),
         ],
       },
       {
@@ -40,6 +44,7 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "MyFlix: css/ folder", href: `${gh}/myflix/tree/main/css` },
           { label: "F1 Race Hub: css/ folder", href: `${gh}/F1-Race-Hub-2026/tree/main/css` },
+          cert("certiport-html-css", "Certiport HTML and CSS"),
         ],
       },
       {
@@ -48,6 +53,7 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "F1 Race Hub: js/ folder", href: `${gh}/F1-Race-Hub-2026/tree/main/js` },
           { label: "Fish-bones: js/game.js", href: `${gh}/Fish-bones/blob/main/js/game.js` },
+          cert("certiport-javascript", "Certiport JavaScript"),
         ],
       },
       {
@@ -94,7 +100,10 @@ export const skillGroups: SkillGroup[] = [
       {
         name: "React",
         note: "Components, state and effects, e.g. the admin page for this site.",
-        evidence: [{ label: "This site: app/admin/page.tsx", href: `${portfolio}/blob/main/app/admin/page.tsx` }],
+        evidence: [
+          { label: "This site: app/admin/page.tsx", href: `${portfolio}/blob/main/app/admin/page.tsx` },
+          cert("react-foundations", "React Foundations for Next.js"),
+        ],
       },
       {
         name: "Next.js (App Router)",
@@ -102,6 +111,16 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "This site: app/ folder", href: `${portfolio}/tree/main/app` },
           { label: "Clinic platform: app/medi-clinic", href: `${clinic}/tree/main/app/medi-clinic` },
+          cert("nextjs-app-router", "Next.js App Router"),
+          cert("nextjs-pages-router", "Next.js Pages Router"),
+        ],
+      },
+      {
+        name: "SEO & page metadata",
+        note: "Page titles, descriptions and search-friendly pages in Next.js.",
+        evidence: [
+          { label: "This site: app/layout.tsx", href: `${portfolio}/blob/main/app/layout.tsx` },
+          cert("nextjs-seo", "Next.js SEO Fundamentals"),
         ],
       },
       {
@@ -162,6 +181,14 @@ export const skillGroups: SkillGroup[] = [
   {
     title: "Tools & workflow",
     skills: [
+      {
+        name: "Software development fundamentals",
+        note: "Core programming concepts, problem-solving and the software development life cycle.",
+        evidence: [
+          cert("certiport-software-development", "Certiport Software Development"),
+          cert("cs50-scratch", "Harvard CS50 (Scratch)"),
+        ],
+      },
       {
         name: "Git & GitHub",
         note: "Small, clearly named commits for each step of a project.",

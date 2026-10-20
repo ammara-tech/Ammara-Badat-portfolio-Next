@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { about } from "@/content/about";
+import Certifications from "@/components/Certifications";
 import { Accent, Eyebrow, PageTitle, Para, SectionTitle, btnGhost, btnPrimary, card } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -32,6 +33,9 @@ export default function About() {
             <Link href="/skills" className={btnGhost}>
               Skills & evidence
             </Link>
+            <a href="#certifications" className={btnGhost}>
+              Certifications
+            </a>
           </div>
         </div>
 
@@ -80,6 +84,8 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      <Certifications />
     </div>
   );
 }
