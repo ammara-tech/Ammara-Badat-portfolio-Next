@@ -34,7 +34,7 @@ export const about = {
     "Junior full stack or front-end developer roles",
     "React / Next.js on the front end, SQL and Supabase on the back end",
     "Gauteng, hybrid or on-site",
-    "Available once my ITProg26 course ends",
+    "Available to start immediately",
   ],
 
   // Numbers for the stats row on the About page.
