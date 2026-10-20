@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/*
+  Colours and fonts carried over from my first portfolio (v1).
+  Use them as Tailwind classes, for example:
+  bg-ink, bg-panel, text-snow, text-mist, text-racing, text-teal, border-line, font-display
+*/
+@theme {
+  --color-ink: #15151e;
+  --color-panel: #1b1b26;
+  --color-panel-alt: #20202e;
+  --color-snow: #f5f5f7;
+  --color-mist: #9497a6;
+  --color-mist-dim: #868a9c; /* lightened from #63667a so small text passes WCAG AA (4.5:1) */
+  --color-racing: #e8002d; /* racing red: big headings, buttons, lines */
+  --color-racing-text: #ff3b5c; /* brighter red for small text, passes WCAG AA on every background */
+  --color-teal: #27f4d2;
+  --color-line: rgb(245 245 247 / 0.09);
+  --color-line-strong: rgb(245 245 247 / 0.16);
+}
+
+/*
+  Light mode (upgrade pack). The toggle in the navbar sets data-theme="light"
+  on <html>, which swaps every colour token above. Every pair was checked
+  for WCAG AA contrast, the same as the dark theme.
+*/
+:root {
+  color-scheme: dark;
+  --grid-line: rgb(245 245 247 / 0.028);
+  --glow-red: rgb(232 0 45 / 0.12);
+  --glow-teal: rgb(39 244 210 / 0.07);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f4f4f7;
+  --color-panel: #ffffff;
+  --color-panel-alt: #ebedf2;
+  --color-snow: #15151e;
+  --color-mist: #4d5062;
+  --color-mist-dim: #585b6c;
+  --color-racing: #d70029;
+  --color-racing-text: #c00026;
+  --color-teal: #00796b;
+  --color-line: rgb(21 21 30 / 0.1);
+  --color-line-strong: rgb(21 21 30 / 0.18);
+  --grid-line: rgb(21 21 30 / 0.045);
+  --glow-red: rgb(215 0 41 / 0.08);
+  --glow-teal: rgb(0 121 107 / 0.08);
+}
+
+/* The font files are loaded in app/layout.tsx with next/font */
+@theme inline {
+  --font-display: var(--font-titillium), "Titillium Web", sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background: #e8002d;
+    color: #f5f5f7;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ===================================================================
+   Motion & atmosphere (upgrade pack)
+   Every effect switches off for visitors who ask for reduced motion,
+   and scroll effects only run in browsers that support them.
+   =================================================================== */
+
+/* Soft red/teal glows and a faint grid behind every page */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-image:
+    radial-gradient(55rem 28rem at 88% -8%, var(--glow-red), transparent 60%),
+    radial-gradient(45rem 28rem at -8% 35%, var(--glow-teal), transparent 60%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: auto, auto, 48px 48px, 48px 48px;
+  mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+}
+
+@keyframes fx-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-type {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fx-blink {
+  50% { opacity: 0; }
+}
+
+@keyframes fx-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes fx-marquee {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fx-glow {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate(-4%, 6%) scale(1.08); opacity: 0.8; }
+}
+
+/* Plays once on page load. Add a delay with style={{ animationDelay: "200ms" }} */
+.fx-rise { animation: fx-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Code card lines "type" in from left to right */
+.fx-type { animation: fx-type 0.55s steps(24, end) both; }
+
+.fx-cursor { animation: fx-blink 1s steps(1) infinite; }
+
+/* Underline that draws itself under the hero heading */
+.fx-underline { transform-origin: left; animation: fx-grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both; }
+
+.fx-glow { animation: fx-glow 9s ease-in-out infinite; }
+
+/* Tech strip on the Home page scrolls sideways and pauses on hover */
+.fx-marquee { animation: fx-marquee 38s linear infinite; }
+.fx-marquee-wrap:hover .fx-marquee { animation-play-state: paused; }
+.fx-marquee-wrap {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Reading progress bar at the very top of the page */
+.fx-progress { display: none; transform-origin: left; }
+
+@supports (animation-timeline: scroll()) {
+  .fx-progress {
+    display: block;
+    animation: fx-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* Sections and cards fade up as they scroll into view */
+@supports (animation-timeline: view()) {
+  .fx-reveal {
+    animation: fx-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+/* ===================================================================
+   Upgrade pack 2
+   =================================================================== */
+
+/* Spotlight cards: a soft glow and a bright edge follow the mouse.
+   components/Spotlight.tsx sets --mx and --my as the pointer moves. */
+@layer components {
+  .spotlight {
+    --spot: var(--color-teal);
+    position: relative;
+  }
+
+  .spotlight-red {
+    --spot: var(--color-racing);
+  }
+
+  .spotlight::before,
+  .spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* the glow inside the card */
+  .spotlight::after {
+    background: radial-gradient(26rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--spot) 9%, transparent), transparent 65%);
+  }
+
+  /* the bright edge: the same gradient, masked so only a 1px ring shows */
+  .spotlight::before {
+    padding: 1px;
+    background: radial-gradient(16rem circle at var(--mx, 50%) var(--my, 50%), var(--spot), transparent 70%);
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+  }
+
+  .spotlight:hover::before,
+  .spotlight:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Project filters: cards slide to their new place (View Transitions API).
+   The class is only on <html> while a filter change is animating. */
+html.filter-vt .vt-card {
+  view-transition-name: var(--vt);
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Theme switch: the new theme grows out of the button as a circle */
+html.theme-vt::view-transition-old(root),
+html.theme-vt::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Lightbox opening */
+@keyframes fx-zoom {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.fx-zoom { animation: fx-zoom 0.25s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-zoom,
+  .fx-rise,
+  .fx-type,
+  .fx-cursor,
+  .fx-underline,
+  .fx-glow,
+  .fx-marquee,
+  .fx-progress,
+  .fx-reveal {
+    animation: none !important;
+  }
+
+  .fx-progress {
+    display: none !important;
+  }
+}
