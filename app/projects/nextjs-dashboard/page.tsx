@@ -107,7 +107,7 @@ export default function CaseStudy() {
                   preload="metadata"
                   playsInline
                   poster={cs.videoPoster || undefined}
-                  className="aspect-video w-full rounded-lg border border-line bg-black"
+                  className="h-auto w-full rounded-lg border border-line bg-black"
                 >
                   <source src={cs.videoUrl} type="video/mp4" />
                   Your browser can&apos;t play this video.{" "}
