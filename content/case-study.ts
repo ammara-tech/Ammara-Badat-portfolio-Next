@@ -1,33 +1,20 @@
 /*
-  ✍️ MY CAPSTONE CASE STUDY — the writing in this file must be in my own words.
+  MY CAPSTONE CASE STUDY — shown at /projects/nextjs-dashboard.
 
-  Shown at /projects/nextjs-dashboard.
-  Any text that starts with "TODO" shows on the page as a dashed red box
-  until I replace it.
+  Written from my own project docs in the nextjs-dashoard repo
+  (README.md, presentations/DEMO.md and presentations/walkthrough-speech.md),
+  with AI help to shorten and arrange it. ✍️ Read it through and change
+  anything that doesn't sound like me.
 
-  Facts I can draw on (from my proposal.md and README in the nextjs-dashoard repo):
-  - Three dashboards in one Next.js app: billing (invoices, customers, revenue),
-    Family Clinic (/medi-clinic) and Medical Aid (/medical-aid)
-  - Audience: the owner and front desk of a small family clinic, and its patients
-  - Two key charts: new patients per month (is the practice growing?) and
-    this month's no-show share (should reception send reminders?)
-  - Roles: owner, front desk, doctor, patient, pharmacist, stock manager, admin,
-    set through trusted Supabase app_metadata
-  - Supabase Auth + Postgres Row Level Security, e.g. supabase/fix-patients-rls-recursion.sql
-  - Patient portal: online booking, masked card wallet, document uploads to a private bucket
-  - Extras: dark/light mode, English/Afrikaans toggle, guided demo tour, keyboard shortcuts,
-    PDF invoices, hover cards on every chart
-  - Not done yet (README): real payments, email/SMS, drug interaction checks,
-    stock going down when medicine is dispensed
+  Any text that starts with "TODO" shows on the page as a dashed red box.
 */
 
 export type Shot = { src: string; alt: string; caption: string };
 
 export const caseStudy = {
   title: "Family Clinic Platform",
-  // One sentence that sums up the project.
   tagline:
-    "TODO: One sentence that sums it up. E.g. what it is and who it's for, in your words.",
+    "A secure clinic system for family practices, where reception, doctors, pharmacy and patients each see only what their role allows.",
 
   liveUrl: "https://nextjs-dashoard-psi.vercel.app",
   repoUrl: "https://github.com/ammara-tech/nextjs-dashoard",
@@ -37,73 +24,69 @@ export const caseStudy = {
   year: "2026",
   context: "ITProg26 capstone, Unicollege",
 
-  // Who you built it for.
   audience:
-    "TODO: Who is this for? (e.g. the owner and front desk of a small family clinic, and the families who are its patients)",
+    "The owner, front desk, doctors and pharmacy of a small family practice, and the families who are its patients.",
 
-  // The problem — 2–4 sentences. What was going wrong or missing before?
   problem:
-    "TODO: Describe the problem in 2–4 sentences. What does a small clinic struggle with, and what questions did the owner need the dashboard to answer?",
+    "A family practice runs on many moving parts: bookings, patient records, payments, medical aid and invoices. Often these live in separate tools and shared spreadsheets, which is slow for families and risky for health data, because a receptionist, a doctor and a pharmacist should not all see the same things. The owner also needed quick answers to two questions: is the practice growing, and how many appointments end up as no-shows?",
 
-  // Your role — what YOU did. Be specific.
   role:
-    "TODO: What did you do yourself? E.g. solo project: planning, database design, Supabase Auth and RLS, building the dashboards, deploying on Vercel. Mention anything you got help with.",
+    "I built it on my own: planning and writing the proposals, designing the Supabase database and its row-level security policies, building all three dashboards in Next.js, writing the demo and presentation, and deploying it on Vercel. The billing dashboard started from the official Next.js tutorial, and I built the Family Clinic and Medical Aid dashboards on top of it.",
 
-  // The stack. "use" says what each tool did in this project.
   stack: [
-    { name: "Next.js (App Router)", use: "Pages, layouts and server-rendered dashboards" },
-    { name: "TypeScript", use: "Typed data for patients, appointments and invoices" },
-    { name: "Supabase Auth", use: "Sign-in for every role, with roles stored in app_metadata" },
-    { name: "PostgreSQL + RLS", use: "Each role only sees the rows it is allowed to" },
-    { name: "Supabase Storage", use: "Patient document uploads to a private bucket" },
-    { name: "Tailwind CSS", use: "Styling, plus dark and light mode" },
-    { name: "Zod", use: "Validating form data on the server" },
-    { name: "Vercel", use: "Hosting, deployed from the main branch" },
+    { name: "Next.js (App Router)", use: "Server components fetch data next to the page; server actions handle writes" },
+    { name: "TypeScript", use: "Typed data for patients, appointments, claims and invoices" },
+    { name: "Supabase Auth", use: "One login for every role, with roles stored in trusted settings users can't edit" },
+    { name: "PostgreSQL + RLS", use: "The database decides which rows each role can see or change" },
+    { name: "Supabase Storage", use: "Patient documents in a private store, opened only through short-lived links" },
+    { name: "Supabase Realtime", use: "Pages refresh by themselves and the bell shows new notifications" },
+    { name: "Tailwind CSS", use: "Consistent styling, with dark and light mode" },
+    { name: "Vercel", use: "Automatic deploys from main; a failed build leaves the last version live" },
   ],
 
-  // Key features — short bullet points. Edit, remove or add.
   features: [
-    "Billing dashboard: revenue, latest invoices, and invoice search and filters",
-    "Clinic dashboard with new patients per month and no-show charts",
-    "Separate sign-ins and dashboards for owner, front desk, doctors and pharmacy",
-    "Patient portal with online booking and document uploads",
-    "Medical aid care plans with sign-up and demo payments",
-    "Dark/light mode, English/Afrikaans toggle and a guided demo tour",
+    "Four doors into the clinic: patients, administration, doctors and pharmacy, each with its own sign-in and view",
+    "Owner dashboard answering \"Is the practice growing?\" and \"What share of appointments are no-shows?\"",
+    "Patient portal: book with a provider in an open slot, upload private documents, save cards and edit my profile",
+    "Doctor dashboard with today's schedule, weekly Monday-to-Friday shifts and a week calendar",
+    "Care Plans and medical aid claims that move through Submitted, In review, Approved or Rejected, and Paid",
+    "Automatic PDF invoices for every payment and every appointment with recorded services",
+    "Dark/light mode, English/Afrikaans, keyboard shortcuts, live notifications and a ten-step guided tour",
   ],
 
-  // Screenshots: save the images in public/case-study/ with these exact names.
   screenshots: [
     {
       src: "/case-study/landing.png",
-      alt: "Landing page with cards for the three dashboards",
-      caption: "The landing page links the billing, clinic and medical aid dashboards.",
+      alt: "Landing page with cards for the Family Clinic, Next.js and Medical Aid dashboards",
+      caption: "One platform, three dashboards, each with its own card and colour.",
     },
     {
       src: "/case-study/clinic-dashboard.png",
-      alt: "Family Clinic owner dashboard with charts",
-      caption: "The owner's dashboard: new patients per month and this month's no-shows.",
+      alt: "Family Clinic admin overview with new patients bar chart and no-show donut chart",
+      caption: "The admin overview: new patients per month and this month's no-show share.",
     },
     {
       src: "/case-study/patient-portal.png",
-      alt: "Patient portal booking screen",
-      caption: "Patients can book appointments and upload documents.",
+      alt: "Patient portal with the Book an appointment form",
+      caption: "Patients book with a provider in an open slot from their own portal.",
     },
     {
       src: "/case-study/billing-dashboard.png",
-      alt: "Billing dashboard with revenue chart and invoices",
-      caption: "The original billing dashboard with revenue and latest invoices.",
+      alt: "Next.js billing dashboard with revenue chart and latest invoices",
+      caption: "The original Next.js invoice dashboard, still working alongside the clinic.",
     },
   ] satisfies Shot[],
 
-  // The hardest part and how you solved it. 2–4 sentences.
   challenges:
-    "TODO: What was the hardest part and how did you fix it? (Ideas: the RLS policy that caused infinite recursion on the patients table, keeping each role's data separate, or the 'JWT issued in the future' clock error.)",
+    "The hardest part was access control. Hiding things on the screen isn't enough, so I moved the rules into the database with row-level security and stored roles in trusted Auth settings. My first patients policy checked the patients table from inside itself and Supabase stopped with \"infinite recursion detected in policy\", so I rewrote it in a separate fix script. I also hit \"JWT issued at future\" errors caused by my computer's clock, and made each dashboard panel load on its own so one failing query shows a warning instead of crashing the page.",
 
-  // What you learned. 1–3 sentences.
-  learned: "TODO: What did this project teach you? 1–3 sentences.",
+  learned:
+    "Security belongs in the database, not just the interface: even if someone tampers with the page, the database still refuses to show another patient's records. I also learned to be upfront about limits, like labelling demo payments and not claiming compliance I haven't earned.",
 
-  // What you'd do next. Bullet points.
   next: [
-    "TODO: What would you build next? (Ideas from your README: real payment processing, email/SMS reminders, drug interaction checks, stock that goes down when medicine is dispensed.)",
+    "Connect a real payment gateway with verified webhooks",
+    "Add refunds for plan members, plus e-mail and SMS alerts",
+    "Finish translating the remaining pages into Afrikaans",
+    "Complete a legal and privacy (POPIA) review before any real patient data",
   ],
 };

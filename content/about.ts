@@ -21,19 +21,20 @@ export const about = {
     "I design and build complete web applications — from interface to database — with a focus on clean logic, readable code, and interfaces that work the way people expect them to.",
 
   // The 30-second About. Three short paragraphs works well.
-  // Paragraphs 1 and 2 are from my first portfolio; paragraph 3 still needs writing.
+  // Paragraphs 1 and 2 are from my first portfolio; paragraph 3 is based on the role in my README.
   // (Python was taken out of paragraph 1 because there's no public link to back it up yet.)
   paragraphs: [
     "I'm a full stack developer who enjoys the whole picture of building software — shaping an interface in HTML and CSS, wiring it up with JavaScript and React, and giving it a backbone with SQL and Supabase underneath.",
     "I like projects that force me to connect the dots between layers — a form that needs validating, a database that needs querying, an interface that needs to stay usable no matter what's happening underneath.",
-    "TODO: Write 1–2 sentences on the role you want. For example: what kind of team or company, what you want to work on (front end with React/Next.js, full stack with Supabase), and where (Johannesburg, remote, hybrid).",
+    "I'm looking for a junior full stack developer role with a South African software team or agency, building complete web applications with React and Next.js on the front end and SQL and Supabase underneath. My capstone, a secure clinic platform, shows the kind of work I want to keep doing.",
   ],
 
   // Short bullet points for the "What I'm looking for" box.
   lookingFor: [
     "Junior full stack or front-end developer roles",
     "React / Next.js on the front end, SQL and Supabase on the back end",
-    "TODO: Add where you'd like to work (city, remote or hybrid) and when you can start",
+    "Gauteng, hybrid or on-site",
+    "Available once my ITProg26 course ends",
   ],
 
   // Numbers for the stats row on the About page.
