@@ -270,8 +270,8 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
 - build the Milestone 3 pages (Skills, case study, About, Contact)
-- build the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
-  the share preview image, keeping my first portfolio's colours and fonts
+- building and assisting with the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
+  the share preview image, keeping my first portfolio's colours and fonts(Some code is recycled from my portfolio one.)
 - compress my own screen recording of the clinic platform so it plays on the case study page
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to
