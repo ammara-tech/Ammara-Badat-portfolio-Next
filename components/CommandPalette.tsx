@@ -7,6 +7,7 @@ import { about } from "@/content/about";
 import { skillGroups } from "@/content/skills";
 import { certificationGroups } from "@/content/certifications";
 import { caseStudy } from "@/content/case-study";
+import { notes } from "@/content/notes";
 import { slugify } from "@/lib/slug";
 import { getTheme, setTheme } from "@/lib/theme";
 
@@ -22,7 +23,7 @@ import { getTheme, setTheme } from "@/lib/theme";
 
 type Item = {
   id: string;
-  group: "Pages" | "Projects" | "Skills" | "Certificates" | "Actions";
+  group: "Pages" | "Projects" | "Notes" | "Skills" | "Certificates" | "Actions";
   label: string;
   hint?: string;
   keywords?: string;
@@ -31,7 +32,7 @@ type Item = {
   run?: () => void;
 };
 
-const groupOrder: Item["group"][] = ["Pages", "Projects", "Actions", "Skills", "Certificates"];
+const groupOrder: Item["group"][] = ["Pages", "Projects", "Notes", "Actions", "Skills", "Certificates"];
 
 const pages: Item[] = [
   { id: "p-home", group: "Pages", label: "Home", icon: "window", href: "/", keywords: "start terminal" },
@@ -41,6 +42,7 @@ const pages: Item[] = [
   { id: "p-skills", group: "Pages", label: "Skills", icon: "terminal", href: "/skills", keywords: "evidence proof tech" },
   { id: "p-certs", group: "Pages", label: "Certifications", icon: "badge", href: "/about#certifications", keywords: "certificates certiport vercel cs50" },
   { id: "p-contact", group: "Pages", label: "Contact", icon: "mail", href: "/contact", keywords: "message hire email form" },
+  { id: "p-notes", group: "Pages", label: "Dev notes", icon: "document", href: "/notes", keywords: "blog posts articles writing rss" },
 ];
 
 const skills: Item[] = skillGroups.flatMap((g) =>
@@ -66,6 +68,16 @@ const certificates: Item[] = certificationGroups.flatMap((g) =>
     href: "/about#certifications",
   })),
 );
+
+const noteItems: Item[] = notes.map((n) => ({
+  id: `n-${n.slug}`,
+  group: "Notes" as const,
+  label: n.title,
+  hint: n.tags.slice(0, 2).join(" · "),
+  keywords: `${n.description} ${n.tags.join(" ")}`,
+  icon: "document" as const,
+  href: `/notes/${n.slug}`,
+}));
 
 type ProjectRow = { id: string; title: string; summary: string | null; tags: string[]; case_study_url: string | null };
 
@@ -116,6 +128,7 @@ export default function CommandPalette() {
           setCopied(true);
         },
       },
+      { id: "a-vcard", group: "Actions", label: "Save my contact card (vCard)", icon: "user", href: about.contact.vcard, keywords: "phone contacts address book" },
       { id: "a-email", group: "Actions", label: "Send me an email", icon: "mail", href: `mailto:${about.contact.email}`, keywords: "contact" },
       { id: "a-github", group: "Actions", label: "Open my GitHub", icon: "github", href: about.contact.github, keywords: "code repos" },
       ...(about.contact.linkedin
@@ -179,14 +192,14 @@ export default function CommandPalette() {
 
   // Every word typed must appear somewhere in the item's text
   const results = useMemo(() => {
-    const all = [...pages, ...projects, ...actions, ...skills, ...certificates];
+    const all = [...pages, ...projects, ...noteItems, ...actions, ...skills, ...certificates];
     const words = query.toLowerCase().split(/\s+/).filter(Boolean);
     const matches = words.length
       ? all.filter((item) => {
           const text = `${item.label} ${item.hint ?? ""} ${item.keywords ?? ""} ${item.group}`.toLowerCase();
           return words.every((w) => text.includes(w));
         })
-      : all.filter((item) => item.group !== "Skills" && item.group !== "Certificates");
+      : all.filter((item) => item.group !== "Skills" && item.group !== "Certificates" && item.group !== "Notes");
     return groupOrder.flatMap((g) => matches.filter((m) => m.group === g)).slice(0, 40);
   }, [query, projects, actions]);
 
@@ -205,6 +218,9 @@ export default function CommandPalette() {
     close();
     if (item.href.startsWith("http") || item.href.startsWith("mailto:")) {
       window.open(item.href, item.href.startsWith("http") ? "_blank" : "_self", "noopener,noreferrer");
+    } else if (/\.[a-z0-9]+$/i.test(item.href)) {
+      // A file on my site (like my contact card) is downloaded, not opened as a page
+      window.location.href = item.href;
     } else {
       router.push(item.href);
     }

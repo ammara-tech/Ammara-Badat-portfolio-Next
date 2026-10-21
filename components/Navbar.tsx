@@ -12,6 +12,7 @@ const links = [
   { href: "/about", label: "About" },
   { href: "/projects", label: "Projects" },
   { href: "/skills", label: "Skills" },
+  { href: "/notes", label: "Notes" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -48,14 +49,14 @@ export default function Navbar() {
       }`}
     >
       <nav aria-label="Main" className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8">
-        <Link href="/" className="group font-display text-lg font-black uppercase tracking-wide">
+        <Link href="/" className="group shrink-0 whitespace-nowrap font-display text-lg font-black uppercase tracking-wide">
           Ammara Badat
           <span className="inline-block text-racing-text transition-transform duration-300 group-hover:scale-150">.</span>
         </Link>
 
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
-        <div className="flex items-center gap-3 md:order-last md:ml-6">
+        <div className="flex items-center gap-3 md:order-last md:ml-4 lg:ml-6">
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("palette:open"))}
@@ -90,7 +91,7 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:flex md:w-auto md:flex-row md:gap-9 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-5 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-4 lg:gap-9 md:border-0 md:bg-transparent md:p-0`}
         >
           {links.map(({ href, label }) => {
             const active = isActive(href);

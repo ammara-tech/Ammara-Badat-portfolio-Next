@@ -22,7 +22,9 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
-| Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn and CV download |
+| Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs and "More projects" |
+| Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
+| Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
 | CV | [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | One-page CV (PDF), linked from the navbar, Home, About and Contact |
 | Admin | `/admin` | Owner-only: sign in, read contact form messages, and add, edit and delete projects (not linked in the navbar) |
 
@@ -239,6 +241,15 @@ See the **Actions** tab.
 | Speed Insights and Analytics | Vercel's cookie-free visit counts and real visitors' loading times. |
 | Lighthouse CI | The GitHub Action above. |
 
+### Milestone 5 extras
+| Extra | What it does |
+|---|---|
+| Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
+| Dev notes + RSS | Three short posts (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
+| Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
+| Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
+| Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
+
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
 (git-ignored). Values are never committed.
@@ -247,6 +258,7 @@ Set in Vercel (Settings → Environment Variables) and, for local development, i
 |------|------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon / publishable key (safe in the browser because RLS protects the data) |
+| `GOOGLE_SITE_VERIFICATION` (optional) | The code from Google Search Console's "HTML tag" method, e.g. `abc123…` (only the code, not the whole tag). |
 | `GITHUB_TOKEN` (optional) | A read-only GitHub token. Only raises the GitHub API limit for the "Live from GitHub" section. |
 
 The Supabase service role / secret key is not used anywhere in this project.
@@ -270,8 +282,8 @@ I used Claude (by Anthropic) as an AI assistant while building this site. It hel
 - draft parts of this README
 - switch the site to my v1 portfolio colours and fonts
 - build the Milestone 3 pages (Skills, case study, About, Contact)
-- building and assisting with the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
-  the share preview image, keeping my first portfolio's colours and fonts(Some code is recycled from my portfolio one.)
+- build the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
+  the share preview image, keeping my first portfolio's colours and fonts
 - compress my own screen recording of the clinic platform so it plays on the case study page
 
 I made the decisions about the site's audience, role, pages and design, chose which projects to

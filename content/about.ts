@@ -61,5 +61,17 @@ export const about = {
     linkedin: "https://www.linkedin.com/in/ammara-badat",
     // My CV, downloadable from the navbar, Home, About and Contact pages (file in public/cv/).
     cv: "/cv/Ammara-Badat-CV.pdf",
+    // "Save my contact" card download (app/ammara-badat.vcf/route.ts)
+    vcard: "/ammara-badat.vcf",
+  },
+
+  // My latest Lighthouse scores (mobile, Home page), shown in the footer.
+  // Update these when I run Lighthouse again. The proof is in Docs/lighthouse-home.png.
+  lighthouse: {
+    performance: 96,
+    accessibility: 100,
+    bestPractices: 100,
+    seo: 100,
+    proof: "https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/blob/main/Docs/lighthouse-home.png",
   },
 };

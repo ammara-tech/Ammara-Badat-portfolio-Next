@@ -98,6 +98,29 @@ export default function Contact() {
             ))}
           </ul>
 
+          {/* Save my contact (vCard) and a QR code to open the portfolio on a phone */}
+          <div className="spotlight flex items-center gap-5 rounded-xl border border-line bg-panel p-5">
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-xl font-black uppercase">Save my contact</p>
+              <p className="mt-1 text-sm text-mist">Adds my name, number, email and links to your phone in one tap.</p>
+              <a href={about.contact.vcard} download className={`${btnGhost} mt-4`}>
+                <Icon name="user" className="h-4 w-4" />
+                Add to contacts
+              </a>
+            </div>
+            <figure className="hidden shrink-0 text-center sm:block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/qr/portfolio.svg"
+                alt="QR code that opens ammara-badat-portfolio-next.vercel.app"
+                width={112}
+                height={112}
+                className="rounded-lg bg-white p-1.5"
+              />
+              <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-widest text-mist">Scan to open</figcaption>
+            </figure>
+          </div>
+
           <div className="rounded-xl border border-racing/40 bg-linear-to-br from-panel to-panel-alt p-5">
             <p className="font-display text-xl font-black uppercase">My CV</p>
             <p className="mt-1 text-sm text-mist">One page: skills, projects, certifications and education.</p>

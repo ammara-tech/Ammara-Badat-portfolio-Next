@@ -24,7 +24,11 @@ export function pageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      // keeps the dev notes RSS feed discoverable from every page
+      types: { "application/rss+xml": [{ url: "/notes/rss.xml", title: "Dev notes by Ammara Badat" }] },
+    },
     openGraph: {
       title,
       description,

@@ -37,6 +37,7 @@ const pages: Record<string, string> = {
   skills: "/skills",
   certificates: "/about#certifications",
   contact: "/contact",
+  notes: "/notes",
 };
 
 const help: [string, string][] = [
@@ -47,6 +48,7 @@ const help: [string, string][] = [
   ["case-study", "open the capstone case study"],
   ["certs", "my certifications"],
   ["contact", "how to reach me"],
+  ["notes", "read my dev notes"],
   ["cv", "download my CV"],
   ["github", "open my GitHub"],
   ["open <page>", "go to a page, e.g. open skills"],
@@ -141,6 +143,9 @@ export default function Terminal() {
         return [{ text: `Opening ${about.contact.github.replace("https://", "")}…`, tone: "accent" }];
       case "projects":
         return go("/projects", "projects");
+      case "notes":
+      case "blog":
+        return go("/notes", "my dev notes");
       case "case-study":
         return go("/projects/nextjs-dashboard", "the case study");
       case "ls":
