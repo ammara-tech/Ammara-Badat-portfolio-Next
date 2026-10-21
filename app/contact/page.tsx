@@ -99,7 +99,7 @@ export default function Contact() {
           </ul>
 
           {/* Save my contact (vCard) and a QR code to open the portfolio on a phone */}
-          <div className="spotlight flex items-center gap-5 rounded-xl border border-line bg-panel p-5">
+          <div className="spotlight flex flex-col gap-5 rounded-xl border border-line bg-panel p-5 min-[420px]:flex-row min-[420px]:items-center">
             <div className="min-w-0 flex-1">
               <p className="font-display text-xl font-black uppercase">Save my contact</p>
               <p className="mt-1 text-sm text-mist">Adds my name, number, email and links to your phone in one tap.</p>
@@ -108,7 +108,7 @@ export default function Contact() {
                 Add to contacts
               </a>
             </div>
-            <figure className="hidden shrink-0 text-center sm:block">
+            <figure className="shrink-0 self-center text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/qr/portfolio.svg"

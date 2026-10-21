@@ -6,6 +6,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
 import LazyExtras from "@/components/LazyExtras";
+import ScrollReveal from "@/components/ScrollReveal";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -62,6 +63,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#15151e",
+  // Tells phone browsers (e.g. Samsung Internet's dark mode) that the site has its own
+  // dark and light themes, so they don't recolour it themselves
+  colorScheme: "dark light",
 };
 
 /*
@@ -203,6 +207,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Spotlight glow, full-screen image viewer and Ctrl+K search, loaded after the page */}
         <LazyExtras />
+        <ScrollReveal />
 
         {/* Vercel Web Analytics (visits, no cookies) and Speed Insights (real visitors' load times) */}
         <Analytics />

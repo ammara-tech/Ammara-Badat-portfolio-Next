@@ -31,6 +31,7 @@ export default function Screenshot({
   priority = false,
 }: Props) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   if (!src || failed) {
     return (
@@ -53,7 +54,12 @@ export default function Screenshot({
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : "auto"}
       onError={() => setFailed(true)}
-      className={`aspect-video w-full rounded-lg border border-line object-cover object-top ${className}`}
+      onLoad={() => setLoaded(true)}
+      // If the image was already loaded (from the cache) before the page became interactive
+      ref={(img) => {
+        if (img?.complete && img.naturalWidth > 0 && !loaded) setLoaded(true);
+      }}
+      className={`aspect-video w-full rounded-lg border border-line object-cover object-top ${loaded ? "" : "fx-shimmer"} ${className}`}
     />
   );
 }

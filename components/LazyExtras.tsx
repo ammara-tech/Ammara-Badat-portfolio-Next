@@ -10,7 +10,7 @@ import type { OpenDetail } from "@/components/Lightbox";
   downloaded and started the first time someone uses them:
   - search: on Ctrl+K, the Search button or the terminal's "search" command
   - image viewer: on the first click of a certificate or screenshot
-  - spotlight: on the first mouse movement (phones never need it)
+  - spotlight: on the first mouse movement or tap
   The first use waits a fraction of a second for the code; after that it's instant.
   This keeps the page free to respond while it loads, which is what Lighthouse's
   "Total Blocking Time" measures.
@@ -59,12 +59,16 @@ export default function LazyExtras() {
     return () => window.removeEventListener("lightbox:open", load);
   }, [lightbox]);
 
-  // Spotlight: wait for the first mouse movement, on devices that have a mouse
+  // Spotlight: wait for the first mouse movement, or the first tap on a phone
   useEffect(() => {
-    if (spotlight || !window.matchMedia("(hover: hover)").matches) return;
+    if (spotlight) return;
     const load = () => setSpotlight(true);
     window.addEventListener("pointermove", load, { once: true, passive: true });
-    return () => window.removeEventListener("pointermove", load);
+    window.addEventListener("pointerdown", load, { once: true, passive: true });
+    return () => {
+      window.removeEventListener("pointermove", load);
+      window.removeEventListener("pointerdown", load);
+    };
   }, [spotlight]);
 
   return (
