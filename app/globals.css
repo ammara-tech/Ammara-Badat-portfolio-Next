@@ -188,6 +188,15 @@
     animation-timeline: view();
     animation-range: entry 0% cover 22%;
   }
+
+  /* Phones and tablets: the screen is short, so "22% of the way through" left big
+     blank gaps at the bottom of the screen. Here a card is fully shown once its
+     top edge is 120px into view. */
+  @media (max-width: 1023px) {
+    .fx-reveal {
+      animation-range: entry 0px entry 120px;
+    }
+  }
 }
 
 /* ===================================================================
@@ -321,6 +330,24 @@ html.fx-io .fx-reveal.is-visible {
 }
 
 .fx-zoom { animation: fx-zoom 0.25s ease-out both; }
+
+/* When a device asks for less motion, the tech strip stops scrolling. Instead of
+   freezing half-way (with names cut off), it becomes a neat wrapped list of every name. */
+@media (prefers-reduced-motion: reduce) {
+  .fx-marquee-wrap {
+    mask-image: none;
+  }
+
+  .fx-marquee {
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .fx-marquee > [aria-hidden="true"] {
+    display: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .fx-shimmer,
