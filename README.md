@@ -193,13 +193,17 @@ After the upgrade the responsive (360–1440px), keyboard and contrast checks we
 **Live site:** https://ammara-badat-portfolio-next.vercel.app
 
 ### Lighthouse scores (mobile)
-| Page | Performance | Accessibility | Best practices | SEO |
-|------|-------------|---------------|----------------|-----|
-| Home | TODO | TODO | TODO | TODO |
+| Home | 96 | 100 | 100 | 100 |
 
 ![Lighthouse scores](Docs/lighthouse-home.png)
 
-**What Lighthouse flagged and how I fixed it:** TODO (write this after running the report).
+**What Lighthouse flagged and how I fixed it:** My first mobile run scored 74 for Performance. The
+load-in animations kept my heading and intro invisible for about 2 seconds (Largest Contentful Paint
+3.4 s, Speed Index 5.1 s), and too much JavaScript ran at load (Total Blocking Time 550 ms). I made the
+animations slide in without hiding the content, loaded the Ctrl+K search, image viewer and spotlight
+effect only after the page appears, and cut the heading font from 4 weights to 2. Performance went
+74 → 88 → 96.
+
 
 Lighthouse also runs automatically: after every production deploy, a GitHub Action
 (`.github/workflows/lighthouse.yml`) checks six pages and fails if Accessibility or SEO drops below 90.

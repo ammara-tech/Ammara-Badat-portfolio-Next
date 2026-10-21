@@ -1,6 +1,5 @@
-Milestone 5 reflection (draft: fill in the [brackets] after you run Lighthouse)
-
+Milestone 5 reflection
 Live URL: https://ammara-badat-portfolio-next.vercel.app
-Lighthouse scores (mobile, Home page): Performance [ ], Accessibility [ ], Best practices [ ], SEO [ ]
+Lighthouse scores (mobile, Home page): Performance [96], Accessibility [100], Best practices [100], SEO [100]
 
-The biggest thing Lighthouse found was [what it flagged, in your own words]. I fixed it by [what you changed]. Before that, I gave every page its own title, description and share picture (the preview you see when a link is sent on WhatsApp or LinkedIn), and I added a sitemap (a list of all my pages for Google) and a robots file (rules telling search engines which pages they may visit). I also made my screenshots load faster with Next.js images, which send smaller files in the size the screen needs. Now a GitHub Action (an automatic check on GitHub) runs Lighthouse after every update, so my Accessibility and SEO scores can't drop below 90 without me noticing.
+The biggest thing Lighthouse found was that my Home page was slow on phones: Performance was only 74, even though Accessibility and SEO were already 100. My animations kept the heading and intro text invisible for almost two seconds, so Lighthouse counted the page as “not loaded yet” (this is called Largest Contentful Paint, or LCP, the time until the biggest piece of content shows). I changed the animations so the text slides in but is visible straight away, and I made the search box and image viewer load only after the page appears, which cut the JavaScript that runs at the start. My Performance score went from 74 to 88 to 96. I also gave every page its own title, description and share picture, and added a sitemap and robots file so Google can find all my pages.
