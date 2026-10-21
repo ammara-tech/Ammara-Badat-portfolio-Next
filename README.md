@@ -225,8 +225,8 @@ See the **Actions** tab.
 ### Profile links
 - **GitHub:** linked in the footer, on the Contact page, in the Ctrl+K search and in the terminal
   (`github`), and listed in my structured data. The Home page shows my latest repositories live from GitHub.
-- **LinkedIn:** TODO link here and on the site, and my site URL added to my LinkedIn profile
-  (Contact info → Website).
+- **LinkedIn:** [linkedin.com/in/ammara-badat](https://www.linkedin.com/in/ammara-badat) — linked in the footer,
+  on the Contact page and in Ctrl+K search. My portfolio URL is on my LinkedIn profile (Contact info → Website and Featured).
 
 ### Milestone 5 upgrades
 | Upgrade | What it does |

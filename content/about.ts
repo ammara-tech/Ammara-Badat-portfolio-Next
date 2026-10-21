@@ -58,7 +58,7 @@ export const about = {
     phone: "+27 60 621 3987",
     github: "https://github.com/ammara-tech",
     // Leave empty ("") until you have a LinkedIn profile.
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/ammara-badat",
     // My CV, downloadable from the navbar, Home, About and Contact pages (file in public/cv/).
     cv: "/cv/Ammara-Badat-CV.pdf",
   },
