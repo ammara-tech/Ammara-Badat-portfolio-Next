@@ -226,7 +226,7 @@ export default function Terminal() {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line-strong bg-panel/90 shadow-2xl shadow-black/40 backdrop-blur">
+    <div className="overflow-hidden rounded-xl border border-line-strong bg-panel shadow-2xl shadow-black/40">
       {/* Window bar */}
       <div className="flex items-center gap-2 border-b border-line bg-panel-alt px-4 py-3">
         <span className="h-3 w-3 rounded-full bg-racing" />
@@ -246,7 +246,7 @@ export default function Terminal() {
         <pre className="overflow-x-auto" aria-label="Code card describing me">
           <code>
             {codeLines.map((line, i) => (
-              <span key={i} className="fx-type block" style={{ animationDelay: `${700 + i * 220}ms` }}>
+              <span key={i} className="fx-type block" style={{ animationDelay: `${250 + i * 120}ms` }}>
                 {line.map(([text, colour], j) => (
                   <span key={j} className={colour}>
                     {text}
@@ -256,7 +256,7 @@ export default function Terminal() {
             ))}
           </code>
         </pre>
-        <p className="fx-type text-mist-dim" style={{ animationDelay: `${700 + codeLines.length * 220}ms` }}>
+        <p className="fx-type text-mist-dim" style={{ animationDelay: `${250 + codeLines.length * 120}ms` }}>
           {'// type "help" or tap a command below'}
         </p>
 
@@ -283,7 +283,7 @@ export default function Terminal() {
         <form
           onSubmit={onSubmit}
           className="fx-type flex items-center gap-2"
-          style={{ animationDelay: `${900 + codeLines.length * 220}ms` }}
+          style={{ animationDelay: `${350 + codeLines.length * 120}ms` }}
         >
           <label htmlFor="terminal-input" className="shrink-0 text-teal">
             <span aria-hidden="true">~ $</span>

@@ -5,9 +5,7 @@ import { Inter, JetBrains_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
-import Lightbox from "@/components/Lightbox";
-import Spotlight from "@/components/Spotlight";
-import CommandPalette from "@/components/CommandPalette";
+import LazyExtras from "@/components/LazyExtras";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -19,7 +17,7 @@ const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrai
 
 const titillium = Titillium_Web({
   subsets: ["latin"],
-  weight: ["400", "600", "700", "900"],
+  weight: ["700", "900"], // only the weights the headings use, so fewer font files to download
   variable: "--font-titillium",
   display: "swap",
 });
@@ -127,7 +125,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div aria-hidden="true" className="fx-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-linear-to-r from-racing to-teal" />
         <div aria-hidden="true" className="site-backdrop" />
 
-        <Spotlight />
         <Navbar />
         <main id="main" tabIndex={-1} className="mx-auto max-w-6xl px-4 py-16 outline-none sm:px-8">
           {children}
@@ -175,11 +172,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </footer>
 
-        {/* Full-screen image viewer, opened by any LightboxTrigger */}
-        <Lightbox />
-
-        {/* Ctrl+K search (components/CommandPalette.tsx) */}
-        <CommandPalette />
+        {/* Spotlight glow, full-screen image viewer and Ctrl+K search, loaded after the page */}
+        <LazyExtras />
 
         {/* Vercel Web Analytics (visits, no cookies) and Speed Insights (real visitors' load times) */}
         <Analytics />

@@ -111,6 +111,13 @@
   to { opacity: 1; transform: none; }
 }
 
+/* Page-load version: slides up but is never invisible, so the heading and intro
+   count as "loaded" straight away (better Lighthouse LCP and Speed Index) */
+@keyframes fx-enter {
+  from { transform: translateY(14px); }
+  to { transform: none; }
+}
+
 @keyframes fx-type {
   from { opacity: 0; clip-path: inset(0 100% 0 0); }
   to { opacity: 1; clip-path: inset(0 0 0 0); }
@@ -135,15 +142,15 @@
 }
 
 /* Plays once on page load. Add a delay with style={{ animationDelay: "200ms" }} */
-.fx-rise { animation: fx-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.fx-rise { animation: fx-enter 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
 /* Code card lines "type" in from left to right */
-.fx-type { animation: fx-type 0.55s steps(24, end) both; }
+.fx-type { animation: fx-type 0.4s steps(20, end) both; }
 
 .fx-cursor { animation: fx-blink 1s steps(1) infinite; }
 
 /* Underline that draws itself under the hero heading */
-.fx-underline { transform-origin: left; animation: fx-grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both; }
+.fx-underline { transform-origin: left; animation: fx-grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.4s both; }
 
 .fx-glow { animation: fx-glow 9s ease-in-out infinite; }
 
