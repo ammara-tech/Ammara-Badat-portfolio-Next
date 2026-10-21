@@ -309,32 +309,28 @@ npm run dev
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Use of AI
-I built this site with Claude (by Anthropic) as an AI pair programmer. AI use was allowed for this
-project, and this is how we split the work.
+AI use was allowed for this project. I built this site with Claude (by Anthropic) as my AI pair
+programmer, working in short rounds, one feature at a time:
 
-**What I did**
-- Decided who the site is for, the role I want, the pages, the design direction (my first
-  portfolio's colours and style) and every feature that was added
-- Chose which projects, certificates and evidence to show, and how to describe them
-- Set up and ran everything outside the code: GitHub, Vercel, Supabase (tables, SQL, Auth, sign-ups off,
-  Storage), Google Search Console and LinkedIn
-- Tested every feature on the live site, ran the RLS tests and Lighthouse audits, and reported
-  the problems I found, which drove the fixes (for example the Vercel build errors and the 74 → 96
-  performance work)
-- Recorded the clinic platform demo, took all the screenshots and proof images, and wrote and
-  edited my reflections, About text and dev notes
-- Reviewed, committed and deployed every change, and learned how each part works
-  (see [Docs/how-it-works.md](Docs/how-it-works.md))
+1. **I decided what to build next**: each milestone, feature or fix, and how it should look and behave.
+2. **Claude wrote the code** for it and explained how it works.
+3. **I added each change to my project** in VS Code, ran the SQL in Supabase, set up the services and
+   settings, committed it and deployed it to Vercel.
+4. **I tested it on the live site** and reported what broke or looked wrong (build errors, the wrong
+   Supabase URL, a sideways-scrolling layout, a 74 Lighthouse score), and we fixed it together.
 
-**What Claude did**
-- Wrote most of the code from my requirements: the pages and components, the Supabase connection,
-  the SQL and RLS policies, the contact form's spam protection, and the SEO and performance work
-- Generated the wireframe images, the CV PDF, the share images and the LinkedIn banner
-- Drafted parts of the README, reflections, case study, dev notes and LinkedIn text, which I edited
-- Explained the code so I could understand and present it
+**What I did:** the site's audience, role, pages and design direction; which projects, certificates and
+evidence to show and how to describe them; every account and setting (GitHub, Vercel, Supabase, Google
+Search Console, LinkedIn); every test, screenshot and proof image; recording the clinic demo; editing
+my reflections, About text and dev notes; and every commit and deploy.
 
-I can explain how every part of the site works, and the guide I used to learn it is in the Docs folder.
+**What Claude did:** wrote the code from my requirements (pages, components, SQL and RLS policies,
+spam protection, SEO and performance work), made the wireframe images, CV PDF, share images and
+LinkedIn banner, and drafted parts of the README, reflections, case study, dev notes and LinkedIn
+text, which I then edited.
 
+I can explain how every part of the site works. The guide I learned from is
+[Docs/how-it-works.md](Docs/how-it-works.md).
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
 [live site](https://ammara-badat-portfolio.vercel.app)
