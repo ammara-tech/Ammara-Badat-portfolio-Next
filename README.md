@@ -309,38 +309,31 @@ npm run dev
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Use of AI
-I used Claude (by Anthropic) as an AI assistant throughout this project. AI use was allowed for this
-project; this is an honest list of what it helped with.
+I built this site with Claude (by Anthropic) as an AI pair programmer. AI use was allowed for this
+project, and this is how we split the work.
 
-**Planning and content**
-- generated the wireframe images in `Docs/` from the layout I described, based on my first portfolio
-- drafted parts of this README, my milestone reflections, the case study text and the About text,
-  which I then edited
-- drafted the three dev notes in `content/notes.ts` from things I actually built, which I edited
-- made my one-page CV PDF and my LinkedIn banner, and drafted the text for my LinkedIn profile
+**What I did**
+- Decided who the site is for, the role I want, the pages, the design direction (my first
+  portfolio's colours and style) and every feature that was added
+- Chose which projects, certificates and evidence to show, and how to describe them
+- Set up and ran everything outside the code: GitHub, Vercel, Supabase (tables, SQL, Auth, sign-ups off,
+  Storage), Google Search Console and LinkedIn
+- Tested every feature on the live site, ran the RLS tests and Lighthouse audits, and reported
+  the problems I found, which drove the fixes (for example the Vercel build errors and the 74 → 96
+  performance work)
+- Recorded the clinic platform demo, took all the screenshots and proof images, and wrote and
+  edited my reflections, About text and dev notes
+- Reviewed, committed and deployed every change, and learned how each part works
+  (see [Docs/how-it-works.md](Docs/how-it-works.md))
 
-**Code**
-- created and edited the Next.js starter files, the navbar, the pages, the Supabase connection,
-  the Projects page and the `/admin` page, starting from code I had used in an earlier project with a similar stack
-- wrote the SQL for the `projects` and `messages` tables, the RLS policies, the spam rate limit and the
-  Storage bucket policies
-- built the Milestone 3 pages (Skills, case study, About, Contact) and the certifications section
-- built the Milestone 4 contact form, its API route and spam protection, the inbox and the accessibility fixes
-- built the visual upgrades: animations, icons, the 404 page, the favicon, the share images, the interactive
-  terminal, spotlight cards, project filters, the image viewer, image upload, the admin overview and light/dark mode
-- built the Milestone 5 work: page titles and descriptions, Open Graph images, the sitemap and robots file,
-  structured data, project pages, Ctrl+K search, the GitHub activity section, the web app manifest,
-  Lighthouse CI, the dev notes pages and RSS feed, page transitions, the contact card and QR code
-- found and fixed the performance problems Lighthouse reported (74 → 96)
-- compressed and blurred my own screen recording of the clinic platform
+**What Claude did**
+- Wrote most of the code from my requirements: the pages and components, the Supabase connection,
+  the SQL and RLS policies, the contact form's spam protection, and the SEO and performance work
+- Generated the wireframe images, the CV PDF, the share images and the LinkedIn banner
+- Drafted parts of the README, reflections, case study, dev notes and LinkedIn text, which I edited
+- Explained the code so I could understand and present it
 
-**What I did myself**
-I decided the site's audience, the role I want, the pages and the design, and chose which projects and
-certificates to include and how to describe them. I set up GitHub, Supabase, Vercel, Google Search Console
-and LinkedIn myself, ran every SQL file, tested every feature, ran the RLS tests and Lighthouse, and
-committed and deployed every change. I went through the AI-written code and text and edited it so I
-understand it and can explain it. [Docs/how-it-works.md](Docs/how-it-works.md) is the guide I used to learn
-how each part works.
+I can explain how every part of the site works, and the guide I used to learn it is in the Docs folder.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
