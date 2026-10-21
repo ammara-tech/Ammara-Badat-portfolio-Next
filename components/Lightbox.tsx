@@ -15,7 +15,7 @@ import Icon from "@/components/Icon";
 
 export type LightboxImage = { src: string; alt: string; caption?: string };
 
-type OpenDetail = { images: LightboxImage[]; index: number };
+export type OpenDetail = { images: LightboxImage[]; index: number };
 
 export function LightboxTrigger({
   images,
@@ -43,7 +43,8 @@ export function LightboxTrigger({
   );
 }
 
-export default function Lightbox() {
+/** onReady: called once the viewer is listening (used by LazyExtras to show the first image) */
+export default function Lightbox({ onReady }: { onReady?: () => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const swipeStart = useRef<number | null>(null);
   const [images, setImages] = useState<LightboxImage[]>([]);
@@ -64,7 +65,9 @@ export default function Lightbox() {
       document.documentElement.style.overflow = "hidden";
     };
     window.addEventListener("lightbox:open", onOpen);
+    onReady?.();
     return () => window.removeEventListener("lightbox:open", onOpen);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once, when the viewer first appears
   }, []);
 
   // Preload the next and previous images so arrowing feels instant

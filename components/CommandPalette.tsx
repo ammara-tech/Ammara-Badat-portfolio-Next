@@ -81,7 +81,8 @@ const noteItems: Item[] = notes.map((n) => ({
 
 type ProjectRow = { id: string; title: string; summary: string | null; tags: string[]; case_study_url: string | null };
 
-export default function CommandPalette() {
+/** onReady: called once the palette is listening (used by LazyExtras to open it straight away) */
+export default function CommandPalette({ onReady }: { onReady?: () => void }) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -158,10 +159,12 @@ export default function CommandPalette() {
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("palette:open", open);
+    onReady?.();
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("palette:open", open);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once, when the palette first appears
   }, []);
 
   // Projects live in Supabase, so they are loaded the first time the palette opens.
