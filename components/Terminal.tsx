@@ -50,6 +50,7 @@ const help: [string, string][] = [
   ["cv", "download my CV"],
   ["github", "open my GitHub"],
   ["open <page>", "go to a page, e.g. open skills"],
+  ["search", "search the whole site (Ctrl K)"],
   ["theme", "switch light / dark mode"],
   ["clear", "clear the screen"],
 ];
@@ -156,6 +157,9 @@ export default function Terminal() {
         setTheme(next);
         return [{ text: `Switched to ${next} mode.`, tone: "accent" }];
       }
+      case "search":
+        window.dispatchEvent(new Event("palette:open"));
+        return [{ text: "Opening search… (tip: Ctrl K works on every page)", tone: "accent" }];
       case "date":
         return [{ text: new Date().toLocaleString("en-ZA", { dateStyle: "full", timeStyle: "short" }), tone: "cmd" }];
       case "echo":

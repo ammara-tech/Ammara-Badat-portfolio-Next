@@ -1,35 +1,39 @@
 import type { Metadata } from "next";
-import { publicClient, type Project } from "@/lib/supabase";
+import { loadProjects, projectHref } from "@/lib/projects";
 import ProjectGrid from "@/components/ProjectGrid";
 import { Accent, Eyebrow, PageTitle } from "@/components/ui";
+import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { siteUrl } from "@/lib/site";
 
 // Always fetch fresh data, so changes from /admin show up straight away
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Projects — Ammara Badat",
-  description: "Projects I've built, loaded live from Supabase.",
-};
-
-async function loadProjects(): Promise<{ projects: Project[]; error: string | null }> {
-  try {
-    const { data, error } = await publicClient()
-      .from("projects")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (error) return { projects: [], error: error.message };
-    return { projects: (data ?? []) as Project[], error: null };
-  } catch (err) {
-    return { projects: [], error: err instanceof Error ? err.message : "Unknown error" };
-  }
-}
+  description:
+    "Web apps by Ammara Badat: a secure Next.js and Supabase clinic platform, a 10-game arcade, an F1 dashboard and more. Filter by tech.",
+  path: "/projects",
+});
 
 export default async function Projects() {
   const { projects, error } = await loadProjects();
 
   return (
     <section>
+      <JsonLd
+        data={[
+          breadcrumbs([{ name: "Projects", path: "/projects" }]),
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            url: `${siteUrl}/projects`,
+            name: "Projects by Ammara Badat",
+            author: personRef,
+            hasPart: projects.map((p) => ({ "@type": "CreativeWork", name: p.title, url: `${siteUrl}${projectHref(p)}` })),
+          },
+        ]}
+      />
       <Eyebrow>Projects</Eyebrow>
       <PageTitle>
         Things I&apos;ve <Accent>built</Accent>

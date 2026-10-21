@@ -189,6 +189,52 @@ removed 0 rows, and only the owner could upload, rename and delete.
 After the upgrade the responsive (360–1440px), keyboard and contrast checks were run again in
 **both** themes, and everything still passes.
 
+## SEO, Lighthouse and profile links (Milestone 5)
+**Live site:** https://ammara-badat-portfolio-next.vercel.app
+
+### Lighthouse scores (mobile)
+| Page | Performance | Accessibility | Best practices | SEO |
+|------|-------------|---------------|----------------|-----|
+| Home | TODO | TODO | TODO | TODO |
+
+![Lighthouse scores](Docs/lighthouse-home.png)
+
+**What Lighthouse flagged and how I fixed it:** TODO (write this after running the report).
+
+Lighthouse also runs automatically: after every production deploy, a GitHub Action
+(`.github/workflows/lighthouse.yml`) checks six pages and fails if Accessibility or SEO drops below 90.
+See the **Actions** tab.
+
+### Findable: what every page has
+- **Title and meta description** written for that page (`lib/seo.ts`), all under 160 characters.
+- **Canonical URL**, so `/projects` and `/projects?tag=CSS` count as one page.
+- **Open Graph and Twitter tags** with a share image made for each page
+  (`opengraph-image.jpg` in each page folder). Every project page draws its own share image
+  on the server (`app/projects/[slug]/opengraph-image.tsx`).
+- **Sitemap** at [/sitemap.xml](https://ammara-badat-portfolio-next.vercel.app/sitemap.xml), which
+  lists every page plus one page per project from Supabase.
+- **robots.txt** at [/robots.txt](https://ammara-badat-portfolio-next.vercel.app/robots.txt), which
+  keeps `/admin` and `/api` out of search results.
+- **Structured data (JSON-LD)** describing me (Person, with my certifications), the website, each
+  page's breadcrumbs, the projects and the case study, so Google can show richer results.
+
+### Profile links
+- **GitHub:** linked in the footer, on the Contact page, in the Ctrl+K search and in the terminal
+  (`github`), and listed in my structured data. The Home page shows my latest repositories live from GitHub.
+- **LinkedIn:** TODO link here and on the site, and my site URL added to my LinkedIn profile
+  (Contact info → Website).
+
+### Milestone 5 upgrades
+| Upgrade | What it does |
+|---|---|
+| A page for every project | `/projects/neon-arcade` and so on, built from Supabase, with breadcrumbs, a share image and "More projects". |
+| Faster images | Screenshots use Next.js `<Image>`: smaller AVIF/WebP files in the size the screen needs, lazy loading, and no layout jumps. The certificate thumbnails went from about 160 KB each to a few KB. |
+| Live GitHub activity | My six most recently updated repos on the Home page, cached for an hour. |
+| Ctrl+K search | Search every page, project, skill and certificate, or download my CV, from anywhere. Also opens from the navbar and the terminal (`search`). |
+| Installable site | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
+| Speed Insights and Analytics | Vercel's cookie-free visit counts and real visitors' loading times. |
+| Lighthouse CI | The GitHub Action above. |
+
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
 (git-ignored). Values are never committed.
@@ -197,6 +243,7 @@ Set in Vercel (Settings → Environment Variables) and, for local development, i
 |------|------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon / publishable key (safe in the browser because RLS protects the data) |
+| `GITHUB_TOKEN` (optional) | A read-only GitHub token. Only raises the GitHub API limit for the "Live from GitHub" section. |
 
 The Supabase service role / secret key is not used anywhere in this project.
 

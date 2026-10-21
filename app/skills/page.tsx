@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { skillGroups } from "@/content/skills";
 import { Accent, Eyebrow, PageTitle, SectionTitle, card } from "@/components/ui";
 import Icon, { type IconName } from "@/components/Icon";
+import { breadcrumbs, pageMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { slugify } from "@/lib/slug";
 
 // An icon for each group of skills
 const groupIcons: Record<string, IconName> = {
@@ -11,14 +14,19 @@ const groupIcons: Record<string, IconName> = {
   "Tools & workflow": "terminal",
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Skills — Ammara Badat",
-  description: "My skills, each linked to a project, file, commit or live page that proves it.",
-};
+  description:
+    "Front-end, React, Next.js, SQL and Supabase skills, each linked to a project, file, commit or certificate that proves it.",
+  path: "/skills",
+});
 
 export default function Skills() {
   return (
     <section>
+      <JsonLd
+        data={breadcrumbs([{ name: "Skills", path: "/skills" }])}
+      />
       <Eyebrow>Skills</Eyebrow>
       <PageTitle>
         What I <Accent>work with</Accent>
@@ -42,7 +50,8 @@ export default function Skills() {
               {group.skills.map((skill) => (
                 <li
                   key={skill.name}
-                  className={`${card} spotlight fx-reveal group relative overflow-hidden p-5 transition duration-300 hover:-translate-y-0.5 hover:border-teal/50 hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.45)]`}
+                  id={slugify(skill.name)}
+                  className={`${card} scroll-mt-28 spotlight fx-reveal group relative overflow-hidden p-5 transition duration-300 hover:-translate-y-0.5 hover:border-teal/50 hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.45)]`}
                 >
                   <span
                     aria-hidden="true"

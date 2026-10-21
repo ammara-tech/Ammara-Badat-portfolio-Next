@@ -1,10 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { about } from "@/content/about";
 import { caseStudy } from "@/content/case-study";
 import Icon from "@/components/Icon";
 import Screenshot from "@/components/Screenshot";
 import Terminal from "@/components/Terminal";
+import GitHubActivity from "@/components/GitHubActivity";
+import { pageMetadata } from "@/lib/seo";
 import { Accent, Divider, Eyebrow, Para, SmartLink, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Ammara Badat — Junior Full Stack Developer",
+  description:
+    "Portfolio of Ammara Badat, a junior full stack developer in Gauteng, South Africa, building secure web apps with Next.js, React and Supabase.",
+  path: "/",
+});
 
 // Tech shown in the scrolling strip
 const tech = [
@@ -124,6 +134,7 @@ export default function Home() {
             <Screenshot
               src={caseStudy.screenshots[0]?.src ?? null}
               alt={caseStudy.screenshots[0]?.alt ?? caseStudy.title}
+              sizes="(min-width: 1024px) 560px, (min-width: 768px) 55vw, 100vw"
               className="transition duration-700 group-hover:scale-[1.03]"
             />
           </div>
@@ -150,6 +161,9 @@ export default function Home() {
           </div>
         </Link>
       </section>
+
+      {/* ---------- Live GitHub repos ---------- */}
+      <GitHubActivity />
 
       {/* ---------- Call to action ---------- */}
       <section className="fx-reveal mt-24 overflow-hidden rounded-2xl border border-line bg-linear-to-br from-panel to-panel-alt p-8 text-center sm:p-12">

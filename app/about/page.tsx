@@ -6,11 +6,17 @@ import CountUp from "@/components/CountUp";
 import Icon from "@/components/Icon";
 import { certificationGroups } from "@/content/certifications";
 import { Accent, Divider, Eyebrow, PageTitle, Para, SectionTitle, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
+import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { siteUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About — Ammara Badat",
-  description: "Who I am and the role I'm looking for.",
-};
+  description:
+    "Who I am, how I work and the junior full stack role I'm looking for, plus my 9 certifications from Certiport, Vercel and Harvard CS50.",
+  path: "/about",
+  type: "profile",
+});
 
 const certificateCount = certificationGroups.reduce((n, g) => n + g.certificates.length, 0);
 
@@ -20,6 +26,17 @@ export default function About() {
 
   return (
     <div className="space-y-16">
+      <JsonLd
+        data={[
+          breadcrumbs([{ name: "About", path: "/about" }]),
+          {
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            url: `${siteUrl}/about`,
+            mainEntity: personRef,
+          },
+        ]}
+      />
       {/* 30-second intro */}
       <section className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div>

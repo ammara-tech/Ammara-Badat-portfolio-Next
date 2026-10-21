@@ -1,13 +1,20 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site";
+import { loadProjects, slugify } from "@/lib/projects";
 
 /*
   Sitemap for search engines, served at /sitemap.xml.
-  It lists every public page. /admin is left out on purpose.
+  It lists every public page, plus one page per project from Supabase,
+  so a project added in /admin is found by Google without editing this file.
+  /admin is left out on purpose.
 */
 
-const siteUrl = "https://ammara-badat-portfolio-next.vercel.app";
+// Rebuild the sitemap at most once an hour
+export const revalidate = 3600;
 
-const pages: { path: string; priority: number; changeFrequency: "weekly" | "monthly" }[] = [
+type Entry = MetadataRoute.Sitemap[number];
+
+const pages: { path: string; priority: number; changeFrequency: Entry["changeFrequency"] }[] = [
   { path: "", priority: 1, changeFrequency: "weekly" },
   { path: "/projects", priority: 0.9, changeFrequency: "weekly" },
   { path: "/projects/nextjs-dashboard", priority: 0.8, changeFrequency: "monthly" },
@@ -16,12 +23,26 @@ const pages: { path: string; priority: number; changeFrequency: "weekly" | "mont
   { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
-  return pages.map((page) => ({
+
+  const fixed: Entry[] = pages.map((page) => ({
     url: `${siteUrl}${page.path}`,
     lastModified,
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }));
+
+  // If Supabase can't be reached, the sitemap still works with the fixed pages
+  const { projects } = await loadProjects();
+  const projectPages: Entry[] = projects
+    .filter((p) => !p.case_study_url) // the capstone is already listed as its case study
+    .map((p) => ({
+      url: `${siteUrl}/projects/${slugify(p.title)}`,
+      lastModified: p.created_at ? new Date(p.created_at) : lastModified,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    }));
+
+  return [...fixed, ...projectPages];
 }

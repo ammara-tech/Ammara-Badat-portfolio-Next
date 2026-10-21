@@ -1,0 +1,39 @@
+# Lighthouse CI (Milestone 5 upgrade)
+#
+# Every time Vercel finishes a production deployment, GitHub runs Lighthouse
+# on the live site (as a phone, like Google does), 3 times per page, and checks the scores:
+#   - Accessibility and SEO must be 90 or more, or this check fails (red X)
+#   - Performance and Best practices below 90 show a warning
+# The full reports are uploaded and linked in the run summary.
+# You can also start it by hand: Actions tab -> Lighthouse -> Run workflow.
+
+name: Lighthouse
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    # Only run after a successful production deployment (or when started by hand)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Lighthouse on the live site
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://ammara-badat-portfolio-next.vercel.app/
+            https://ammara-badat-portfolio-next.vercel.app/about
+            https://ammara-badat-portfolio-next.vercel.app/projects
+            https://ammara-badat-portfolio-next.vercel.app/projects/nextjs-dashboard
+            https://ammara-badat-portfolio-next.vercel.app/skills
+            https://ammara-badat-portfolio-next.vercel.app/contact
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

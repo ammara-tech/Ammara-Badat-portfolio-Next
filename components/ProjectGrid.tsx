@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { flushSync } from "react-dom";
+import Link from "next/link";
 import type { Project } from "@/lib/supabase";
+import { projectHref } from "@/lib/slug";
 import Screenshot from "@/components/Screenshot";
 import Icon from "@/components/Icon";
 import { SmartLink, Tag, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
@@ -100,16 +102,17 @@ export default function ProjectGrid({ projects }: { projects: Project[] }) {
       )}
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
-        {visible.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+        {visible.map((project, i) => (
+          <ProjectCard key={project.id} project={project} first={i === 0} />
         ))}
       </div>
     </>
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({ project, first }: { project: Project; first: boolean }) {
   const isCapstone = Boolean(project.case_study_url);
+  const href = projectHref(project);
 
   return (
     <article
@@ -120,10 +123,14 @@ function ProjectCard({ project }: { project: Project }) {
           : "flex flex-col border-line hover:border-teal/60 hover:shadow-[0_0_50px_-18px_rgb(39_244_210/0.4)]"
       }`}
     >
-      <div className="relative overflow-hidden rounded-lg">
+      {/* The picture links to the project page too; hidden from screen readers and Tab
+          because the title link right below goes to the same place */}
+      <Link href={href} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden rounded-lg">
         <Screenshot
           src={project.image_url}
-          alt={`Screenshot of ${project.title}`}
+          alt=""
+          priority={first}
+          sizes={isCapstone ? "(min-width: 1024px) 600px, (min-width: 768px) 55vw, 100vw" : undefined}
           className="transition duration-700 group-hover:scale-[1.04]"
         />
         {isCapstone && (
@@ -131,13 +138,15 @@ function ProjectCard({ project }: { project: Project }) {
             Capstone
           </span>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col">
         <h2
           className={`mt-5 font-display text-2xl font-black uppercase tracking-tight ${isCapstone ? "md:mt-0 md:text-4xl" : ""}`}
         >
-          {project.title}
+          <Link href={href} className="transition hover:text-teal">
+            {project.title}
+          </Link>
         </h2>
         {project.summary && <p className="mt-2 leading-relaxed text-mist">{project.summary}</p>}
 
@@ -156,6 +165,12 @@ function ProjectCard({ project }: { project: Project }) {
               Read case study
               <Icon name="arrow-right" className={`h-4 w-4 ${btnIcon}`} />
             </SmartLink>
+          )}
+          {!isCapstone && (
+            <Link href={href} className={`${btnGhost} ${small}`} aria-label={`Details about ${project.title}`}>
+              <Icon name="document" className="h-4 w-4" />
+              Details
+            </Link>
           )}
           {project.live_url && (
             <SmartLink href={project.live_url} className={`${isCapstone ? btnGhost : btnPrimary} ${small}`}>

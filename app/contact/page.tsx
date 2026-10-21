@@ -3,11 +3,16 @@ import { about } from "@/content/about";
 import ContactForm from "@/components/ContactForm";
 import Icon, { type IconName } from "@/components/Icon";
 import { Accent, Eyebrow, PageTitle, btnGhost } from "@/components/ui";
+import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { siteUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact — Ammara Badat",
-  description: "Send Ammara Badat a message, or download her CV.",
-};
+  description:
+    "Get in touch with Ammara Badat, a junior full stack developer in Gauteng. Send a message, email, call or download her CV.",
+  path: "/contact",
+});
 
 type ContactLink = { label: string; value: string; href: string; icon: IconName };
 
@@ -27,6 +32,17 @@ export default function Contact() {
 
   return (
     <section>
+      <JsonLd
+        data={[
+          breadcrumbs([{ name: "Contact", path: "/contact" }]),
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            url: `${siteUrl}/contact`,
+            about: personRef,
+          },
+        ]}
+      />
       <Eyebrow>Contact</Eyebrow>
       <PageTitle>
         Let&apos;s <Accent>talk</Accent>

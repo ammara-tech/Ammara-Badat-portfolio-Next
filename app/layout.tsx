@@ -1,13 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Inter, JetBrains_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
 import Lightbox from "@/components/Lightbox";
 import Spotlight from "@/components/Spotlight";
+import CommandPalette from "@/components/CommandPalette";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
+import { siteUrl } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
@@ -20,7 +24,6 @@ const titillium = Titillium_Web({
   display: "swap",
 });
 
-const siteUrl = "https://ammara-badat-portfolio-next.vercel.app";
 const title = "Ammara Badat — Junior Full Stack Developer";
 const description =
   "Portfolio of Ammara Badat, a junior full stack developer in South Africa building with Next.js, React and Supabase.";
@@ -174,6 +177,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Full-screen image viewer, opened by any LightboxTrigger */}
         <Lightbox />
+
+        {/* Ctrl+K search (components/CommandPalette.tsx) */}
+        <CommandPalette />
+
+        {/* Vercel Web Analytics (visits, no cookies) and Speed Insights (real visitors' load times) */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

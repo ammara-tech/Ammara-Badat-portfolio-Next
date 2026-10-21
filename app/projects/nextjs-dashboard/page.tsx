@@ -5,11 +5,17 @@ import Screenshot from "@/components/Screenshot";
 import { LightboxTrigger, type LightboxImage } from "@/components/Lightbox";
 import Icon from "@/components/Icon";
 import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
+import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { siteUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: `${caseStudy.title} — Case study — Ammara Badat`,
-  description: "Capstone case study: the problem, my role, the stack, screenshots and what's next.",
-};
+  description:
+    "Capstone case study: a secure clinic platform built with Next.js and Supabase. The problem, my role, the stack, a demo video and lessons learned.",
+  path: "/projects/nextjs-dashboard",
+  type: "article",
+});
 
 // A video file in /public plays on the page; anything else (YouTube, Loom) is a link.
 const isVideoFile = /\.(mp4|webm)$/i.test(caseStudy.videoUrl);
@@ -33,6 +39,24 @@ export default function CaseStudy() {
 
   return (
     <article>
+      <JsonLd
+        data={[
+          breadcrumbs([
+            { name: "Projects", path: "/projects" },
+            { name: cs.title, path: "/projects/nextjs-dashboard" },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: `${cs.title}: capstone case study`,
+            description: cs.tagline,
+            url: `${siteUrl}/projects/nextjs-dashboard`,
+            image: `${siteUrl}${cs.screenshots[0]?.src ?? "/opengraph-image.png"}`,
+            author: personRef,
+            about: { "@type": "SoftwareApplication", name: cs.title, applicationCategory: "HealthApplication", url: cs.liveUrl },
+          },
+        ]}
+      />
       <Link href="/projects" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-mist hover:text-teal">
         <Icon name="arrow-left" className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
         All projects
@@ -90,7 +114,13 @@ export default function CaseStudy() {
             label={`Enlarge screenshot: ${heroShot.alt}`}
             className="group relative block w-full overflow-hidden rounded-lg text-left"
           >
-            <Screenshot src={heroShot.src} alt={heroShot.alt} className="transition duration-700 group-hover:scale-[1.02]" />
+            <Screenshot
+              src={heroShot.src}
+              alt={heroShot.alt}
+              sizes="(min-width: 1152px) 1088px, 100vw"
+              priority
+              className="transition duration-700 group-hover:scale-[1.02]"
+            />
             <ZoomHint />
           </LightboxTrigger>
           <figcaption className="mt-3 font-mono text-xs text-mist">{heroShot.caption}</figcaption>
@@ -204,6 +234,7 @@ export default function CaseStudy() {
                     <Screenshot
                       src={shot.src}
                       alt={shot.alt}
+                      sizes="(min-width: 640px) 384px, 100vw"
                       className="transition duration-700 group-hover:scale-[1.04]"
                     />
                     <ZoomHint />

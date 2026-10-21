@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { certificationGroups } from "@/content/certifications";
 import { Accent, SectionTitle } from "@/components/ui";
 import Icon from "@/components/Icon";
@@ -45,11 +46,13 @@ export default function Certifications() {
                     label={`View the ${cert.name} certificate`}
                     className="relative shrink-0 overflow-hidden rounded border border-line transition hover:border-teal"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    {/* next/image sends a small thumbnail instead of the full certificate */}
+                    <Image
                       src={cert.image}
                       alt=""
-                      loading="lazy"
+                      width={88}
+                      height={56}
+                      sizes="88px"
                       className="h-14 w-22 object-cover object-top transition duration-500 group-hover:scale-110"
                     />
                   </LightboxTrigger>

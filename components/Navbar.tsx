@@ -56,6 +56,17 @@ export default function Navbar() {
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
         <div className="flex items-center gap-3 md:order-last md:ml-6">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("palette:open"))}
+            aria-label="Search the site (Ctrl K)"
+            aria-keyshortcuts="Control+K Meta+K"
+            className="flex items-center gap-2 rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal lg:px-3"
+          >
+            <Icon name="search" className="h-4 w-4" />
+            <span className="hidden font-mono text-[11px] uppercase tracking-widest lg:inline">Search</span>
+            <kbd className="hidden rounded border border-line-strong px-1 font-mono text-[10px] lg:inline">Ctrl K</kbd>
+          </button>
           <ThemeToggle />
           <button
             className="relative h-8 w-8 md:hidden"
