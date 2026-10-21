@@ -263,33 +263,84 @@ Set in Vercel (Settings → Environment Variables) and, for local development, i
 
 The Supabase service role / secret key is not used anywhere in this project.
 
-## Run locally
-1. Create `.env.local` in the project root with the two variables above.
-2. Run:
+## Setup (run it yourself)
+You need Node.js 20 or newer, a free [Supabase](https://supabase.com) project and, to deploy, a
+free [Vercel](https://vercel.com) account.
+
+### 1. Supabase
+1. Create a Supabase project.
+2. **Create the owner account:** Authentication → Users → **Add user** (email and password). Copy the
+   user's **UID**.
+3. **Turn off sign-ups**, so nobody else can create an account: Authentication → Sign In / Providers →
+   Email → switch off **Allow new users to sign up**.
+4. In the SQL files in `Supabase/`, replace my UID (`ed0dcf97-9b0a-460e-8ab3-0d025847c218`) with yours.
+   It is what makes the RLS policies "owner only".
+5. Open the **SQL Editor** and run the files **in this order**:
+
+| Order | File | What it creates |
+|---|---|---|
+| 1 | `schema.sql` | `projects` table, RLS (anyone reads, only the owner writes) and my starting projects |
+| 2 | `003-screenshots-video-case-study.sql` | Video and case study columns, screenshot paths, capstone first |
+| 3 | `004-messages-contact-form.sql` | `messages` table for the contact form, owner-only reading and the spam rate limit |
+| 4 | `005-project-images-storage.sql` | `project-images` Storage bucket and owner-only upload policies |
+
+6. Copy the **Project URL** and the **anon / publishable key** from Project Settings → API.
+
+### 2. Run locally
+1. Create `.env.local` in the project root (it is git-ignored):
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+   Use only the base URL, with nothing after `.supabase.co`.
+2. Install and start:
 ```bash
 npm install
 npm run dev
 ```
-3. Open http://localhost:3000.
+3. Open http://localhost:3000. Sign in at http://localhost:3000/admin with the owner account.
+
+### 3. Deploy
+1. Import the GitHub repo into Vercel.
+2. Add the environment variables from the table above (Settings → Environment Variables).
+3. Deploy. Every push to `main` deploys again, and the Lighthouse GitHub Action then checks the live site.
+
+### How the code works
+A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Use of AI
-I used Claude (by Anthropic) as an AI assistant while building this site. It helped me:
+I used Claude (by Anthropic) as an AI assistant throughout this project. AI use was allowed for this
+project; this is an honest list of what it helped with.
 
-- generate the wireframe images in `Docs/` from the layout I described, based on my first portfolio
-- assisted in creating and editing the Next.js starter files, the navbar, the placeholder pages, the Supabase connection,
-  the Projects page and the `/admin` page with code i previously used for a project that also used a similar stack to this
-- write the SQL for the `projects` table
-- draft parts of this README
-- switch the site to my v1 portfolio colours and fonts
-- build the Milestone 3 pages (Skills, case study, About, Contact)
-- build the visual upgrade: animations, scroll effects, icons, the custom 404 page, the favicon and
-  the share preview image, keeping my first portfolio's colours and fonts
-- compress my own screen recording of the clinic platform so it plays on the case study page
+**Planning and content**
+- generated the wireframe images in `Docs/` from the layout I described, based on my first portfolio
+- drafted parts of this README, my milestone reflections, the case study text and the About text,
+  which I then edited
+- drafted the three dev notes in `content/notes.ts` from things I actually built, which I edited
+- made my one-page CV PDF and my LinkedIn banner, and drafted the text for my LinkedIn profile
 
-I made the decisions about the site's audience, role, pages and design, chose which projects to
-include and how to describe them, set up GitHub, Supabase and Vercel myself, tested every feature,
-ran the RLS test and checked the results. I went through the AI-written code and text and edited
-it so I understand it and can explain it.
+**Code**
+- created and edited the Next.js starter files, the navbar, the pages, the Supabase connection,
+  the Projects page and the `/admin` page, starting from code I had used in an earlier project with a similar stack
+- wrote the SQL for the `projects` and `messages` tables, the RLS policies, the spam rate limit and the
+  Storage bucket policies
+- built the Milestone 3 pages (Skills, case study, About, Contact) and the certifications section
+- built the Milestone 4 contact form, its API route and spam protection, the inbox and the accessibility fixes
+- built the visual upgrades: animations, icons, the 404 page, the favicon, the share images, the interactive
+  terminal, spotlight cards, project filters, the image viewer, image upload, the admin overview and light/dark mode
+- built the Milestone 5 work: page titles and descriptions, Open Graph images, the sitemap and robots file,
+  structured data, project pages, Ctrl+K search, the GitHub activity section, the web app manifest,
+  Lighthouse CI, the dev notes pages and RSS feed, page transitions, the contact card and QR code
+- found and fixed the performance problems Lighthouse reported (74 → 96)
+- compressed and blurred my own screen recording of the clinic platform
+
+**What I did myself**
+I decided the site's audience, the role I want, the pages and the design, and chose which projects and
+certificates to include and how to describe them. I set up GitHub, Supabase, Vercel, Google Search Console
+and LinkedIn myself, ran every SQL file, tested every feature, ran the RLS tests and Lighthouse, and
+committed and deployed every change. I went through the AI-written code and text and edited it so I
+understand it and can explain it. [Docs/how-it-works.md](Docs/how-it-works.md) is the guide I used to learn
+how each part works.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:

@@ -35,7 +35,7 @@ create policy "Owner can update projects"
 create policy "Owner can delete projects"
   on public.projects for delete
   to authenticated
-  using ((select auth.uid()) = 'ed0dcf97-9b0a-460e-8ab3-0d025847c218'::uuid)
+  using ((select auth.uid()) = 'ed0dcf97-9b0a-460e-8ab3-0d025847c218'::uuid);
 
 -- Table: public.projects values:
 insert into public.projects (title, summary, live_url, repo_url, tags, sort_order) values
