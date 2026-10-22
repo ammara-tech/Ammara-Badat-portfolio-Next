@@ -8,6 +8,7 @@ import { projectHref } from "@/lib/slug";
 import Screenshot from "@/components/Screenshot";
 import Icon from "@/components/Icon";
 import { SmartLink, Tag, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
+import { motionReduced } from "@/lib/motion";
 
 /*
   The project cards plus the tag filter.
@@ -50,7 +51,7 @@ export default function ProjectGrid({ projects }: { projects: Project[] }) {
     window.history.replaceState(null, "", url);
 
     const doc = document as DocWithVT;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = motionReduced();
     if (!doc.startViewTransition || reduceMotion) {
       setActive(next);
       return;

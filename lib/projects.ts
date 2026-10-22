@@ -22,8 +22,14 @@ export async function loadProjects(): Promise<{ projects: Project[]; error: stri
   }
 }
 
+/**
+ * Finds one project by its page address. Returns null if there's no such project.
+ * If Supabase can't be reached it throws, so visitors see the friendly error page
+ * (app/error.tsx) with a "Try again" button instead of a wrong "page not found".
+ */
 export async function findProject(slug: string) {
-  const { projects } = await loadProjects();
+  const { projects, error } = await loadProjects();
+  if (error) throw new Error(`Projects couldn't be loaded: ${error}`);
   const index = projects.findIndex((p) => slugify(p.title) === slug);
   if (index === -1) return null;
   return { project: projects[index], others: projects.filter((_, i) => i !== index) };

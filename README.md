@@ -250,6 +250,16 @@ See the **Actions** tab.
 | Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
 | Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
 
+### More features (after Milestone 5)
+| Feature | What it does |
+|---|---|
+| Automated tests + CI | 43 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers and the contact card. A GitHub Action runs them on every push. |
+| Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
+| Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
+| Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off in the footer, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
+| Web CV (`/cv`) | My CV as a page: easy to read on a phone, readable by Google, and it prints cleanly on white paper. The PDF download stays. |
+| Phone navigation bar | On phones, a bar at the bottom with Home, Projects, Search, Notes and Contact. It hides while you scroll down and comes back when you scroll up. |
+
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
 (git-ignored). Values are never committed.
@@ -299,6 +309,7 @@ npm install
 npm run dev
 ```
 3. Open http://localhost:3000. Sign in at http://localhost:3000/admin with the owner account.
+4. Run the tests with `npm test` (they also run on GitHub after every push; see the **Actions** tab).
 
 ### 3. Deploy
 1. Import the GitHub repo into Vercel.

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { motionReduced } from "@/lib/motion";
 
 /*
   Cards fade up as you scroll. Newer browsers do this with CSS alone
@@ -15,7 +16,7 @@ export default function ScrollReveal() {
 
   useEffect(() => {
     if (CSS.supports("animation-timeline: view()")) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (motionReduced()) return;
 
     document.documentElement.classList.add("fx-io");
     const observer = new IntersectionObserver(

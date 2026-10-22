@@ -9,7 +9,8 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const found = await findProject(slug);
+  // If the database is down, still draw a general image instead of failing
+  const found = await findProject(slug).catch(() => null);
 
   return brandImage({
     eyebrow: "PROJECT · AMMARA BADAT",

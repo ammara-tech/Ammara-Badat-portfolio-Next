@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motionReduced } from "@/lib/motion";
 
 /**
  * Counts a number up from 0 when it scrolls into view, e.g. "10+" or "7".
@@ -18,7 +19,7 @@ export default function CountUp({ value, duration = 1200 }: { value: string; dur
   useEffect(() => {
     const el = ref.current;
     if (target === null || !el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (motionReduced()) return;
 
     setShown(0);
     let frame = 0;

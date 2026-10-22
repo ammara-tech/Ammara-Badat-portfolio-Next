@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { about } from "@/content/about";
 import ContactForm from "@/components/ContactForm";
 import Icon, { type IconName } from "@/components/Icon";
@@ -124,10 +125,16 @@ export default function Contact() {
           <div className="rounded-xl border border-racing/40 bg-linear-to-br from-panel to-panel-alt p-5">
             <p className="font-display text-xl font-black uppercase">My CV</p>
             <p className="mt-1 text-sm text-mist">One page: skills, projects, certifications and education.</p>
-            <a href={cv} download className={`${btnGhost} mt-4`}>
-              <Icon name="download" className="h-4 w-4" />
-              Download CV (PDF)
-            </a>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a href={cv} download className={btnGhost}>
+                <Icon name="download" className="h-4 w-4" />
+                Download CV (PDF)
+              </a>
+              <Link href="/cv" className={btnGhost}>
+                <Icon name="document" className="h-4 w-4" />
+                View online
+              </Link>
+            </div>
           </div>
         </div>
 

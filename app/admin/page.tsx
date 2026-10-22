@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserClient, type Project } from "@/lib/supabase";
 import Inbox from "@/components/Inbox";
-import Icon from "@/components/Icon";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
+import ProjectOrderList from "@/components/ProjectOrderList";
 
 type FormState = {
   title: string;
@@ -389,53 +389,9 @@ function Dashboard({ email }: { email: string }) {
         </div>
       </form>
 
-      {/* Project list */}
+      {/* Project list: drag to reorder (components/ProjectOrderList.tsx) */}
       <h2 className="mt-10 text-xl font-semibold">Projects ({projects.length})</h2>
-      <ul className="mt-4 space-y-3">
-        {projects.map((project) => (
-          <li
-            key={project.id}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-panel p-4"
-          >
-            <div className="flex min-w-0 flex-1 items-center gap-4">
-              {project.image_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={project.image_url}
-                  alt=""
-                  loading="lazy"
-                  className="hidden h-12 w-20 shrink-0 rounded border border-line object-cover object-top sm:block"
-                />
-              ) : (
-                <span className="hidden h-12 w-20 shrink-0 items-center justify-center rounded border border-dashed border-line-strong sm:flex">
-                  <Icon name="photo" className="h-5 w-5 text-mist-dim" />
-                </span>
-              )}
-              <div className="min-w-0">
-                <p className="font-medium">
-                  <span className="mr-2 text-mist-dim">{project.sort_order}.</span>
-                  {project.title}
-                </p>
-                {project.summary && <p className="mt-1 text-sm text-mist">{project.summary}</p>}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => startEdit(project)}
-                className="rounded border border-line-strong px-3 py-1 text-sm"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(project)}
-                className="rounded border border-racing/50 px-3 py-1 text-sm text-racing-text"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <ProjectOrderList projects={projects} onEdit={startEdit} onDelete={handleDelete} onSaved={loadProjects} />
     </section>
   );
 }

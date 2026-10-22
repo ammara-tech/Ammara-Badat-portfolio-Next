@@ -5,12 +5,14 @@
   before the page paints, so there is no white or dark "flash" on load.
 */
 
+import { motionReduced } from "@/lib/motion";
+
 export type Theme = "dark" | "light";
 
 const KEY = "theme";
 
-/** Runs in <head> before anything renders. Kept tiny on purpose. */
-export const themeScript = `try{if(localStorage.getItem("${KEY}")==="light")document.documentElement.dataset.theme="light"}catch(e){}`;
+/** Runs in <head> before anything renders. Kept tiny on purpose. Also applies the animations switch (lib/motion.ts). */
+export const themeScript = `try{var d=document.documentElement;if(localStorage.getItem("${KEY}")==="light")d.dataset.theme="light";if(localStorage.getItem("motion")==="reduced")d.dataset.motion="reduced"}catch(e){}`;
 
 export function getTheme(): Theme {
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
@@ -38,7 +40,7 @@ export function setTheme(theme: Theme, from?: { x: number; y: number }) {
   };
 
   const doc = document as DocWithVT;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = motionReduced();
   if (!doc.startViewTransition || reduceMotion) {
     apply();
     return;

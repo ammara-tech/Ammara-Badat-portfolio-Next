@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { loadProjects, projectHref } from "@/lib/projects";
 import ProjectGrid from "@/components/ProjectGrid";
 import { Accent, Eyebrow, PageTitle } from "@/components/ui";
@@ -43,13 +44,38 @@ export default async function Projects() {
       </p>
 
       {error && (
-        <p className="mt-8 rounded border border-racing/40 bg-racing/10 p-4 text-snow">
-          Couldn&apos;t load projects right now. ({error})
-        </p>
+        <div role="alert" className="mt-8 rounded-xl border border-racing/40 bg-racing/10 p-5 text-snow">
+          <p className="font-semibold">My projects couldn&apos;t be loaded right now.</p>
+          <p className="mt-1 text-sm text-mist">
+            Please refresh the page in a moment. You can still read my{" "}
+            <Link href="/projects/nextjs-dashboard" className="text-teal underline underline-offset-2">
+              capstone case study
+            </Link>{" "}
+            or see my code on{" "}
+            <a href="https://github.com/ammara-tech" className="text-teal underline underline-offset-2">
+              GitHub
+            </a>
+            .
+          </p>
+        </div>
+      )}
+
+      {/* Nothing in the database yet (and no error): say so instead of an empty page */}
+      {!error && projects.length === 0 && (
+        <div className="mt-10 rounded-xl border border-dashed border-line-strong p-8 text-center">
+          <p className="font-display text-2xl font-black uppercase">Projects coming soon</p>
+          <p className="mt-2 text-mist">
+            In the meantime, have a look at my{" "}
+            <Link href="/projects/nextjs-dashboard" className="text-teal underline underline-offset-2">
+              capstone case study
+            </Link>
+            .
+          </p>
+        </div>
       )}
 
       {/* Tag filter and cards (components/ProjectGrid.tsx) */}
-      <ProjectGrid projects={projects} />
+      {projects.length > 0 && <ProjectGrid projects={projects} />}
     </section>
   );
 }

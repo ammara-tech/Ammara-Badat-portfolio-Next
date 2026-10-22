@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
 import LazyExtras from "@/components/LazyExtras";
 import ScrollReveal from "@/components/ScrollReveal";
+import MotionToggle from "@/components/MotionToggle";
+import MobileNav from "@/components/MobileNav";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -122,7 +124,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
       </head>
-      <body className="min-h-screen overflow-x-clip bg-ink font-sans text-snow antialiased">
+      <body className="min-h-screen overflow-x-clip bg-ink pb-[calc(4.25rem+env(safe-area-inset-bottom))] font-sans text-snow antialiased md:pb-0">
         {/* Keyboard users can jump straight past the navbar */}
         <a
           href="#main"
@@ -149,6 +151,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p className="font-mono text-xs text-mist">
                 © {new Date().getFullYear()} · Built with Next.js, Tailwind CSS and Supabase
               </p>
+              <div className="mt-3">
+                <MotionToggle />
+              </div>
             </div>
 
             {/* My latest Lighthouse scores, linked to the screenshot that proves them */}
@@ -208,6 +213,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Spotlight glow, full-screen image viewer and Ctrl+K search, loaded after the page */}
         <LazyExtras />
         <ScrollReveal />
+
+        {/* Bottom navigation bar on phones only */}
+        <MobileNav />
 
         {/* Vercel Web Analytics (visits, no cookies) and Speed Insights (real visitors' load times) */}
         <Analytics />

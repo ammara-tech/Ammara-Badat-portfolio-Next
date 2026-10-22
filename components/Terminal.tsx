@@ -7,6 +7,7 @@ import { about } from "@/content/about";
 import { skillGroups } from "@/content/skills";
 import { certificationGroups } from "@/content/certifications";
 import { getTheme, setTheme } from "@/lib/theme";
+import { setMotion } from "@/lib/motion";
 
 /*
   The code card from my first portfolio, now a small terminal.
@@ -38,6 +39,7 @@ const pages: Record<string, string> = {
   certificates: "/about#certifications",
   contact: "/contact",
   notes: "/notes",
+  cv: "/cv",
 };
 
 const help: [string, string][] = [
@@ -54,6 +56,7 @@ const help: [string, string][] = [
   ["open <page>", "go to a page, e.g. open skills"],
   ["search", "search the whole site (Ctrl K)"],
   ["theme", "switch light / dark mode"],
+  ["motion", "turn animations on / off"],
   ["clear", "clear the screen"],
 ];
 
@@ -165,6 +168,11 @@ export default function Terminal() {
       case "search":
         window.dispatchEvent(new Event("palette:open"));
         return [{ text: "Opening search… (tip: Ctrl K works on every page)", tone: "accent" }];
+      case "motion": {
+        const on = document.documentElement.dataset.motion === "reduced";
+        setMotion(on);
+        return [{ text: `Animations ${on ? "on" : "off"}.`, tone: "accent" }];
+      }
       case "date":
         return [{ text: new Date().toLocaleString("en-ZA", { dateStyle: "full", timeStyle: "short" }), tone: "cmd" }];
       case "echo":

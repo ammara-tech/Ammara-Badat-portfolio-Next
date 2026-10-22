@@ -10,6 +10,7 @@ import { caseStudy } from "@/content/case-study";
 import { notes } from "@/content/notes";
 import { slugify } from "@/lib/slug";
 import { getTheme, setTheme } from "@/lib/theme";
+import { setMotion } from "@/lib/motion";
 
 /*
   Command palette: press Ctrl + K (or ⌘ K on a Mac), or the Search button in
@@ -42,6 +43,7 @@ const pages: Item[] = [
   { id: "p-skills", group: "Pages", label: "Skills", icon: "terminal", href: "/skills", keywords: "evidence proof tech" },
   { id: "p-certs", group: "Pages", label: "Certifications", icon: "badge", href: "/about#certifications", keywords: "certificates certiport vercel cs50" },
   { id: "p-contact", group: "Pages", label: "Contact", icon: "mail", href: "/contact", keywords: "message hire email form" },
+  { id: "p-cv", group: "Pages", label: "CV (web page)", icon: "document", href: "/cv", keywords: "resume curriculum vitae print" },
   { id: "p-notes", group: "Pages", label: "Dev notes", icon: "document", href: "/notes", keywords: "blog posts articles writing rss" },
 ];
 
@@ -108,6 +110,14 @@ export default function CommandPalette({ onReady }: { onReady?: () => void }) {
           a.download = "";
           a.click();
         },
+      },
+      {
+        id: "a-motion",
+        group: "Actions",
+        label: "Turn animations on / off",
+        icon: "sparkles",
+        keywords: "motion animation calm reduce",
+        run: () => setMotion(document.documentElement.dataset.motion === "reduced"),
       },
       {
         id: "a-theme",

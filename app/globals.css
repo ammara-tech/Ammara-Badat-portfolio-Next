@@ -83,6 +83,18 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* The same when a visitor switches animations off with the footer switch */
+  html[data-motion="reduced"] {
+    scroll-behavior: auto;
+  }
+
+  html[data-motion="reduced"] *,
+  html[data-motion="reduced"] *::before,
+  html[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ===================================================================
@@ -374,5 +386,101 @@ html.fx-io .fx-reveal.is-visible {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* Animations switched off with the footer switch (components/MotionToggle.tsx):
+   exactly the same rules as the two blocks above */
+html[data-motion="reduced"] .fx-marquee-wrap {
+  mask-image: none;
+}
+
+html[data-motion="reduced"] .fx-marquee {
+  width: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+html[data-motion="reduced"] .fx-marquee > [aria-hidden="true"] {
+  display: none;
+}
+
+html[data-motion="reduced"] :is(.fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-progress, .fx-reveal) {
+  animation: none !important;
+}
+
+html[data-motion="reduced"] :is(.fx-progress, .fx-sweep) {
+  display: none !important;
+}
+
+html[data-motion="reduced"].fx-io .fx-reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* ===================================================================
+   Printing (mainly for the /cv page): white paper, black text,
+   no navigation, footer or buttons
+   =================================================================== */
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  :root,
+  :root[data-theme="light"] {
+    --color-ink: #ffffff;
+    --color-panel: #ffffff;
+    --color-panel-alt: #ffffff;
+    --color-snow: #111111;
+    --color-mist: #333333;
+    --color-mist-dim: #555555;
+    --color-teal: #00695c;
+    --color-racing: #b0001f;
+    --color-line: #dddddd;
+    --color-line-strong: #bbbbbb;
+  }
+
+  body {
+    background: #fff !important;
+    padding-bottom: 0 !important;
+  }
+
+  header,
+  footer,
+  nav,
+  dialog,
+  .no-print,
+  .site-backdrop,
+  .fx-progress,
+  .fx-sweep {
+    display: none !important;
+  }
+
+  .cv-header {
+    display: block !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .print-only {
+    display: list-item;
+    list-style: none;
+  }
+
+  .cv-block {
+    break-inside: avoid;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }

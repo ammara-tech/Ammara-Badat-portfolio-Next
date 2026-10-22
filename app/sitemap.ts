@@ -23,6 +23,7 @@ const pages: { path: string; priority: number; changeFrequency: Entry["changeFre
   { path: "/skills", priority: 0.7, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
   { path: "/notes", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/cv", priority: 0.7, changeFrequency: "monthly" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
