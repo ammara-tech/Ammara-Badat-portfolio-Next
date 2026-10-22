@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@/components/Icon";
 import ThemeToggle from "@/components/ThemeToggle";
+import MotionToggle from "@/components/MotionToggle";
 import { about } from "@/content/about";
 
 const links = [
@@ -56,19 +57,23 @@ export default function Navbar() {
 
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
-        <div className="flex items-center gap-3 md:order-last md:ml-4 lg:ml-6">
+        <div className="flex items-center gap-3 md:order-last md:ml-4 md:gap-2 lg:ml-6 lg:gap-3">
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("palette:open"))}
             aria-label="Search the site (Ctrl K)"
             aria-keyshortcuts="Control+K Meta+K"
-            className="flex items-center gap-2 rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal lg:px-3"
+            className="flex items-center gap-2 rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal xl:px-3"
           >
             <Icon name="search" className="h-4 w-4" />
-            <span className="hidden font-mono text-[11px] uppercase tracking-widest lg:inline">Search</span>
-            <kbd className="hidden rounded border border-line-strong px-1 font-mono text-[10px] lg:inline">Ctrl K</kbd>
+            <span className="hidden font-mono text-[11px] uppercase tracking-widest xl:inline">Search</span>
+            <kbd className="hidden rounded border border-line-strong px-1 font-mono text-[10px] xl:inline">Ctrl K</kbd>
           </button>
           <ThemeToggle />
+          {/* Animations switch: here on tablet and desktop, inside the menu on phones */}
+          <div className="hidden md:block">
+            <MotionToggle />
+          </div>
           <button
             className="relative h-8 w-8 md:hidden"
             onClick={() => setOpen(!open)}
@@ -91,7 +96,7 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-5 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-4 lg:gap-9 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-9 md:border-0 md:bg-transparent md:p-0`}
         >
           {links.map(({ href, label }) => {
             const active = isActive(href);
@@ -120,6 +125,9 @@ export default function Navbar() {
               <Icon name="download" className="h-3.5 w-3.5" />
               CV
             </a>
+          </li>
+          <li className="border-t border-line pt-5 md:hidden">
+            <MotionToggle variant="switch" />
           </li>
         </ul>
       </nav>
