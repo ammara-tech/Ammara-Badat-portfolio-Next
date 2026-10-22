@@ -68,6 +68,8 @@ export const viewport: Viewport = {
   // Tells phone browsers (e.g. Samsung Internet's dark mode) that the site has its own
   // dark and light themes, so they don't recolour it themselves
   colorScheme: "dark light",
+  // Lets the phone navigation bar sit above the iPhone home bar (env(safe-area-inset-bottom))
+  viewportFit: "cover",
 };
 
 /*
@@ -115,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     // suppressHydrationWarning: the theme script below may add data-theme="light" before React loads
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrains.variable} ${titillium.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrains.variable} ${titillium.variable} overflow-x-clip`}>
       <head>
         {/* Applies the saved light/dark choice before the page paints (no flash) */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
@@ -124,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
       </head>
-      <body className="min-h-screen overflow-x-clip bg-ink pb-[calc(4.25rem+env(safe-area-inset-bottom))] font-sans text-snow antialiased md:pb-0">
+      <body className="min-h-screen overflow-x-clip bg-ink pb-[calc(4rem+env(safe-area-inset-bottom))] font-sans text-snow antialiased md:pb-0">
         {/* Keyboard users can jump straight past the navbar */}
         <a
           href="#main"

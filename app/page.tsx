@@ -94,7 +94,7 @@ export default function Home() {
         <div className="fx-rise relative" style={{ animationDelay: "300ms" }}>
           <div
             aria-hidden="true"
-            className="fx-glow absolute -inset-6 -z-10 rounded-[2rem] bg-linear-to-br from-racing/30 via-transparent to-teal/25 blur-3xl"
+            className="fx-glow absolute -inset-y-6 inset-x-0 -z-10 rounded-[2rem] lg:-inset-6 bg-linear-to-br from-racing/30 via-transparent to-teal/25 blur-3xl"
           />
           <Terminal />
         </div>

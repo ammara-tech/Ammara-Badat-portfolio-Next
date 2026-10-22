@@ -28,6 +28,61 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "phone-navigation-bar",
+    title: "Building a phone navigation bar that actually stays put",
+    description:
+      "I added an app-style bar to the bottom of my site on phones. It kept moving, and the real cause was an 8-pixel glow I couldn't even see.",
+    date: "2026-10-22",
+    tags: ["Mobile", "CSS", "Debugging"],
+    body: [
+      {
+        type: "p",
+        text: "On phones, my site now has a bar fixed to the bottom of the screen with Home, Projects, Search, Notes and Contact, like an app. Your thumb can reach it, so you never have to scroll back up to the menu. My first version had three problems.",
+      },
+      { type: "h2", text: "1. Hiding it while scrolling felt broken" },
+      {
+        type: "p",
+        text: "I first made the bar slide away when you scroll down and come back when you scroll up, which a lot of apps do. On my phone it just felt unreliable: the bar kept disappearing exactly when I wanted to tap it. Now it never moves. A navigation bar you can always find is better than a clever one.",
+      },
+      { type: "h2", text: "2. The blur made scrolling stutter" },
+      {
+        type: "p",
+        text: "The bar had a see-through, blurred background. It looks nice, but the phone has to redraw that blur on every frame while you scroll, which made the page judder. A solid background with a soft shadow above it looks almost the same and scrolls smoothly.",
+      },
+      { type: "h2", text: "3. The real bug: something was 8 pixels too wide" },
+      {
+        type: "p",
+        text: "On the Home page only, the bar sat partly below the bottom of the screen and the page could wobble sideways. I measured the page with JavaScript and found it was 398 pixels wide on a 390-pixel phone. The culprit was the soft red and teal glow behind my terminal card. It was set to spread 24 pixels past the card on every side, so on a narrow screen it poked out past the edge.",
+      },
+      {
+        type: "p",
+        text: "You can't see the glow's edge, but the phone's browser can. When anything is wider than the screen, it makes the whole page wider to fit it, and \"fixed to the bottom of the screen\" then means the bottom of that wider, slightly zoomed page. Two fixes:",
+      },
+      {
+        type: "code",
+        lang: "html",
+        code: `<!-- The glow only spreads sideways on large screens -->
+<div class="fx-glow absolute -inset-y-6 inset-x-0 lg:-inset-6 ..."></div>
+
+<!-- And the page can never be wider than the screen -->
+<html class="overflow-x-clip">`,
+      },
+      { type: "h2", text: "How I checked it" },
+      {
+        type: "ul",
+        items: [
+          "I scrolled through five pages on three phone sizes (360, 390 and 430 pixels wide) and recorded where the bar's bottom edge was on every step. It was always exactly at the bottom of the screen.",
+          "I scrolled to the very end of each page to check the footer isn't hidden behind the bar. The page has extra space at the bottom on phones so nothing gets covered.",
+          "I compared screenshots of my desktop pages before and after. They're identical, because the bar only exists below tablet size.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: if something fixed to the screen won't stay put on a phone, look for anything wider than the screen, even something invisible like a glow or a shadow.",
+      },
+    ],
+  },
+  {
     slug: "testing-on-a-real-phone",
     title: "What I learned when I tested my portfolio on my own phone",
     description:
