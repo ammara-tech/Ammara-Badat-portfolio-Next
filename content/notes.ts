@@ -28,6 +28,78 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "testing-on-a-real-phone",
+    title: "What I learned when I tested my portfolio on my own phone",
+    description:
+      "My site looked perfect on my laptop. On my phone, the tech strip froze, cards left blank gaps and the screenshots were slow. Here's what was really going on.",
+    date: "2026-10-22",
+    tags: ["Mobile", "CSS", "Accessibility"],
+    body: [
+      {
+        type: "p",
+        text: "I had checked my portfolio at phone sizes in the browser's developer tools, and everything passed. Then I opened it on my actual phone and found five problems straight away. Testing on a real device showed me things a desktop browser pretending to be a phone did not.",
+      },
+      { type: "h2", text: "1. The tech strip froze when I tapped it" },
+      {
+        type: "p",
+        text: "My \"Tech I work with\" strip scrolls sideways and pauses when you hover over it with a mouse. Phones don't have hover, so they treat a tap as a hover, and the hover never ends. One tap and the strip stopped for good. The fix was to only pause on hover on devices that actually have a mouse:",
+      },
+      {
+        type: "code",
+        lang: "css",
+        code: `@media (hover: hover) {
+  .fx-marquee-wrap:hover .fx-marquee {
+    animation-play-state: paused;
+  }
+}`,
+      },
+      { type: "h2", text: "2. My phone was asking for less motion" },
+      {
+        type: "p",
+        text: "Even after that, most of my animations still didn't play on my phone. The reason surprised me: my phone's power saving mode tells websites \"reduce motion\" (a setting for people who feel dizzy or distracted by movement), and my site was already respecting it by switching animations off. So the site was doing the right thing. The problem was what it looked like afterwards: the strip stopped half-way, with tech names cut off at the edge of the screen.",
+      },
+      {
+        type: "p",
+        text: "Now, when a device asks for less motion, the strip turns into a neat wrapped list that shows every technology. People who want a calm site still see everything.",
+      },
+      { type: "h2", text: "3. Blank gaps while scrolling" },
+      {
+        type: "p",
+        text: "My cards fade in as they scroll into view, and they only finished fading once they were 22% of the way up the screen. On a laptop that's fine, but a phone screen is short, so the bottom part of the screen often looked empty while I scrolled. On phones and tablets, cards now finish appearing once their top edge is 120 pixels onto the screen:",
+      },
+      {
+        type: "code",
+        lang: "css",
+        code: `@media (max-width: 1023px) {
+  .fx-reveal {
+    animation-range: entry 0px entry 120px;
+  }
+}`,
+      },
+      { type: "h2", text: "4. Light mode looked wrong" },
+      {
+        type: "p",
+        text: "My phone's browser has its own dark mode that recolours websites, so it was fighting my light theme. I added one setting that tells browsers my site already has its own dark and light themes (color-scheme: dark light), so they leave my colours alone.",
+      },
+      { type: "h2", text: "5. Slow screenshots and a missing QR code" },
+      {
+        type: "ul",
+        items: [
+          "Screenshots: I switched the image format Vercel creates from AVIF to WebP, which is much quicker to make the first time, and added a soft shimmer while an image loads so the space never looks broken.",
+          "QR code: I had hidden it on phones because \"you can't scan your own screen\". But it's actually handy on a phone, so someone else can scan it straight off my screen. Now it shows everywhere.",
+        ],
+      },
+      {
+        type: "p",
+        text: "All of these fixes only apply to phones and tablets, or to people who ask for less motion. I compared screenshots of my desktop pages before and after, and they stayed the same.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: developer tools are a good start, but always test on a real phone. Real phones have touch screens, battery-saving settings and their own browser features that change how a site behaves.",
+      },
+    ],
+  },
+  {
     slug: "lighthouse-74-to-96",
     title: "How I took my Lighthouse score from 74 to 96",
     description:
