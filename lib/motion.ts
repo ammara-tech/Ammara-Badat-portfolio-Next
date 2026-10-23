@@ -1,6 +1,6 @@
 /*
   Animations on or off.
-  A visitor can switch animations off with the switch in the footer (or Ctrl+K,
+  A visitor can switch animations off with the switch in the top bar (or Ctrl+K,
   or the terminal's "motion" command). The choice is saved in localStorage and
   applied before the page paints, by the same small script as the theme
   (lib/theme.ts). Devices that ask for reduced motion always get it, whatever the switch says.
