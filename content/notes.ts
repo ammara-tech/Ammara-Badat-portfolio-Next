@@ -114,7 +114,7 @@ jobs:
     body: [
       {
         type: "p",
-        text: "In peer review, my classmate Legion said my site stands out and feels finished, but that it has too much colour and animation for someone who likes a minimal style. That was fair. The animations are part of my style, so I didn't want to delete them, but I also didn't want them to get in anyone's way.",
+        text: "In peer review, my classmate said my site stands out and feels finished, but that it has too much colour and animation for someone who likes a minimal style. That was fair. The animations are part of my style, so I didn't want to delete them, but I also didn't want them to get in anyone's way.",
       },
       { type: "h2", text: "The idea: let the visitor decide" },
       {
