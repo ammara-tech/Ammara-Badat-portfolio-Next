@@ -18,15 +18,15 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 10 certifications |
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
 | Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs and "More projects" |
 | Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
 | Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
-| CV | [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | One-page CV (PDF), linked from the navbar, Home, About and Contact |
-| Admin | `/admin` | Owner-only: sign in, read contact form messages, and add, edit and delete projects (not linked in the navbar) |
+| CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
+| Admin | `/admin` | Owner-only: sign in, read contact form messages, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
 
 ## Wireframes
 - [Home](Docs/wireframe-home.png)
@@ -35,6 +35,68 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 
 ## Tech stack
 Next.js (App Router) · TypeScript · Tailwind CSS · Supabase (Postgres, Auth, Row Level Security) · deployed on Vercel
+
+## Milestones at a glance
+What I built in each milestone, plus the extras I added on top. The details for each part are
+further down this README, and my reflection for each milestone is in the [`Reflections/`](Reflections) folder.
+
+### Milestone 1: Plan, set up and deploy
+- Chose my audience (South African recruiters and tech leads) and my target role (Junior Full Stack Developer).
+- Drew wireframes for [Home](Docs/wireframe-home.png), [Projects](Docs/wireframe-projects.png) and [Contact](Docs/wireframe-contact.png).
+- Started a Next.js app with TypeScript and Tailwind CSS, split my old one-page portfolio into separate
+  pages (Home, About, Projects, Contact) with a shared navbar, and deployed it to Vercel.
+- Peer review: a classmate said the site stands out but has a lot of colour and animation, which led to
+  the animations switch I added later ([Reflections/Peer review.txt](Reflections/Peer%20review.txt)).
+
+### Milestone 2: Database and security
+- Created the `projects` table in Supabase, and the Projects page now loads from it instead of text in the code.
+- Turned on Row Level Security with four policies: anyone can read, only my account can add, edit or delete.
+- Built an owner-only `/admin` page with sign-in, where I can add, edit and delete projects.
+- Proved a signed-out visitor can't change anything ([see the test](#how-i-proved-a-visitor-cannot-write)).
+
+### Milestone 3: Case study, About and Skills
+- Wrote a case study of my capstone (Family Clinic Platform) with screenshots and a demo video,
+  with my private details blurred.
+- Wrote an About page that explains who I am in about 30 seconds, and added my certifications with an image viewer.
+- Built a Skills page where every skill links to proof (a file, a commit or a live page).
+- Restyled the site to match my first portfolio, and added animations, icons, a 404 page and a share preview.
+
+### Milestone 4: Contact form, CV and accessibility
+- Contact form saved to a `messages` table, with spam protection: a hidden honeypot field, a speed check and a
+  rate limit inside the database ([details](#contact-form-milestone-4)).
+- An inbox on `/admin` that only my account can read.
+- One-page CV download.
+- Checked every page at 360, 390, 768, 1024 and 1440px, with the keyboard, and for WCAG AA contrast
+  ([details](#responsive-and-accessibility-checks-milestone-4)).
+
+### Upgrade pack 2 (between Milestones 4 and 5)
+Interactive terminal, spotlight cards, project filters, a lightbox, screenshot uploads to Supabase Storage,
+an admin overview with a chart, light and dark mode, and a sitemap, robots.txt and structured data
+([details](#upgrade-pack-2-improves-milestones-14)).
+
+### Milestone 5: SEO, Lighthouse and profile links
+- Lighthouse on mobile: **Performance 96, Accessibility 100, Best Practices 100, SEO 100**
+  (Performance started at 74, [here's how I fixed it](#lighthouse-scores-mobile)).
+- Every page has its own title, description, canonical URL and share image.
+- A page for every project, faster images, live GitHub activity, Ctrl+K search, an installable site,
+  Vercel Analytics and Lighthouse CI.
+- GitHub and LinkedIn linked from the site, and my site linked from LinkedIn.
+- **Extras:** verified in Google Search Console, dev notes with an RSS feed, page transitions, a
+  "Save my contact" card with a QR code, and a Lighthouse badge in the footer
+  ([details](#milestone-5-extras)).
+
+### After Milestone 5: what the site has now
+- **Mobile first:** tested on my own phone and fixed the tech marquee, light mode, the animations,
+  slow screenshots and the QR code on phones, without changing the desktop look.
+- **Phone navigation bar** at the bottom (Home, Projects, Search, Notes, Contact) that always stays in place.
+- **Animations switch** in the top bar, so visitors who find the site busy can calm it down.
+- **Drag-and-drop project order** in `/admin`.
+- **Web CV page** at `/cv`, as well as the PDF.
+- **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
+- **43 automated tests** that run on GitHub on every push.
+- **5 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone and the navigation bar).
+- **10 certifications**, the newest being Hour of AI: The First Night from Minecraft Education and Code.org.
+- A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Database
 One table, `projects`, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
@@ -245,7 +307,7 @@ See the **Actions** tab.
 | Extra | What it does |
 |---|---|
 | Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
-| Dev notes + RSS | Three short posts (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
+| Dev notes + RSS | Short posts (five so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
 | Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
 | Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
 | Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
@@ -256,9 +318,9 @@ See the **Actions** tab.
 | Automated tests + CI | 43 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers and the contact card. A GitHub Action runs them on every push. |
 | Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
 | Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
-| Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off in the footer, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
+| Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
 | Web CV (`/cv`) | My CV as a page: easy to read on a phone, readable by Google, and it prints cleanly on white paper. The PDF download stays. |
-| Phone navigation bar | On phones, a bar at the bottom with Home, Projects, Search, Notes and Contact. It hides while you scroll down and comes back when you scroll up. |
+| Phone navigation bar | On phones, a bar at the bottom with Home, Projects, Search, Notes and Contact. It always stays in place at the bottom of the screen. |
 
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
