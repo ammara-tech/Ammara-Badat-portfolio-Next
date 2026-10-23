@@ -18,7 +18,7 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 10 certifications |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
@@ -95,7 +95,7 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
 - **43 automated tests** that run on GitHub on every push.
 - **5 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone and the navigation bar).
-- **10 certifications**, the newest being Hour of AI: The First Night from Minecraft Education and Code.org.
+- **9 certifications** from Certiport, Vercel and Harvard CS50.
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Database
