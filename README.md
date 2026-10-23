@@ -18,7 +18,7 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 10 certifications |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
