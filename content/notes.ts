@@ -28,6 +28,145 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "why-my-portfolio-has-tests",
+    title: "Why my portfolio has 47 automated tests",
+    description:
+      "Tests are small programs that check my code still does what it should. Here's what mine check and how GitHub runs them on every push.",
+    date: "2026-10-23",
+    tags: ["Testing", "Vitest", "GitHub Actions"],
+    body: [
+      {
+        type: "p",
+        text: "Every time I change my site, something else could break without me noticing. Clicking through every page after every change is slow, and I would still miss things. So my portfolio has automated tests: small pieces of code that run my real code with example inputs and check the answers are right.",
+      },
+      { type: "h2", text: "What a test looks like" },
+      {
+        type: "p",
+        text: "I use Vitest, a testing tool that works well with TypeScript. A test describes what should happen in plain words, runs the code, and then \"expects\" a result. This one checks that a project title becomes the right page address:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `it("turns & into 'and'", () => {
+  expect(slugify("Fish & Bones")).toBe("fish-and-bones");
+});`,
+      },
+      {
+        type: "p",
+        text: "If someone (including me) changes slugify and breaks it, this test fails and says exactly which rule stopped working.",
+      },
+      { type: "h2", text: "What my tests check" },
+      {
+        type: "ul",
+        items: [
+          "Page addresses: project titles turn into clean addresses, and a project with a case study links to it.",
+          "Spam protection: a normal message is accepted, while a filled-in hidden field or a form sent in under 3 seconds is treated as a bot. Empty names, bad emails and messages that are too short or too long are rejected.",
+          "Proof for every skill: every skill on my Skills page must link to evidence, so I can't list a skill I can't back up.",
+          "Files really exist: every certificate image, case study screenshot and my CV PDF are where the site links to them, so there are no broken images.",
+          "Dev notes: every note has its own address, a real date and a description short enough for Google.",
+          "SEO and the contact card: pages get a canonical address and share tags, and the \"Save my contact\" file is a valid vCard.",
+          "The reading progress bar on this page: empty at the top, half full halfway, and never more than full.",
+        ],
+      },
+      {
+        type: "p",
+        text: "Some tests run once for every item, like one check per skill, which is how 28 written tests become 47 checks.",
+      },
+      { type: "h2", text: "GitHub runs them for me" },
+      {
+        type: "p",
+        text: "I don't have to remember to run them. A GitHub Action (a small job GitHub runs on its own computers) installs my project and runs npm test every time I push. In the Actions tab on GitHub, a green tick means everything passed and a red cross shows which test failed.",
+      },
+      {
+        type: "code",
+        lang: "yaml",
+        code: `on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test`,
+      },
+      {
+        type: "p",
+        text: "This sits next to my Lighthouse check, another GitHub Action that tests speed, accessibility and SEO after every deploy. Together they mean a mistake shows up in minutes, not when a recruiter finds it.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: a test is a promise written in code. Write one for each rule you never want to break, and let GitHub check it for you.",
+      },
+    ],
+  },
+  {
+    slug: "animations-switch-from-peer-review",
+    title: "Turning peer review into a feature: the animations switch",
+    description:
+      "A classmate said my portfolio had too much colour and animation. Instead of removing them, I let every visitor choose.",
+    date: "2026-10-23",
+    tags: ["Accessibility", "Peer review", "CSS"],
+    body: [
+      {
+        type: "p",
+        text: "In peer review, my classmate Legion said my site stands out and feels finished, but that it has too much colour and animation for someone who likes a minimal style. That was fair. The animations are part of my style, so I didn't want to delete them, but I also didn't want them to get in anyone's way.",
+      },
+      { type: "h2", text: "The idea: let the visitor decide" },
+      {
+        type: "p",
+        text: "I added an animations switch. On a laptop or tablet it is a small round button in the top bar, next to the light and dark mode button. On a phone it is an on/off switch inside the menu. It also works from the Ctrl+K search and from my terminal with the command motion.",
+      },
+      {
+        type: "p",
+        text: "I first put the switch in the footer, but nobody scrolls all the way down to change a setting. People look for settings at the top, next to the theme button, so that is where it lives now.",
+      },
+      { type: "h2", text: "How it remembers your choice" },
+      {
+        type: "p",
+        text: "When you switch animations off, the site saves the word \"reduced\" in localStorage (a small storage space the browser keeps for each website) and adds data-motion=\"reduced\" to the page's <html> tag. On your next visit, a tiny script in the page's <head> reads that choice before anything is drawn, so the animations never flash on and then stop.",
+      },
+      {
+        type: "code",
+        lang: "js",
+        code: `// Runs before the page is drawn (lib/theme.ts)
+if (localStorage.getItem("motion") === "reduced")
+  document.documentElement.dataset.motion = "reduced";`,
+      },
+      { type: "h2", text: "What the calm version looks like" },
+      {
+        type: "p",
+        text: "My CSS already had rules for prefers-reduced-motion, a setting on phones and computers for people who get dizzy or distracted by movement. I copied those same rules for data-motion=\"reduced\", so switching off gives exactly the same calm version:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Every animation and transition finishes instantly.",
+          "The scrolling strip of tech I work with stops and becomes a neat, centred list.",
+          "Cards and sections appear straight away instead of sliding in as you scroll.",
+          "The stripe that sweeps across the top when you change page is hidden.",
+        ],
+      },
+      { type: "h2", text: "When the device has already said no" },
+      {
+        type: "p",
+        text: "If your phone or computer is set to reduce motion, that always wins. The switch shows as off and can't be turned on, and its label explains why: \"Animations are off because your device asks for less motion\". A website shouldn't override an accessibility setting someone chose on purpose.",
+      },
+      {
+        type: "p",
+        text: "The switch also has role=\"switch\" and aria-checked, so a screen reader announces it as an on/off switch and says whether animations are on.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: feedback doesn't always mean removing something. Sometimes the best fix is giving people a choice and making the default respect their settings.",
+      },
+    ],
+  },
+  {
     slug: "phone-navigation-bar",
     title: "Building a phone navigation bar that actually stays put",
     description:

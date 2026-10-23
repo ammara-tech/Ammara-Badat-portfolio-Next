@@ -5,6 +5,7 @@ import { findNote, formatDate, notes, readingMinutes, type Block } from "@/conte
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
+import ReadingProgress from "@/components/ReadingProgress";
 import Icon from "@/components/Icon";
 import { card } from "@/components/ui";
 
@@ -77,6 +78,7 @@ export default async function NotePage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-3xl">
+      <ReadingProgress targetId="note-body" />
       <JsonLd
         data={[
           breadcrumbs([
@@ -142,7 +144,7 @@ export default async function NotePage({ params }: Props) {
         <div aria-hidden="true" className="mt-8 h-1 w-40 rounded-full bg-linear-to-r from-racing to-teal" />
       </header>
 
-      <div className="mt-10 space-y-5 text-lg leading-relaxed text-mist">
+      <div id="note-body" className="mt-10 space-y-5 text-lg leading-relaxed text-mist">
         {note.body.map((block, i) => (
           <Content key={i} block={block} />
         ))}

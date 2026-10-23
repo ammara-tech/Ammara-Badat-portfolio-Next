@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { about } from "@/content/about";
 import ContactForm from "@/components/ContactForm";
+import CopyEmail from "@/components/CopyEmail";
 import Icon, { type IconName } from "@/components/Icon";
 import { Accent, Eyebrow, PageTitle, btnGhost } from "@/components/ui";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
@@ -66,24 +67,42 @@ export default function Contact() {
             {links.map((link) => (
               <li key={link.label}>
                 {link.href ? (
-                  <a
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="group flex items-center gap-4 rounded-xl border border-line bg-panel p-4 transition duration-300 hover:-translate-y-0.5 hover:border-teal hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.5)]"
-                  >
-                    <span className="rounded-lg border border-line-strong p-2.5 text-mist transition group-hover:border-teal/50 group-hover:text-teal">
-                      <Icon name={link.icon} className="h-5 w-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-mono text-xs uppercase tracking-widest text-mist">{link.label}</span>
-                      <span className="mt-0.5 block break-all text-snow">{link.value}</span>
-                    </span>
-                    <Icon
-                      name={link.href.startsWith("http") ? "arrow-up-right" : "arrow-right"}
-                      className="h-4 w-4 text-teal transition-transform group-hover:translate-x-1"
-                    />
-                  </a>
+                  // The wrapper lifts on hover, so the Copy button moves with the email card
+                  <div className="relative transition duration-300 hover:-translate-y-0.5">
+                    <a
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className={`group flex items-center gap-4 rounded-xl border border-line bg-panel p-4 transition duration-300 hover:border-teal hover:shadow-[0_0_40px_-18px_rgb(39_244_210/0.5)] ${
+                        link.label === "Email" ? "pr-16" : ""
+                      }`}
+                    >
+                      <span className="rounded-lg border border-line-strong p-2.5 text-mist transition group-hover:border-teal/50 group-hover:text-teal">
+                        <Icon name={link.icon} className="h-5 w-5" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-mono text-xs uppercase tracking-widest text-mist">{link.label}</span>
+                        <span className="mt-0.5 block break-all text-snow">
+                          {link.label === "Email" ? (
+                            <>
+                              {link.value.split("@")[0]}@<wbr />
+                              {link.value.split("@")[1]}
+                            </>
+                          ) : (
+                            link.value
+                          )}
+                        </span>
+                      </span>
+                      {/* The email card has a Copy button where the arrow would be */}
+                      {link.label !== "Email" && (
+                        <Icon
+                          name={link.href.startsWith("http") ? "arrow-up-right" : "arrow-right"}
+                          className="h-4 w-4 text-teal transition-transform group-hover:translate-x-1"
+                        />
+                      )}
+                    </a>
+                    {link.label === "Email" && <CopyEmail email={email} />}
+                  </div>
                 ) : (
                   <div className="flex items-center gap-4 rounded-xl border border-dashed border-line-strong p-4">
                     <span className="rounded-lg border border-line p-2.5 text-mist">

@@ -84,7 +84,7 @@
     }
   }
 
-  /* The same when a visitor switches animations off with the footer switch */
+  /* The same when a visitor switches animations off with the switch in the top bar */
   html[data-motion="reduced"] {
     scroll-behavior: auto;
   }
@@ -191,6 +191,11 @@
     animation: fx-grow linear both;
     animation-timeline: scroll(root);
   }
+}
+
+/* On a dev note, the reading bar (components/ReadingProgress.tsx) replaces the site-wide scroll bar */
+html:has(.reading-progress) .fx-progress {
+  display: none !important;
 }
 
 /* Sections and cards fade up as they scroll into view */
@@ -389,7 +394,7 @@ html.fx-io .fx-reveal.is-visible {
   }
 }
 
-/* Animations switched off with the footer switch (components/MotionToggle.tsx):
+/* Animations switched off with the switch in the top bar (components/MotionToggle.tsx):
    exactly the same rules as the two blocks above */
 html[data-motion="reduced"] .fx-marquee-wrap {
   mask-image: none;
