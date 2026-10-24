@@ -8,24 +8,13 @@ import { idleState, IDLE_LIMIT_MS, type IdleState } from "@/lib/idle";
   Signs me out of /admin after 30 minutes without activity, in case I leave
   a laptop open. A warning with a countdown shows for the last minute.
 
-  My last activity is also saved in localStorage, so two admin tabs share it:
-  working in one tab keeps the other one signed in too.
+  Each tab has its own sign-in (lib/admin-session.ts), so each tab has its own timer.
 */
 
-const KEY = "admin-last-active";
 export const IDLE_FLAG = "admin-idle-signout"; // tells the sign-in page why I was signed out
-
-function readShared() {
-  try {
-    return Number(localStorage.getItem(KEY)) || 0;
-  } catch {
-    return 0;
-  }
-}
 
 export default function IdleSignOut() {
   const lastActive = useRef(0);
-  const lastSaved = useRef(0);
   const [state, setState] = useState<IdleState>({ kind: "active" });
   const stayButton = useRef<HTMLButtonElement>(null);
 
@@ -33,17 +22,7 @@ export default function IdleSignOut() {
     lastActive.current = Date.now();
 
     const mark = () => {
-      const now = Date.now();
-      lastActive.current = now;
-      // Saving on every mouse move is wasteful, so save at most every 5 seconds
-      if (now - lastSaved.current > 5000) {
-        lastSaved.current = now;
-        try {
-          localStorage.setItem(KEY, String(now));
-        } catch {
-          // private mode: this tab still works on its own
-        }
-      }
+      lastActive.current = Date.now();
     };
     mark();
 
@@ -56,13 +35,12 @@ export default function IdleSignOut() {
       } catch {
         // the sign-in page just won't explain why
       }
-      await getBrowserClient().auth.signOut();
+      await getBrowserClient().auth.signOut({ scope: "local" });
     }
 
     // Check once a second. If the laptop was asleep, the first check after waking signs out.
     const timer = setInterval(() => {
-      const latest = Math.max(lastActive.current, readShared());
-      const next = idleState(Date.now(), latest);
+      const next = idleState(Date.now(), lastActive.current);
       // Only re-draw when something visible changes
       setState((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
       if (next.kind === "expired") {
@@ -111,7 +89,7 @@ export default function IdleSignOut() {
         </button>
         <button
           type="button"
-          onClick={() => getBrowserClient().auth.signOut()}
+          onClick={() => getBrowserClient().auth.signOut({ scope: "local" })}
           className="rounded border border-line-strong px-4 py-2 text-sm"
         >
           Sign out now

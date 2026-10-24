@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserClient, type Project } from "@/lib/supabase";
+import { ADMIN_AUTH_KEY, LEFT_AT_KEY, leftTooLongAgo, tabStorage } from "@/lib/admin-session";
 import Inbox from "@/components/Inbox";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
@@ -47,26 +48,56 @@ const parseTags = (text: string) =>
 const inputClass =
   "w-full rounded border border-line-strong bg-ink px-3 py-2 text-snow focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal";
 
+/*
+  /admin always starts on the sign-in form. The dashboard only appears once Supabase
+  confirms a sign-in made in THIS tab (lib/admin-session.ts). Nothing from the
+  dashboard is in the page's HTML, and its data only loads for my account (RLS).
+*/
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
-  const [checking, setChecking] = useState(true);
+  // Only true while a tab that was already signed in is being refreshed: shows a blank
+  // area for a moment instead of flashing the sign-in form
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     const supabase = getBrowserClient();
+    const storage = tabStorage();
+    const signOutHere = () => supabase.auth.signOut({ scope: "local" });
 
-    supabase.auth.getSession().then(({ data }) => {
+    // Was this tab closed (or left) and brought back later? Then sign out.
+    async function check() {
+      const leftAt = Number(storage.getItem(LEFT_AT_KEY)) || null;
+      storage.removeItem(LEFT_AT_KEY);
+      if (leftTooLongAgo(leftAt, Date.now())) await signOutHere();
+      if (!storage.getItem(ADMIN_AUTH_KEY)) return; // not signed in here: stay on the sign-in form
+      setChecking(true);
+      const { data } = await supabase.auth.getSession();
       setSession(data.session);
       setChecking(false);
-    });
+    }
+    check();
+
+    // Note the time the tab is closed, refreshed or left...
+    const onHide = () => storage.setItem(LEFT_AT_KEY, String(Date.now()));
+    // ...and if the browser brings the page back from its memory much later, sign out
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) check();
+    };
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("pageshow", onShow);
 
     const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
     });
 
-    return () => data.subscription.unsubscribe();
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("pageshow", onShow);
+      data.subscription.unsubscribe();
+    };
   }, []);
 
-  if (checking) return <p className="text-mist">Loading…</p>;
+  if (checking) return <div className="min-h-[50vh]" aria-busy="true" />;
   if (!session) return <SignIn />;
   return <Dashboard email={session.user.email ?? ""} />;
 }

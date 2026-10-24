@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { matchesSearch, replyLink } from "@/lib/inbox";
 import { describe as describeActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
+import { leftTooLongAgo } from "@/lib/admin-session";
 import type { ActivityEntry } from "@/lib/supabase";
 
 // A message like one sent from the Contact page
@@ -86,5 +87,21 @@ describe("admin auto sign-out", () => {
   it("signs out after 30 minutes, even if the laptop was asleep for hours", () => {
     expect(idleState(minutes(30), start)).toEqual({ kind: "expired" });
     expect(idleState(minutes(300), start)).toEqual({ kind: "expired" });
+  });
+});
+
+describe("admin sign-in stays in one tab", () => {
+  const now = 1_000_000;
+
+  it("stays signed in after a normal refresh (about a second)", () => {
+    expect(leftTooLongAgo(now - 1200, now)).toBe(false);
+  });
+
+  it("signs out when a closed tab is reopened later", () => {
+    expect(leftTooLongAgo(now - 60_000, now)).toBe(true);
+  });
+
+  it("does nothing when the tab was never closed", () => {
+    expect(leftTooLongAgo(null, now)).toBe(false);
   });
 });

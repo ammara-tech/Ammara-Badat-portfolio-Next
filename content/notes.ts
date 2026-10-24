@@ -31,7 +31,7 @@ export const notes: Note[] = [
     slug: "drafts-and-activity-log",
     title: "Drafts and an activity log: letting the database keep track",
     description:
-      "My admin page now has drafts that visitors can't see, a live preview, a history of every change and an automatic sign-out.",
+      "My admin page now has drafts visitors can't see, a live preview, a history of every change and a sign-in that ends when the tab closes.",
     date: "2026-10-24",
     tags: ["Supabase", "RLS", "Triggers"],
     body: [
@@ -86,10 +86,26 @@ export const notes: Note[] = [
         type: "p",
         text: "I tested it on a local copy of the database: as a visitor and as another signed-in account, reading the log returned nothing, and adding, changing or deleting entries failed with \"permission denied\". A draft stayed hidden from both, even when they tried to publish it.",
       },
-      { type: "h2", text: "4. Automatic sign-out" },
+      { type: "h2", text: "4. A sign-in that stays in one tab" },
       {
         type: "p",
-        text: "If I leave my laptop open, anyone could use my admin page. Now, after 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes. My last activity is shared between tabs, so working in one admin tab keeps the others signed in too.",
+        text: "Supabase normally saves the sign-in in localStorage, which every tab shares and which survives closing the browser. That meant that if I forgot to press Sign out, anyone who opened /admin on that computer later would land in my dashboard. Now the sign-in is saved in sessionStorage instead, which belongs to one tab and is wiped when the tab or window closes.",
+      },
+      {
+        type: "ul",
+        items: [
+          "/admin always starts on the sign-in form. A new tab, a new window or another person on the same computer gets the sign-in form, while my own tab stays signed in.",
+          "Closing the window signs me out, even if I forget to press Sign out.",
+          "Browsers can bring back a closed tab with its sessionStorage (\"Reopen closed tab\"). So the page notes the time it was closed, and if it opens again more than 10 seconds later, it signs out. A normal refresh takes about a second, so refreshing keeps me signed in.",
+          "After 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes.",
+        ],
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `createClient(url, key, {
+  auth: { storage: window.sessionStorage, storageKey: "portfolio-admin-auth" },
+});`,
       },
       {
         type: "tip",

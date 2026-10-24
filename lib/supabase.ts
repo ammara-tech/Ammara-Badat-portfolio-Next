@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { ADMIN_AUTH_KEY, tabStorage } from "@/lib/admin-session";
 
 // Reads the two settings from Vercel. Throws a clear message if either is missing.
 function getConfig() {
@@ -20,13 +21,23 @@ export function publicClient(): SupabaseClient {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-// Used in the browser (admin page). Remembers who is signed in.
+// Used in the browser (admin page). Remembers who is signed in, but only in this one tab:
+// the sign-in is kept in sessionStorage, so it is gone when the tab or window closes
+// (lib/admin-session.ts explains why).
 let browserClient: SupabaseClient | null = null;
 
 export function getBrowserClient(): SupabaseClient {
   if (!browserClient) {
     const { url, key } = getConfig();
-    browserClient = createClient(url, key);
+    browserClient = createClient(url, key, {
+      auth: { storage: tabStorage(), storageKey: ADMIN_AUTH_KEY, persistSession: true },
+    });
+    // Older versions of my site saved the sign-in in localStorage, shared by every tab. Remove it.
+    try {
+      for (const k of Object.keys(localStorage)) if (/^sb-.+-auth-token$/.test(k)) localStorage.removeItem(k);
+    } catch {
+      // storage blocked: nothing was saved there anyway
+    }
   }
   return browserClient;
 }
