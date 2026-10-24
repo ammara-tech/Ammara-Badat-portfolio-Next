@@ -28,6 +28,76 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "drafts-and-activity-log",
+    title: "Drafts and an activity log: letting the database keep track",
+    description:
+      "My admin page now has drafts that visitors can't see, a live preview, a history of every change and an automatic sign-out.",
+    date: "2026-10-24",
+    tags: ["Supabase", "RLS", "Triggers"],
+    body: [
+      {
+        type: "p",
+        text: "Until now, every project I added in /admin went live on my site straight away, and nothing remembered what I had changed. I wanted to work on a project before showing it, see how it would look first, and have a history of my changes.",
+      },
+      { type: "h2", text: "1. Drafts that are really hidden" },
+      {
+        type: "p",
+        text: "Each project now has a published column and a Live / Draft switch in /admin. The easy way to hide drafts would be to filter them out in my page code, but then anyone calling the Supabase API directly could still read them. So I changed the Row Level Security rule instead:",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `create policy "Anyone can read published projects"
+  on public.projects for select
+  to anon, authenticated
+  using (published or (select auth.uid()) = 'my-user-id'::uuid);`,
+      },
+      {
+        type: "p",
+        text: "Visitors only get published projects. My account gets everything, so drafts still show in /admin with a Draft label. My public pages didn't need any changes at all, because the database now leaves drafts out for them.",
+      },
+      { type: "h2", text: "2. A live preview" },
+      {
+        type: "p",
+        text: "While I fill in the form, a preview underneath shows the real project card from my Projects page, built from what I've typed so far. It's the same component, not a copy, so it can't look different. The preview has the HTML attribute inert, which means its buttons can't be clicked or reached with Tab, so I can't leave the page with unsaved changes by accident.",
+      },
+      { type: "h2", text: "3. An activity log written by the database" },
+      {
+        type: "p",
+        text: "I could have saved a history entry from my admin page after each change, but a history written by the browser can be faked or skipped. Instead, a trigger (code that runs inside the database automatically) writes to an activity_log table whenever a project is added, edited, published, moved to drafts, reordered or deleted. It even works out what changed, like \"Edited MyFlix (summary, tags)\".",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `create trigger projects_activity
+  after insert or update or delete on public.projects
+  for each row execute function public.log_project_activity();`,
+      },
+      {
+        type: "ul",
+        items: [
+          "Only my account can read the log (an RLS select policy).",
+          "There are no insert, update or delete policies, so nobody can add, change or remove entries from a browser, not even me. Only the trigger can write.",
+          "Dragging one project can move several others, so entries made within a few seconds are grouped into one line: \"Changed the project order (3 projects moved)\".",
+          "New entries appear live, using Realtime like my inbox.",
+        ],
+      },
+      {
+        type: "p",
+        text: "I tested it on a local copy of the database: as a visitor and as another signed-in account, reading the log returned nothing, and adding, changing or deleting entries failed with \"permission denied\". A draft stayed hidden from both, even when they tried to publish it.",
+      },
+      { type: "h2", text: "4. Automatic sign-out" },
+      {
+        type: "p",
+        text: "If I leave my laptop open, anyone could use my admin page. Now, after 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes. My last activity is shared between tabs, so working in one admin tab keeps the others signed in too.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: if a rule really matters, like who can see a draft or what goes in a history, let the database enforce it. The page can then focus on looking good.",
+      },
+    ],
+  },
+  {
     slug: "live-admin-inbox",
     title: "Making my admin inbox live with Supabase Realtime",
     description:

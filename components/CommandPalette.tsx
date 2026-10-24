@@ -185,10 +185,11 @@ export default function CommandPalette({ onReady }: { onReady?: () => void }) {
       const { getBrowserClient } = await import("@/lib/supabase");
       const { data } = await getBrowserClient()
         .from("projects")
-        .select("id, title, summary, tags, case_study_url")
+        .select("*")
         .order("sort_order", { ascending: true });
       setProjects(
-        ((data ?? []) as ProjectRow[]).map((p) => ({
+        // When I'm signed in, Supabase also returns my drafts, so leave them out here
+        ((data ?? []) as (ProjectRow & { published?: boolean })[]).filter((p) => p.published !== false).map((p) => ({
           id: `pr-${p.id}`,
           group: "Projects",
           label: p.title,

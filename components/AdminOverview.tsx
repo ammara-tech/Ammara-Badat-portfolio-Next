@@ -53,6 +53,7 @@ export default function AdminOverview({ projects, refreshKey }: { projects: Proj
   const week = days.reduce((n, d) => n + d.count, 0);
   const peak = Math.max(1, ...days.map((d) => d.count));
   const withImage = projects.filter((p) => p.image_url).length;
+  const drafts = projects.filter((p) => p.published === false).length;
   const tagCount = new Set(projects.flatMap((p) => p.tags)).size;
 
   const show = (n: number | undefined) => (n === undefined ? "–" : String(n));
@@ -71,7 +72,7 @@ export default function AdminOverview({ projects, refreshKey }: { projects: Proj
       )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon="cube" label="Projects" value={String(projects.length)} note={`${withImage} with a screenshot · ${tagCount} tags`} />
+        <StatCard icon="cube" label="Projects" value={String(projects.length)} note={`${drafts > 0 ? `${drafts} ${drafts === 1 ? "draft" : "drafts"} · ` : ""}${withImage} with a screenshot · ${tagCount} tags`} />
         <StatCard
           icon="inbox"
           label="Unread messages"

@@ -6,6 +6,8 @@ import Icon from "@/components/Icon";
 
 /*
   The project list on /admin, in the order the Projects page shows them.
+  Each project has a Live / Draft switch: drafts are hidden from visitors by RLS
+  (Supabase/007-drafts-activity-log.sql), but still show here for me.
   Drag a project by its handle (mouse or finger) to a new place, or use the
   ↑ and ↓ buttons (keyboard and screen-reader friendly). The new order is saved
   to Supabase straight away, as each project's sort_order (0, 1, 2, ...).
@@ -53,6 +55,26 @@ export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }
 
     const position = next.findIndex((p) => p.title === movedTitle) + 1;
     setStatus({ type: "ok", text: `Saved. "${movedTitle}" is now number ${position} of ${next.length}.` });
+    onSaved();
+  }
+
+  async function togglePublished(project: Project) {
+    const published = project.published === false; // the new value
+    setStatus({ type: "busy", text: published ? `Publishing "${project.title}"…` : `Moving "${project.title}" to drafts…` });
+    const { data, error } = await getBrowserClient()
+      .from("projects")
+      .update({ published })
+      .eq("id", project.id)
+      .select("id");
+    if (error || !data || data.length === 0) {
+      setStatus({ type: "error", text: error?.message ?? "Nothing was saved. You may not have permission." });
+      return;
+    }
+    setItems((list) => list.map((p) => (p.id === project.id ? { ...p, published } : p)));
+    setStatus({
+      type: "ok",
+      text: published ? `"${project.title}" is live on the Projects page.` : `"${project.title}" is now a draft. Only you can see it.`,
+    });
     onSaved();
   }
 
@@ -128,7 +150,7 @@ export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }
               dragId === project.id ? "relative z-10 border-teal shadow-2xl shadow-black/40" : "border-line"
             }`}
           >
-            <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="flex min-w-0 flex-1 basis-64 items-center gap-3">
               <button
                 type="button"
                 aria-label={`Drag to move ${project.title}`}
@@ -160,12 +182,32 @@ export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }
                 <p className="font-medium">
                   <span className="mr-2 text-mist-dim">{index + 1}.</span>
                   {project.title}
+                  {project.published === false && (
+                    <span className="ml-2 rounded border border-line-strong px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-widest text-mist">
+                      Draft
+                    </span>
+                  )}
                 </p>
                 {project.summary && <p className="mt-1 text-sm text-mist">{project.summary}</p>}
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={project.published !== false}
+                aria-label={`Published on my site: ${project.title}`}
+                onClick={() => togglePublished(project)}
+                className={`flex items-center gap-1.5 rounded border px-2.5 py-1 font-mono text-[11px] uppercase tracking-widest transition ${
+                  project.published !== false
+                    ? "border-teal/50 text-teal hover:bg-teal/10"
+                    : "border-line-strong text-mist hover:border-teal hover:text-teal"
+                }`}
+              >
+                <span aria-hidden="true" className={`h-2 w-2 rounded-full ${project.published !== false ? "bg-teal" : "bg-line-strong"}`} />
+                {project.published !== false ? "Live" : "Draft"}
+              </button>
               <button
                 type="button"
                 onClick={() => move(index, -1)}

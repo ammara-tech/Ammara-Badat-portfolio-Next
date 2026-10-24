@@ -42,6 +42,8 @@ export type Project = {
   case_study_url: string | null;
   tags: string[];
   sort_order: number;
+  /** false = draft: only my account can see it (RLS, Supabase/007-drafts-activity-log.sql) */
+  published: boolean;
   created_at: string;
 };
 
@@ -51,5 +53,15 @@ export type Message = {
   email: string;
   message: string;
   is_read: boolean;
+  created_at: string;
+};
+
+/** One row of the admin activity log, written by a database trigger */
+export type ActivityEntry = {
+  id: number;
+  action: "added" | "edited" | "published" | "unpublished" | "reordered" | "deleted";
+  project_id: string | null;
+  project_title: string;
+  details: string | null;
   created_at: string;
 };

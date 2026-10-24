@@ -111,7 +111,8 @@ export default function ProjectGrid({ projects }: { projects: Project[] }) {
   );
 }
 
-function ProjectCard({ project, first }: { project: Project; first: boolean }) {
+/** One project card. Also used by the live preview on /admin. */
+export function ProjectCard({ project, first }: { project: Project; first: boolean }) {
   const isCapstone = Boolean(project.case_study_url);
   const href = projectHref(project);
 

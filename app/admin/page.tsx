@@ -7,6 +7,9 @@ import Inbox from "@/components/Inbox";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
 import ProjectOrderList from "@/components/ProjectOrderList";
+import ActivityLog from "@/components/ActivityLog";
+import IdleSignOut, { IDLE_FLAG } from "@/components/IdleSignOut";
+import { ProjectCard } from "@/components/ProjectGrid";
 
 type FormState = {
   title: string;
@@ -18,6 +21,7 @@ type FormState = {
   case_study_url: string;
   tags: string;
   sort_order: string;
+  published: boolean;
 };
 
 const emptyForm: FormState = {
@@ -30,7 +34,15 @@ const emptyForm: FormState = {
   case_study_url: "",
   tags: "",
   sort_order: "0",
+  published: true,
 };
+
+/** Splits "JavaScript, HTML, CSS" into a clean list of tags */
+const parseTags = (text: string) =>
+  text
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
 const inputClass =
   "w-full rounded border border-line-strong bg-ink px-3 py-2 text-snow focus:border-teal focus:outline-none focus:ring-1 focus:ring-teal";
@@ -66,6 +78,19 @@ function SignIn() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Explain an automatic sign-out (components/IdleSignOut.tsx)
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(IDLE_FLAG)) {
+        sessionStorage.removeItem(IDLE_FLAG);
+        setTimedOut(true);
+      }
+    } catch {
+      // storage blocked: nothing to show
+    }
+  }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,6 +107,11 @@ function SignIn() {
     <section className="mx-auto max-w-sm">
       <h1 className="font-display text-3xl font-black uppercase">Admin sign in</h1>
       <p className="mt-2 text-mist">This area is for the site owner only.</p>
+      {timedOut && (
+        <p role="status" className="mt-4 rounded border border-teal/40 bg-teal/10 p-3 text-sm text-snow">
+          You were signed out after 30 minutes without activity, to keep the admin page safe.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <label className="block">
@@ -132,6 +162,8 @@ function Dashboard({ email }: { email: string }) {
   const [busy, setBusy] = useState(false);
   // Bumped when messages change, so the overview cards reload
   const [statsKey, setStatsKey] = useState(0);
+  // Bumped when projects change, so the activity log reloads (it is also live)
+  const [activityKey, setActivityKey] = useState(0);
 
   const loadProjects = useCallback(async () => {
     const { data, error } = await supabase
@@ -141,13 +173,14 @@ function Dashboard({ email }: { email: string }) {
 
     if (error) setMessage({ type: "error", text: error.message });
     else setProjects((data ?? []) as Project[]);
+    setActivityKey((k) => k + 1);
   }, [supabase]);
 
   useEffect(() => {
     loadProjects();
   }, [loadProjects]);
 
-  function updateField(field: keyof FormState, value: string) {
+  function updateField(field: Exclude<keyof FormState, "published">, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
@@ -163,6 +196,7 @@ function Dashboard({ email }: { email: string }) {
       case_study_url: project.case_study_url ?? "",
       tags: project.tags.join(", "),
       sort_order: String(project.sort_order),
+      published: project.published !== false,
     });
     setMessage(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -193,11 +227,9 @@ function Dashboard({ email }: { email: string }) {
       image_url: form.image_url.trim() || null,
       video_url: form.video_url.trim() || null,
       case_study_url: form.case_study_url.trim() || null,
-      tags: form.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      tags: parseTags(form.tags),
       sort_order: Number(form.sort_order) || 0,
+      published: form.published,
     };
 
     const result = editingId
@@ -210,7 +242,10 @@ function Dashboard({ email }: { email: string }) {
       // RLS blocks updates silently, so no rows back means "not allowed"
       setMessage({ type: "error", text: "Nothing was saved. You may not have permission." });
     } else {
-      setMessage({ type: "ok", text: editingId ? "Project updated." : "Project added." });
+      setMessage({
+        type: "ok",
+        text: `${editingId ? "Project updated" : "Project added"}${form.published ? "." : " as a draft. Only you can see it."}`,
+      });
       setEditingId(null);
       setForm(emptyForm);
       await loadProjects();
@@ -240,8 +275,27 @@ function Dashboard({ email }: { email: string }) {
     await supabase.auth.signOut();
   }
 
+  // What the card will look like on the Projects page, built from the form as I type
+  const preview: Project = {
+    id: editingId ?? "preview",
+    title: form.title.trim() || "Project title",
+    summary: form.summary.trim() || null,
+    live_url: form.live_url.trim() || null,
+    repo_url: form.repo_url.trim() || null,
+    image_url: form.image_url.trim() || null,
+    video_url: form.video_url.trim() || null,
+    case_study_url: form.case_study_url.trim() || null,
+    tags: parseTags(form.tags),
+    sort_order: Number(form.sort_order) || 0,
+    published: form.published,
+    created_at: new Date().toISOString(),
+  };
+
   return (
     <section>
+      {/* Signs me out after 30 minutes without activity */}
+      <IdleSignOut />
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-black uppercase">Admin</h1>
@@ -373,6 +427,23 @@ function Dashboard({ email }: { email: string }) {
           </label>
         </div>
 
+        <label className="flex items-start gap-3 rounded-lg border border-line-strong p-3">
+          <input
+            type="checkbox"
+            checked={form.published}
+            onChange={(e) => setForm((current) => ({ ...current, published: e.target.checked }))}
+            className="mt-1 h-4 w-4 accent-teal"
+          />
+          <span>
+            <span className="block text-sm text-snow">Published</span>
+            <span className="block text-sm text-mist">
+              {form.published
+                ? "Visitors can see this project on the Projects page."
+                : "Draft: only you can see it. Visitors can't, even through the API (RLS)."}
+            </span>
+          </span>
+        </label>
+
         <div className="flex gap-3">
           <button
             type="submit"
@@ -389,9 +460,29 @@ function Dashboard({ email }: { email: string }) {
         </div>
       </form>
 
+      {/* Live preview: the real project card, built from the form above. "inert" stops its links
+          from being clicked or focused, so I can't leave the page by accident. */}
+      <section aria-labelledby="preview-title" className="mt-8">
+        <h2 id="preview-title" className="flex flex-wrap items-center gap-3 text-xl font-semibold">
+          Live preview
+          {!form.published && (
+            <span className="rounded border border-line-strong px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-mist">
+              Draft
+            </span>
+          )}
+        </h2>
+        <p className="mt-1 text-sm text-mist">How this project will look on the Projects page. It updates as you type.</p>
+        <div inert className="mt-4 grid gap-6 md:grid-cols-2">
+          <ProjectCard project={preview} first={false} />
+        </div>
+      </section>
+
       {/* Project list: drag to reorder (components/ProjectOrderList.tsx) */}
       <h2 className="mt-10 text-xl font-semibold">Projects ({projects.length})</h2>
       <ProjectOrderList projects={projects} onEdit={startEdit} onDelete={handleDelete} onSaved={loadProjects} />
+
+      {/* Every change to a project, written by a database trigger (components/ActivityLog.tsx) */}
+      <ActivityLog refreshKey={activityKey} />
     </section>
   );
 }
