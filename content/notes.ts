@@ -28,10 +28,68 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "sign-in-that-ends-when-the-tab-closes",
+    title: "A sign-in that ends when I close the tab",
+    description:
+      "If I forgot to sign out of my admin page, anyone using that computer could open it. Now the sign-in lives in one tab and ends when it closes.",
+    date: "2026-10-24",
+    tags: ["Security", "Supabase", "Browser storage"],
+    body: [
+      {
+        type: "p",
+        text: "I noticed a problem with my /admin page: if I signed in on a computer and forgot to press Sign out, the next person to open /admin on that computer went straight into my dashboard. Opening it in a new tab did the same. That's because of where Supabase keeps the sign-in.",
+      },
+      { type: "h2", text: "localStorage vs sessionStorage" },
+      {
+        type: "p",
+        text: "Browsers have two small storage spaces for each website. localStorage is shared by every tab and stays until it is cleared, even after the browser is closed. sessionStorage belongs to one tab only and is wiped when that tab or window closes. Supabase uses localStorage by default, so the sign-in stayed around. I told it to use sessionStorage instead:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `createClient(url, key, {
+  auth: { storage: window.sessionStorage, storageKey: "portfolio-admin-auth" },
+});`,
+      },
+      { type: "h2", text: "What happens now" },
+      {
+        type: "ul",
+        items: [
+          "/admin always opens on the sign-in form. Nothing from the dashboard is in the page until Supabase confirms a sign-in made in this tab.",
+          "A new tab, a new window or another person on the same computer gets the sign-in form, while my own tab stays signed in.",
+          "Closing the window signs me out, even if I forget to press Sign out.",
+          "Refreshing keeps me signed in, because sessionStorage survives a refresh.",
+        ],
+      },
+      { type: "h2", text: "The sneaky case: reopening a closed tab" },
+      {
+        type: "p",
+        text: "While testing, I learned that browsers can bring a closed tab back together with its sessionStorage, with Ctrl+Shift+T or when Chrome restores tabs after a restart. So the page writes down the time whenever it is closed or left (the pagehide event). When it opens again, it compares: a refresh comes back within about a second, but a reopened tab comes back much later. More than 10 seconds means sign out.",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `window.addEventListener("pagehide", () =>
+  sessionStorage.setItem("portfolio-admin-left-at", String(Date.now())));
+
+// when the page opens again
+if (Date.now() - leftAt > 10_000) await supabase.auth.signOut({ scope: "local" });`,
+      },
+      {
+        type: "p",
+        text: "I also delete the old sign-in that earlier versions saved in localStorage, so nothing is left behind. I tested every case in a browser: a fresh visit, signing in, refreshing, a second tab, reopening a closed tab and starting a new browser. Only my own open tab ever showed the dashboard.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: where you store a sign-in decides how long it lasts. For a private admin page, shorter is safer.",
+      },
+    ],
+  },
+  {
     slug: "drafts-and-activity-log",
     title: "Drafts and an activity log: letting the database keep track",
     description:
-      "My admin page now has drafts visitors can't see, a live preview, a history of every change and a sign-in that ends when the tab closes.",
+      "My admin page now has drafts that visitors can't see, a live preview, a history of every change and an automatic sign-out.",
     date: "2026-10-24",
     tags: ["Supabase", "RLS", "Triggers"],
     body: [
@@ -86,26 +144,10 @@ export const notes: Note[] = [
         type: "p",
         text: "I tested it on a local copy of the database: as a visitor and as another signed-in account, reading the log returned nothing, and adding, changing or deleting entries failed with \"permission denied\". A draft stayed hidden from both, even when they tried to publish it.",
       },
-      { type: "h2", text: "4. A sign-in that stays in one tab" },
+      { type: "h2", text: "4. Automatic sign-out" },
       {
         type: "p",
-        text: "Supabase normally saves the sign-in in localStorage, which every tab shares and which survives closing the browser. That meant that if I forgot to press Sign out, anyone who opened /admin on that computer later would land in my dashboard. Now the sign-in is saved in sessionStorage instead, which belongs to one tab and is wiped when the tab or window closes.",
-      },
-      {
-        type: "ul",
-        items: [
-          "/admin always starts on the sign-in form. A new tab, a new window or another person on the same computer gets the sign-in form, while my own tab stays signed in.",
-          "Closing the window signs me out, even if I forget to press Sign out.",
-          "Browsers can bring back a closed tab with its sessionStorage (\"Reopen closed tab\"). So the page notes the time it was closed, and if it opens again more than 10 seconds later, it signs out. A normal refresh takes about a second, so refreshing keeps me signed in.",
-          "After 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes.",
-        ],
-      },
-      {
-        type: "code",
-        lang: "ts",
-        code: `createClient(url, key, {
-  auth: { storage: window.sessionStorage, storageKey: "portfolio-admin-auth" },
-});`,
+        text: "If I leave my laptop open, anyone could use my admin page. Now, after 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes.",
       },
       {
         type: "tip",
