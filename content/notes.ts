@@ -28,6 +28,59 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "from-47-to-65-tests",
+    title: "From 47 to 65 tests: what changed and why",
+    description:
+      "A day after writing about my 47 automated tests, I had 65. Every new feature on my admin page came with tests of its own. Here's the breakdown.",
+    date: "2026-10-24",
+    tags: ["Testing", "Vitest", "Admin"],
+    body: [
+      {
+        type: "p",
+        text: "Yesterday I wrote a note called \"Why my portfolio has 47 automated tests\". It was true when I wrote it, but the number has already moved: npm test now runs 65 checks. That isn't a mistake. The number grew because I followed my own rule: every new feature gets tests for the logic that must not break.",
+      },
+      { type: "h2", text: "Where the 18 new checks came from" },
+      {
+        type: "p",
+        text: "All of them are in one new file, tests/admin.test.ts, because they all test my admin page:",
+      },
+      {
+        type: "ul",
+        items: [
+          "47 → 52, live inbox (5 checks): searching by name, email or text in any capitals, an empty search showing everything, non-matches being hidden, and the Reply link using the right address, subject, first name and quoted message.",
+          "52 → 58, activity log and auto sign-out (6 checks): each change described in plain words, reorders from one drag grouped into one line, \"5 min ago\" style times, and the sign-out timer staying quiet, warning in the last minute and signing out after 30 minutes, even after the laptop was asleep.",
+          "58 → 61, one-tab sign-in (3 checks): a normal refresh keeps me signed in, a closed tab reopened later signs out, and a tab that was never closed is left alone.",
+          "61 → 65, two-step sign-in (4 checks): the code screen after the password, the set-up screen when no app is connected, the dashboard only after both steps, and pasted codes with spaces cleaned up.",
+        ],
+      },
+      { type: "h2", text: "Tests I wrote vs checks that run" },
+      {
+        type: "p",
+        text: "In my last note, 28 written tests became 47 checks, because one test runs once for every skill on my Skills page. Now there are 46 written tests (28 + 18) and still one check per skill, so 65 checks run.",
+      },
+      { type: "h2", text: "Making the admin code testable" },
+      {
+        type: "p",
+        text: "Most of the new admin code talks to Supabase or the browser, which is hard to test. So I moved the decisions into small functions in lib/ that only take values in and give an answer back. For example, nextStep() in lib/two-step.ts decides what to show after the password, and idleState() in lib/idle.ts decides whether to warn or sign out. The components call these functions, and the tests check them directly.",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `it("only shows the dashboard after both steps", () => {
+  expect(nextStep({ currentLevel: "aal2", nextLevel: "aal2" })).toBe("dashboard");
+});`,
+      },
+      {
+        type: "p",
+        text: "The database rules (RLS, the activity log trigger and the two-step aal2 rule) aren't in these 65, because they run inside Supabase, not in my code. I tested those separately on a local copy of the database as a visitor, as another account and as me, and wrote the results in each feature's note.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: a number in a blog post is only true on the day it was written. What matters is that it keeps going up with every feature.",
+      },
+    ],
+  },
+  {
     slug: "two-step-sign-in",
     title: "Two-step sign-in: a password isn't enough any more",
     description:
