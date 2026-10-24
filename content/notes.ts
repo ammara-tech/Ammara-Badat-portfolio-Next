@@ -28,6 +28,70 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "two-step-sign-in",
+    title: "Two-step sign-in: a password isn't enough any more",
+    description:
+      "My admin page now needs a 6-digit code from an authenticator app on my phone, and the database itself refuses owner access without it.",
+    date: "2026-10-24",
+    tags: ["Security", "Supabase", "MFA"],
+    body: [
+      {
+        type: "p",
+        text: "My /admin page was protected by an email and password. If someone guessed or stole the password, they could read my messages and change my projects. Two-step sign-in (also called MFA, multi-factor authentication) fixes that: after the password, you also need a code that only my phone can make.",
+      },
+      { type: "h2", text: "Why an authenticator app and not email codes" },
+      {
+        type: "p",
+        text: "Supabase can send sign-in codes by email, but I wanted something that doesn't depend on an inbox. An authenticator app (I use Microsoft Authenticator) makes a new 6-digit code every 30 seconds from a secret that is only on my phone. This is called TOTP, a time-based one-time password. It works offline, and Supabase supports it for free.",
+      },
+      { type: "h2", text: "How signing in works now" },
+      {
+        type: "ul",
+        items: [
+          "Step 1: email and password, as before.",
+          "Step 2: the 6-digit code from the app. Only then does the dashboard appear.",
+          "The first time, the page shows a QR code instead. I scanned it with the app (Other account) and typed in the first code to prove it worked. After that, it only ever asks for the code.",
+          "There's no way to skip it: without an app set up, the page goes straight to the set-up screen.",
+        ],
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `const { data } = await supabase.auth.mfa.enroll({ factorType: "totp" }); // QR code to scan
+await supabase.auth.mfa.challengeAndVerify({ factorId, code });             // check a code`,
+      },
+      { type: "h2", text: "The part that really protects the data" },
+      {
+        type: "p",
+        text: "Hiding the dashboard behind a code screen isn't enough on its own, because someone with my password could skip my page and call the Supabase API directly. So I changed the database rules too. Supabase puts an \"assurance level\" in every login token: aal1 means password only, aal2 means password plus code. All my owner rules now go through one function that checks both my user ID and aal2:",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `create function public.is_owner() returns boolean as $$
+  select auth.uid() = 'my-user-id'::uuid
+     and (auth.jwt() ->> 'aal') = 'aal2';
+$$;
+
+create policy "Owner can read messages"
+  on public.messages for select to authenticated
+  using ((select public.is_owner()));`,
+      },
+      {
+        type: "p",
+        text: "I tested it on a local copy of the database. Signed in as me with only a password (aal1), I couldn't read messages, drafts or the activity log, adding a project or uploading an image failed with \"violates row-level security policy\", and editing or deleting changed nothing. With the code (aal2), everything worked. Visitors can still send messages from the Contact page.",
+      },
+      {
+        type: "p",
+        text: "One small bug I found while testing: pasting a code like \"123 456\" only kept 5 digits, because the box had a 6-character limit and counted the space. Now the page removes spaces first.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: two-step sign-in only counts if the database checks it too. A code screen stops people using my page; the aal2 rule stops them using my data.",
+      },
+    ],
+  },
+  {
     slug: "sign-in-that-ends-when-the-tab-closes",
     title: "A sign-in that ends when I close the tab",
     description:

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getBrowserClient, type Project } from "@/lib/supabase";
 import { ADMIN_AUTH_KEY, LEFT_AT_KEY, leftTooLongAgo, tabStorage } from "@/lib/admin-session";
+import { nextStep } from "@/lib/two-step";
+import { TwoStepCode, TwoStepSetup } from "@/components/TwoStep";
 import Inbox from "@/components/Inbox";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
@@ -50,11 +52,14 @@ const inputClass =
 
 /*
   /admin always starts on the sign-in form. The dashboard only appears once Supabase
-  confirms a sign-in made in THIS tab (lib/admin-session.ts). Nothing from the
-  dashboard is in the page's HTML, and its data only loads for my account (RLS).
+  confirms a sign-in made in THIS tab (lib/admin-session.ts) AND the two-step code
+  from my authenticator app has been entered (components/TwoStep.tsx). Nothing from
+  the dashboard is in the page's HTML, and its data only loads for my account (RLS).
 */
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
+  // After the password: ask for the authenticator code, set the app up, or show the dashboard
+  const [step, setStep] = useState<"code" | "setup" | "dashboard" | null>(null);
   // Only true while a tab that was already signed in is being refreshed: shows a blank
   // area for a moment instead of flashing the sign-in form
   const [checking, setChecking] = useState(false);
@@ -64,16 +69,38 @@ export default function AdminPage() {
     const storage = tabStorage();
     const signOutHere = () => supabase.auth.signOut({ scope: "local" });
 
+    // Sign-in events are ignored until the checks below are done, so a reopened tab
+    // can never show the dashboard, not even for a moment
+    let ready = false;
+
     // Was this tab closed (or left) and brought back later? Then sign out.
     async function check() {
+      ready = false;
       const leftAt = Number(storage.getItem(LEFT_AT_KEY)) || null;
       storage.removeItem(LEFT_AT_KEY);
       if (leftTooLongAgo(leftAt, Date.now())) await signOutHere();
-      if (!storage.getItem(ADMIN_AUTH_KEY)) return; // not signed in here: stay on the sign-in form
+      if (!storage.getItem(ADMIN_AUTH_KEY)) {
+        await decide(null); // not signed in here: the sign-in form
+        ready = true;
+        return;
+      }
       setChecking(true);
       const { data } = await supabase.auth.getSession();
-      setSession(data.session);
+      await decide(data.session);
       setChecking(false);
+      ready = true;
+    }
+
+    // Works out which step comes next for this sign-in
+    async function decide(newSession: Session | null) {
+      if (!newSession) {
+        setSession(null);
+        setStep(null);
+        return;
+      }
+      const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      setStep(nextStep({ currentLevel: data?.currentLevel ?? null, nextLevel: data?.nextLevel ?? null }));
+      setSession(newSession);
     }
     check();
 
@@ -86,8 +113,10 @@ export default function AdminPage() {
     window.addEventListener("pagehide", onHide);
     window.addEventListener("pageshow", onShow);
 
+    // Signing in, entering the code and signing out all come through here.
+    // setTimeout: Supabase asks for other Supabase calls to wait until this callback has finished.
     const { data } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
+      if (ready) setTimeout(() => decide(newSession), 0);
     });
 
     return () => {
@@ -98,7 +127,9 @@ export default function AdminPage() {
   }, []);
 
   if (checking) return <div className="min-h-[50vh]" aria-busy="true" />;
-  if (!session) return <SignIn />;
+  if (!session || !step) return <SignIn />;
+  if (step === "code") return <TwoStepCode />;
+  if (step === "setup") return <TwoStepSetup />;
   return <Dashboard email={session.user.email ?? ""} />;
 }
 

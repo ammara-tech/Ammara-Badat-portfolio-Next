@@ -26,7 +26,7 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
 | Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
 | CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
-| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), drafts, a live preview, an activity log, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
+| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
 
 ## Wireframes
 - [Home](Docs/wireframe-home.png)
@@ -93,8 +93,8 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - **Drag-and-drop project order** in `/admin`.
 - **Web CV page** at `/cv`, as well as the PDF.
 - **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
-- **61 automated tests** that run on GitHub on every push.
-- **10 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, and a sign-in that ends when the tab closes).
+- **65 automated tests** that run on GitHub on every push.
+- **11 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, and two-step sign-in).
 - **Reading progress bar** on dev notes and a **Copy email** button on Contact.
 - **9 certifications** from Certiport, Vercel and Harvard CS50.
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
@@ -141,6 +141,9 @@ RLS is enabled on `projects` with four policies:
 
 Screenshot: [Policies in Supabase](Docs/rls-policies.png) (taken before drafts were added, when the read
 policy was "Anyone can read projects")
+
+Since `008-two-step-sign-in.sql`, "my user ID" in these rules means `public.is_owner()`: my user ID **and**
+a two-step sign-in (`aal2`). A sign-in with only the password gets nothing.
 
 `activity_log` has RLS too: only my account can `select`, and there are no insert, update or delete
 policies, so only the database trigger can write to it.
@@ -315,7 +318,7 @@ See the **Actions** tab.
 | Extra | What it does |
 |---|---|
 | Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
-| Dev notes + RSS | Short posts (ten so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
+| Dev notes + RSS | Short posts (eleven so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
 | Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
 | Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
 | Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
@@ -323,7 +326,7 @@ See the **Actions** tab.
 ### More features (after Milestone 5)
 | Feature | What it does |
 |---|---|
-| Automated tests + CI | 61 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer and the one-tab sign-in. A GitHub Action runs them on every push. |
+| Automated tests + CI | 65 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in and the two-step sign-in steps. A GitHub Action runs them on every push. |
 | Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
 | Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
 | Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
@@ -335,6 +338,7 @@ See the **Actions** tab.
 | Drafts | A Live / Draft switch on every project in `/admin`. A new RLS policy lets visitors read only published projects, while my account reads them all, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
 | Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
 | Activity log | A database trigger records every project added, edited, published, moved to drafts, reordered or deleted, shown as a live timeline in `/admin`. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`). |
+| Two-step sign-in | After the password, `/admin` asks for a 6-digit code from an authenticator app (TOTP, set up once with a QR code). Every owner RLS policy now uses `public.is_owner()`, which needs my user ID **and** an `aal2` login token, so a guessed password alone can't read or change anything, even through the API (`components/TwoStep.tsx`, `Supabase/008-two-step-sign-in.sql`). |
 | One-tab sign-in | The admin sign-in is kept in `sessionStorage`, not `localStorage`, so it belongs to one tab: `/admin` always opens on the sign-in form, a new tab, window or person gets the sign-in form, and closing the window signs me out. A closed tab reopened more than 10 seconds later is signed out too (`lib/admin-session.ts`). |
 | Auto sign-out | After 30 minutes without activity, `/admin` signs me out, with a 60-second "Still there?" warning first (`components/IdleSignOut.tsx`). |
 
@@ -373,6 +377,7 @@ free [Vercel](https://vercel.com) account.
 | 4 | `005-project-images-storage.sql` | `project-images` Storage bucket and owner-only upload policies |
 | 5 | `006-realtime-inbox.sql` | Turns on Realtime for `messages`, for the live admin inbox |
 | 6 | `007-drafts-activity-log.sql` | `published` column and "Anyone can read published projects" policy, the owner-only `activity_log` table and its trigger |
+| 7 | `008-two-step-sign-in.sql` | `is_owner()` (my user ID + two-step sign-in) used by every owner policy. Set up your authenticator app in `/admin` **before** running it |
 
 6. Copy the **Project URL** and the **anon / publishable key** from Project Settings → API.
 

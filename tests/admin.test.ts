@@ -3,6 +3,7 @@ import { matchesSearch, replyLink } from "@/lib/inbox";
 import { describe as describeActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
+import { cleanCode, nextStep } from "@/lib/two-step";
 import type { ActivityEntry } from "@/lib/supabase";
 
 // A message like one sent from the Contact page
@@ -103,5 +104,24 @@ describe("admin sign-in stays in one tab", () => {
 
   it("does nothing when the tab was never closed", () => {
     expect(leftTooLongAgo(null, now)).toBe(false);
+  });
+});
+
+describe("admin two-step sign-in", () => {
+  it("asks for the authenticator code after the password", () => {
+    expect(nextStep({ currentLevel: "aal1", nextLevel: "aal2" })).toBe("code");
+  });
+
+  it("makes me set up an authenticator app if there isn't one yet", () => {
+    expect(nextStep({ currentLevel: "aal1", nextLevel: "aal1" })).toBe("setup");
+  });
+
+  it("only shows the dashboard after both steps", () => {
+    expect(nextStep({ currentLevel: "aal2", nextLevel: "aal2" })).toBe("dashboard");
+  });
+
+  it("accepts a pasted code with spaces, and never more than 6 digits", () => {
+    expect(cleanCode("123 456")).toBe("123456");
+    expect(cleanCode("12a34567")).toBe("123456");
   });
 });
