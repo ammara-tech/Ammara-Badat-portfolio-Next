@@ -282,6 +282,15 @@ html.theme-vt::view-transition-new(root) {
 }
 
 /* Page transitions (app/template.tsx) */
+/* The "Live" dot on the admin inbox gently pulses */
+@keyframes fx-live {
+  50% { opacity: 0.35; }
+}
+
+.fx-live {
+  animation: fx-live 2s ease-in-out infinite;
+}
+
 @keyframes fx-page {
   from { transform: translateY(12px); }
   to { transform: none; }
@@ -367,6 +376,7 @@ html.fx-io .fx-reveal.is-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .fx-live,
   .fx-shimmer,
   .fx-page,
   .fx-sweep,
@@ -410,7 +420,7 @@ html[data-motion="reduced"] .fx-marquee > [aria-hidden="true"] {
   display: none;
 }
 
-html[data-motion="reduced"] :is(.fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-progress, .fx-reveal) {
+html[data-motion="reduced"] :is(.fx-live, .fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-progress, .fx-reveal) {
   animation: none !important;
 }
 

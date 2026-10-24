@@ -28,6 +28,69 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "live-admin-inbox",
+    title: "Making my admin inbox live with Supabase Realtime",
+    description:
+      "New contact messages now pop into my admin page the moment they're sent, without refreshing, and only my account receives them.",
+    date: "2026-10-24",
+    tags: ["Supabase", "Realtime", "Admin"],
+    body: [
+      {
+        type: "p",
+        text: "My contact form saves messages to Supabase, and my private /admin page has an inbox to read them. It worked, but I had to press Refresh to see anything new. A real inbox should tell you when something arrives, so I made it live.",
+      },
+      { type: "h2", text: "Supabase Realtime" },
+      {
+        type: "p",
+        text: "Supabase Realtime keeps a connection open between my admin page and the database. When a row is added, changed or deleted in the messages table, the database pushes that change to the page straight away. I only had to switch it on for my table, once, in the SQL Editor:",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `alter publication supabase_realtime add table public.messages;`,
+      },
+      {
+        type: "p",
+        text: "Then the inbox listens for changes. A new message is added to the top of the list and a small pop-up says \"New message from Thabo\". A small \"Live\" dot next to the title shows the connection is working.",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `supabase
+  .channel("admin-inbox")
+  .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (payload) => {
+    if (payload.eventType === "INSERT") {
+      // add it to the top of the inbox and show the pop-up
+    }
+  })
+  .subscribe();`,
+      },
+      { type: "h2", text: "Is that safe?" },
+      {
+        type: "p",
+        text: "This was my first question. If the database pushes messages out, could a visitor listen in? No: Realtime follows the same Row Level Security rules as everything else. A browser is only sent the rows it is allowed to read, and only my account is allowed to read messages. A visitor who subscribes to the same table simply receives nothing.",
+      },
+      { type: "h2", text: "Small things that make it feel like a real inbox" },
+      {
+        type: "ul",
+        items: [
+          "The browser tab shows how many messages are unread, like \"(2) Admin\", so I notice even when I'm in another tab.",
+          "A search box finds messages by name, email or text, and All / Unread / Read buttons filter the list.",
+          "Reply opens my email app with the sender's address, a subject, a greeting with their first name and their message quoted underneath.",
+          "Deleting a message shows \"Message deleted · Undo\" for 5 seconds before it is really deleted, so one wrong tap isn't permanent.",
+        ],
+      },
+      {
+        type: "p",
+        text: "For Undo, the message disappears from the list straight away, but the delete is only sent to Supabase after 5 seconds. Pressing Undo cancels the timer, so nothing was ever deleted. If the delete fails, for example because I'm not allowed, the message comes back and an error explains why.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: a live feature still has to follow the security rules. Realtime with RLS means I didn't have to write any new security code; the rules I already had protect it.",
+      },
+    ],
+  },
+  {
     slug: "why-my-portfolio-has-tests",
     title: "Why my portfolio has 47 automated tests",
     description:

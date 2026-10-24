@@ -26,7 +26,7 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 | Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
 | Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
 | CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
-| Admin | `/admin` | Owner-only: sign in, read contact form messages, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
+| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
 
 ## Wireframes
 - [Home](Docs/wireframe-home.png)
@@ -93,8 +93,8 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - **Drag-and-drop project order** in `/admin`.
 - **Web CV page** at `/cv`, as well as the PDF.
 - **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
-- **47 automated tests** that run on GitHub on every push.
-- **7 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch and automated tests).
+- **52 automated tests** that run on GitHub on every push.
+- **8 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests and the live admin inbox).
 - **Reading progress bar** on dev notes and a **Copy email** button on Contact.
 - **9 certifications** from Certiport, Vercel and Harvard CS50.
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
@@ -308,7 +308,7 @@ See the **Actions** tab.
 | Extra | What it does |
 |---|---|
 | Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
-| Dev notes + RSS | Short posts (seven so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
+| Dev notes + RSS | Short posts (eight so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
 | Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
 | Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
 | Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
@@ -316,7 +316,7 @@ See the **Actions** tab.
 ### More features (after Milestone 5)
 | Feature | What it does |
 |---|---|
-| Automated tests + CI | 47 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card and the reading progress bar. A GitHub Action runs them on every push. |
+| Automated tests + CI | 52 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link. A GitHub Action runs them on every push. |
 | Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
 | Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
 | Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
@@ -324,6 +324,7 @@ See the **Actions** tab.
 | Phone navigation bar | On phones, a bar at the bottom with Home, Projects, Search, Notes and Contact. It always stays in place at the bottom of the screen. |
 | Reading progress | On every dev note, a red-to-teal bar at the top fills as you read, and is full when you reach the last paragraph. It works in every browser, including Safari on iPhones (`components/ReadingProgress.tsx`). |
 | Copy email | A **Copy** button next to my email on the Contact page. One tap copies the address and shows "Copied!", which helps people who use webmail, where email links don't open anything (`components/CopyEmail.tsx`). |
+| Live admin inbox | New contact messages appear in `/admin` straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count, there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
 
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
@@ -358,6 +359,7 @@ free [Vercel](https://vercel.com) account.
 | 2 | `003-screenshots-video-case-study.sql` | Video and case study columns, screenshot paths, capstone first |
 | 3 | `004-messages-contact-form.sql` | `messages` table for the contact form, owner-only reading and the spam rate limit |
 | 4 | `005-project-images-storage.sql` | `project-images` Storage bucket and owner-only upload policies |
+| 5 | `006-realtime-inbox.sql` | Turns on Realtime for `messages`, for the live admin inbox |
 
 6. Copy the **Project URL** and the **anon / publishable key** from Project Settings → API.
 
