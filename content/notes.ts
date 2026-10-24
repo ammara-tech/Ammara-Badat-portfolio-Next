@@ -48,7 +48,7 @@ export const notes: Note[] = [
         type: "ul",
         items: [
           "47 → 52, live inbox (5 checks): searching by name, email or text in any capitals, an empty search showing everything, non-matches being hidden, and the Reply link using the right address, subject, first name and quoted message.",
-          "52 → 58, activity log and auto sign-out (6 checks): each change described in plain words, reorders from one drag grouped into one line, \"5 min ago\" style times, and the sign-out timer staying quiet, warning in the last minute and signing out after 30 minutes, even after the laptop was asleep.",
+          "52 → 58, activity log and auto sign-out (6 checks): each change described in plain words, reorders from one drag grouped into one line, \"5 min ago\" style times, and the sign-out timer staying quiet, warning before the time runs out and signing out when it does, even after the laptop was asleep.",
           "58 → 61, one-tab sign-in (3 checks): a normal refresh keeps me signed in, a closed tab reopened later signs out, and a tab that was never closed is left alone.",
           "61 → 65, two-step sign-in (4 checks): the code screen after the password, the set-up screen when no app is connected, the dashboard only after both steps, and pasted codes with spaces cleaned up.",
         ],
@@ -95,7 +95,7 @@ export const notes: Note[] = [
       { type: "h2", text: "Why an authenticator app and not email codes" },
       {
         type: "p",
-        text: "Supabase can send sign-in codes by email, but I wanted something that doesn't depend on an inbox. An authenticator app (I use Microsoft Authenticator) makes a new 6-digit code every 30 seconds from a secret that is only on my phone. This is called TOTP, a time-based one-time password. It works offline, and Supabase supports it for free.",
+        text: "Supabase can send sign-in codes by email, but I wanted something that doesn't depend on an inbox. An authenticator app on my phone makes a new 6-digit code every 30 seconds from a secret that is only on my phone. This is called TOTP, a time-based one-time password. It works offline, and Supabase supports it for free.",
       },
       { type: "h2", text: "How signing in works now" },
       {
@@ -103,7 +103,7 @@ export const notes: Note[] = [
         items: [
           "Step 1: email and password, as before.",
           "Step 2: the 6-digit code from the app. Only then does the dashboard appear.",
-          "The first time, the page shows a QR code instead. I scanned it with the app (Other account) and typed in the first code to prove it worked. After that, it only ever asks for the code.",
+          "The first time, the page shows a QR code instead. I scanned it with the app and typed in the first code to prove it worked. After that, it only ever asks for the code.",
           "There's no way to skip it: without an app set up, the page goes straight to the set-up screen.",
         ],
       },
@@ -165,7 +165,7 @@ create policy "Owner can read messages"
         type: "code",
         lang: "ts",
         code: `createClient(url, key, {
-  auth: { storage: window.sessionStorage, storageKey: "portfolio-admin-auth" },
+  auth: { storage: window.sessionStorage },
 });`,
       },
       { type: "h2", text: "What happens now" },
@@ -181,16 +181,16 @@ create policy "Owner can read messages"
       { type: "h2", text: "The sneaky case: reopening a closed tab" },
       {
         type: "p",
-        text: "While testing, I learned that browsers can bring a closed tab back together with its sessionStorage, with Ctrl+Shift+T or when Chrome restores tabs after a restart. So the page writes down the time whenever it is closed or left (the pagehide event). When it opens again, it compares: a refresh comes back within about a second, but a reopened tab comes back much later. More than 10 seconds means sign out.",
+        text: "While testing, I learned that browsers can bring a closed tab back together with its sessionStorage, with Ctrl+Shift+T or when Chrome restores tabs after a restart. So the page writes down the time whenever it is closed or left (the pagehide event). When it opens again, it compares: a refresh comes back within about a second, but a reopened tab comes back much later. If it was gone for more than a few seconds, it signs out.",
       },
       {
         type: "code",
         lang: "ts",
         code: `window.addEventListener("pagehide", () =>
-  sessionStorage.setItem("portfolio-admin-left-at", String(Date.now())));
+  sessionStorage.setItem(LEFT_AT_KEY, String(Date.now())));
 
 // when the page opens again
-if (Date.now() - leftAt > 10_000) await supabase.auth.signOut({ scope: "local" });`,
+if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "local" });`,
       },
       {
         type: "p",
@@ -264,7 +264,7 @@ if (Date.now() - leftAt > 10_000) await supabase.auth.signOut({ scope: "local" }
       { type: "h2", text: "4. Automatic sign-out" },
       {
         type: "p",
-        text: "If I leave my laptop open, anyone could use my admin page. Now, after 29 minutes without clicks, typing or scrolling, a \"Still there?\" box counts down from 60 seconds, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes.",
+        text: "If I leave my laptop open, anyone could use my admin page. Now, after a while without clicks, typing or scrolling, a \"Still there?\" box counts down, and then I'm signed out. If the laptop was asleep, I'm signed out as soon as it wakes.",
       },
       {
         type: "tip",
@@ -368,7 +368,7 @@ if (Date.now() - leftAt > 10_000) await supabase.auth.signOut({ scope: "local" }
         type: "ul",
         items: [
           "Page addresses: project titles turn into clean addresses, and a project with a case study links to it.",
-          "Spam protection: a normal message is accepted, while a filled-in hidden field or a form sent in under 3 seconds is treated as a bot. Empty names, bad emails and messages that are too short or too long are rejected.",
+          "Spam protection: a normal message is accepted, while a filled-in hidden field or a form sent impossibly fast is treated as a bot. Empty names, bad emails and messages that are too short or too long are rejected.",
           "Proof for every skill: every skill on my Skills page must link to evidence, so I can't list a skill I can't back up.",
           "Files really exist: every certificate image, case study screenshot and my CV PDF are where the site links to them, so there are no broken images.",
           "Dev notes: every note has its own address, a real date and a description short enough for Google.",
@@ -674,12 +674,12 @@ if (localStorage.getItem("motion") === "reduced")
       { type: "h2", text: "Layer 1: a honeypot" },
       {
         type: "p",
-        text: "The form has an extra field called \"website\" that people can't see or reach with the keyboard. Bots fill in every field they find, so if that field has anything in it, my API route quietly throws the message away but still answers \"sent\", so the bot doesn't learn anything.",
+        text: "The form has an extra field that people can't see or reach with the keyboard. Bots fill in every field they find, so if that field has anything in it, my API route quietly throws the message away but still answers \"sent\", so the bot doesn't learn anything.",
       },
       { type: "h2", text: "Layer 2: too fast to be human" },
       {
         type: "p",
-        text: "The form remembers when it was opened. A message sent less than three seconds later is almost certainly a bot, so it gets the same quiet treatment.",
+        text: "The form remembers when it was opened. A message sent faster than any person could type it is almost certainly a bot, so it gets the same quiet treatment.",
       },
       { type: "h2", text: "Layer 3: a rate limit in the database" },
       {
@@ -689,15 +689,16 @@ if (localStorage.getItem("motion") === "reduced")
       {
         type: "ul",
         items: [
-          "at most 3 messages per email address every 10 minutes",
-          "at most 3 per visitor every 10 minutes (I store a one-way hash of the IP address, never the IP itself)",
-          "at most 30 messages an hour in total",
+          "a limit on messages from the same email address in a short time",
+          "a limit per visitor (I store a one-way hash of the IP address, never the IP itself)",
+          "a limit on the total number of messages per hour, in case lots of bots try at once",
         ],
       },
       {
         type: "code",
         lang: "sql",
-        code: `if recent_from_sender >= 3 then
+        code: `-- the real limits are kept in the database, not in this post
+if recent_from_sender >= max_per_sender then
   raise exception 'Too many messages. Please try again in a few minutes.'
     using errcode = 'P0001';
 end if;`,
