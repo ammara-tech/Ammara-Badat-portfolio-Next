@@ -34,7 +34,20 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 - [Contact](Docs/wireframe-contact.png)
 
 ## Tech stack
-Next.js (App Router) · TypeScript · Tailwind CSS · Supabase (Postgres, Auth, Row Level Security) · deployed on Vercel
+Next.js (App Router) · React · TypeScript · Tailwind CSS · Supabase (Postgres, Auth with two-step sign-in,
+Row Level Security, Storage, Realtime) · Vitest and GitHub Actions · deployed on Vercel
+
+## Project structure
+```
+app/         Pages and API routes (each folder is a web address)
+components/  Reusable building blocks (Navbar, ContactForm, Inbox, TwoStep, ...)
+content/     My words: about, case study, skills, certifications, dev notes, CV
+lib/         Supabase connection, SEO, theme, project loading and small tested helper functions
+public/      Screenshots, certificates, CV PDF, demo video, icons
+Supabase/    The SQL files, run in order (schema.sql, then 003 to 008)
+tests/       Vitest tests (npm test)
+Docs/        Wireframes, proof screenshots and the code guide (how-it-works.md)
+```
 
 ## Milestones at a glance
 What I built in each milestone, plus the extras I added on top. The details for each part are
@@ -100,7 +113,16 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
 
 ## Database
-One table, `projects`, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
+Three tables, plus Supabase Storage for images:
+
+| Table | What it holds | Defined in |
+|---|---|---|
+| `projects` | My projects (below) | `schema.sql`, `003`, `007` |
+| `messages` | Contact form messages ([details](#contact-form-milestone-4)) | `004` |
+| `activity_log` | The history of every change to a project, written only by a database trigger | `007` |
+| `storage.objects` | Screenshots uploaded from `/admin` ([details](#storage-security-rls-on-files)) | `005` |
+
+The `projects` table, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
 
 | Column | Type | Purpose |
 |--------|------|---------|
@@ -124,32 +146,36 @@ creates the `activity_log` table (the history shown in `/admin`).
 
 ## Content
 The page text lives in the `content/` folder, separate from the code:
-`content/about.ts` (About, Home and Contact), `content/case-study.ts` (capstone case study) and
-`content/skills.ts` (skills and their evidence links) and `content/certifications.ts` (my certificates,
-shown on the About page; the images are in `public/certificates/`). Every skill must have at least one evidence
+`content/about.ts` (About, Home and Contact), `content/case-study.ts` (capstone case study),
+`content/skills.ts` (skills and their evidence links), `content/certifications.ts` (my certificates,
+shown on the About page; the images are in `public/certificates/`), `content/notes.ts` (dev notes) and
+`content/cv.ts` (the web CV at `/cv`). Every skill must have at least one evidence
 link, or the site will not build, so I can't list a skill I can't back up.
 
 ## Security: Row Level Security
-RLS is enabled on `projects` with four policies:
+RLS is enabled on every table. On `projects` there are four policies:
 
 | Policy | Who | Rule |
 |--------|-----|------|
-| Anyone can read published projects | `anon`, `authenticated` | `select` only if `published` is true, or if `auth.uid()` is my user ID (so I can see my drafts) |
-| Owner can insert projects | `authenticated` | only if `auth.uid()` is my user ID |
-| Owner can update projects | `authenticated` | only if `auth.uid()` is my user ID |
-| Owner can delete projects | `authenticated` | only if `auth.uid()` is my user ID |
+| Anyone can read published projects | `anon`, `authenticated` | `select` only if `published` is true, or if `is_owner()` (so I can see my drafts) |
+| Owner can insert projects | `authenticated` | only if `is_owner()` |
+| Owner can update projects | `authenticated` | only if `is_owner()` |
+| Owner can delete projects | `authenticated` | only if `is_owner()` |
 
 Screenshot: [Policies in Supabase](Docs/rls-policies.png) (taken before drafts were added, when the read
 policy was "Anyone can read projects")
 
-Since `008-two-step-sign-in.sql`, "my user ID" in these rules means `public.is_owner()`: my user ID **and**
-a two-step sign-in (`aal2`). A sign-in with only the password gets nothing.
+**`is_owner()`** (from `008-two-step-sign-in.sql`) is true only for my user ID **and** a two-step sign-in:
+Supabase puts an assurance level in the login token, `aal1` for password only and `aal2` for password plus
+the code from my authenticator app. A sign-in with only the password gets nothing, even through the API.
+Before two-step sign-in, these rules checked my user ID alone.
 
 `activity_log` has RLS too: only my account can `select`, and there are no insert, update or delete
 policies, so only the database trigger can write to it.
 
 Public sign-ups are turned off in Supabase Auth, so mine is the only account. Even if another
-account existed, the policies check my exact user ID, so "any signed-in user" still cannot write.
+account existed, the policies check my exact user ID and the two-step level, so "any signed-in user"
+still cannot write.
 
 ### How I proved a visitor cannot write
 Signed out, in an incognito window, I used the public anon key from the browser console to try
@@ -163,6 +189,25 @@ every operation against the live database:
 | Delete MyFlix | ❌ Blocked: 0 rows deleted |
 
 Screenshot: [RLS test in the browser console](Docs/rls-test-console.png)
+
+### How I tested the admin security (drafts, activity log, two-step sign-in)
+Before running `007` and `008` on Supabase, I ran every SQL file in order on a local PostgreSQL set up
+like Supabase, and tested as a visitor, as another signed-in account and as me:
+
+| Test | Result |
+|------|--------|
+| Visitor or another account reads a draft, even after trying to publish it | ❌ 0 rows |
+| Visitor or another account reads the activity log | ❌ 0 rows |
+| Anyone (me included) adds, changes or deletes log entries directly | ❌ `permission denied` |
+| Me with only a password (`aal1`): read messages, drafts or the log | ❌ 0 rows |
+| Me with only a password (`aal1`): add a project or upload an image | ❌ `violates row-level security policy` |
+| Me with only a password (`aal1`): edit or delete a project or message | ❌ 0 rows changed |
+| Me with the authenticator code (`aal2`): everything | ✅ Works |
+| Another account with `aal2` reads messages | ❌ 0 rows |
+| Visitor sends a contact message | ✅ Still works |
+
+I also tested the sign-in screens in a browser: a fresh visit, the QR set-up, a wrong code, a pasted
+code with a space, the code step on the next sign-in, refreshing, a second tab and reopening a closed tab.
 
 ## Contact form (Milestone 4)
 Messages from `/contact` are saved to a `messages` table, defined in
@@ -182,12 +227,12 @@ Messages from `/contact` are saved to a `messages` table, defined in
 | Policy | Who | Rule |
 |--------|-----|------|
 | Anyone can send a message | `anon`, `authenticated` | `insert` only, and it must arrive unread |
-| Owner can read messages | `authenticated` | only if `auth.uid()` is my user ID |
-| Owner can update messages | `authenticated` | only if `auth.uid()` is my user ID (mark as read) |
-| Owner can delete messages | `authenticated` | only if `auth.uid()` is my user ID |
+| Owner can read messages | `authenticated` | only if `is_owner()` |
+| Owner can update messages | `authenticated` | only if `is_owner()` (mark as read) |
+| Owner can delete messages | `authenticated` | only if `is_owner()` |
 
 Visitors can add a message but can never read, change or delete one, including their own.
-The inbox is on the `/admin` page, which only my account can use.
+The inbox is on the `/admin` page, which only my account can use, after both sign-in steps.
 
 ### Spam protection: honeypot + rate limit
 I chose a **honeypot** and a **rate limit**, so real visitors never have to solve a CAPTCHA:
@@ -257,7 +302,8 @@ Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and
 | Another signed-in user | ✅ | ❌ | ❌ |
 | My account (owner) | ✅ | ✅ | ✅ |
 
-I tested the policies on a local Postgres copy: a visitor and another user were blocked with
+Since `008-two-step-sign-in.sql`, "my account" here also means `is_owner()` (my account with the
+authenticator code). I tested the policies on a local Postgres copy: a visitor and another user were blocked with
 "new row violates row-level security policy", a visitor listed 0 files, another user's delete
 removed 0 rows, and only the owner could upload, rename and delete.
 
@@ -268,6 +314,8 @@ After the upgrade the responsive (360–1440px), keyboard and contrast checks we
 **Live site:** https://ammara-badat-portfolio-next.vercel.app
 
 ### Lighthouse scores (mobile)
+| Page | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
 | Home | 96 | 100 | 100 | 100 |
 
 ![Lighthouse scores](Docs/lighthouse-home.png)
@@ -279,9 +327,9 @@ animations slide in without hiding the content, loaded the Ctrl+K search, image 
 effect only after the page appears, and cut the heading font from 4 weights to 2. Performance went
 74 → 88 → 96.
 
-
 Lighthouse also runs automatically: after every production deploy, a GitHub Action
-(`.github/workflows/lighthouse.yml`) checks six pages and fails if Accessibility or SEO drops below 90.
+(`.github/workflows/lighthouse.yml`) checks six pages (Home, About, Projects, the case study, Skills and
+Contact) and fails if Accessibility or SEO drops below 90.
 See the **Actions** tab.
 
 ### Findable: what every page has
@@ -291,7 +339,7 @@ See the **Actions** tab.
   (`opengraph-image.jpg` in each page folder). Every project page draws its own share image
   on the server (`app/projects/[slug]/opengraph-image.tsx`).
 - **Sitemap** at [/sitemap.xml](https://ammara-badat-portfolio-next.vercel.app/sitemap.xml), which
-  lists every page plus one page per project from Supabase.
+  lists every page plus one page per published project from Supabase and one per dev note.
 - **robots.txt** at [/robots.txt](https://ammara-badat-portfolio-next.vercel.app/robots.txt), which
   keeps `/admin` and `/api` out of search results.
 - **Structured data (JSON-LD)** describing me (Person, with my certifications), the website, each
@@ -307,7 +355,7 @@ See the **Actions** tab.
 | Upgrade | What it does |
 |---|---|
 | A page for every project | `/projects/neon-arcade` and so on, built from Supabase, with breadcrumbs, a share image and "More projects". |
-| Faster images | Screenshots use Next.js `<Image>`: smaller AVIF/WebP files in the size the screen needs, lazy loading, and no layout jumps. The certificate thumbnails went from about 160 KB each to a few KB. |
+| Faster images | Screenshots use Next.js `<Image>`: smaller WebP files in the size the screen needs, lazy loading, and no layout jumps. The certificate thumbnails went from about 160 KB each to a few KB. |
 | Live GitHub activity | My six most recently updated repos on the Home page, cached for an hour. |
 | Ctrl+K search | Search every page, project, skill and certificate, or download my CV, from anywhere. Also opens from the navbar and the terminal (`search`). |
 | Installable site | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
@@ -377,9 +425,11 @@ free [Vercel](https://vercel.com) account.
 | 4 | `005-project-images-storage.sql` | `project-images` Storage bucket and owner-only upload policies |
 | 5 | `006-realtime-inbox.sql` | Turns on Realtime for `messages`, for the live admin inbox |
 | 6 | `007-drafts-activity-log.sql` | `published` column and "Anyone can read published projects" policy, the owner-only `activity_log` table and its trigger |
-| 7 | `008-two-step-sign-in.sql` | `is_owner()` (my user ID + two-step sign-in) used by every owner policy. Set up your authenticator app in `/admin` **before** running it |
+| 7 | `008-two-step-sign-in.sql` | `is_owner()` (my user ID + two-step sign-in) used by every owner policy. Run it **last**, after setting up your authenticator app in `/admin` (step 2 below) |
 
-6. Copy the **Project URL** and the **anon / publishable key** from Project Settings → API.
+6. Check that two-step sign-in with an authenticator app is allowed: Authentication → Multi-Factor
+   (or Sign In / Providers) → **TOTP** switched on. It is on by default.
+7. Copy the **Project URL** and the **anon / publishable key** from Project Settings → API.
 
 ### 2. Run locally
 1. Create `.env.local` in the project root (it is git-ignored):
@@ -394,12 +444,19 @@ npm install
 npm run dev
 ```
 3. Open http://localhost:3000. Sign in at http://localhost:3000/admin with the owner account.
+   The first time, the admin page shows a QR code: scan it with an authenticator app (Google
+   Authenticator, or Microsoft Authenticator → **Other account**) and enter the 6-digit code. After that,
+   every sign-in asks for the code. Then run `008-two-step-sign-in.sql`.
+   - The sign-in only lasts for that browser tab and ends when the window closes.
+   - Lost the phone? In Supabase, Authentication → Users → your account → delete its MFA factor, then set
+     up the new phone in `/admin`.
 4. Run the tests with `npm test` (they also run on GitHub after every push; see the **Actions** tab).
 
 ### 3. Deploy
 1. Import the GitHub repo into Vercel.
 2. Add the environment variables from the table above (Settings → Environment Variables).
-3. Deploy. Every push to `main` deploys again, and the Lighthouse GitHub Action then checks the live site.
+3. Deploy. Every push to `main` deploys again; the Tests action runs on every push, and the Lighthouse
+   action then checks the live site.
 
 ### How the code works
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
@@ -412,8 +469,9 @@ programmer, working in short rounds, one feature at a time:
 2. **Claude wrote the code** for it and explained how it works.
 3. **I added each change to my project** in VS Code, ran the SQL in Supabase, set up the services and
    settings, committed it and deployed it to Vercel.
-4. **I tested it on the live site** and reported what broke or looked wrong (build errors, the wrong
-   Supabase URL, a sideways-scrolling layout, a 74 Lighthouse score), and we fixed it together.
+4. **I tested it on the live site and on my own phone** and reported what broke or looked wrong (build
+   errors, the wrong Supabase URL, a sideways-scrolling layout, a 74 Lighthouse score, a phone navigation
+   bar that wouldn't stay put), and we fixed it together.
 
 **What I did:** the site's audience, role, pages and design direction; which projects, certificates and
 evidence to show and how to describe them; every account and setting (GitHub, Vercel, Supabase, Google
@@ -426,7 +484,11 @@ LinkedIn banner, and drafted parts of the README, reflections, case study, dev n
 text, which I then edited.
 
 I can explain how every part of the site works. The guide I learned from is
-[Docs/how-it-works.md](Docs/how-it-works.md).
+[Docs/how-it-works.md](Docs/how-it-works.md), which I keep updated as the site changes.
+
+## Video walkthrough
+My 3-minute video walkthrough is submitted privately to my lecturer with the final submission.
+
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
 [live site](https://ammara-badat-portfolio.vercel.app)
