@@ -28,6 +28,78 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "writing-about-security-safely",
+    title: "Writing about security without handing hackers a map",
+    description:
+      "I went back through my dev notes and took out details that could help an attacker, but kept the code. Here's what I removed, what I kept, and why.",
+    date: "2026-10-25",
+    tags: ["Security", "Writing", "Supabase"],
+    body: [
+      {
+        type: "p",
+        text: "My dev notes explain how I built my portfolio, including its security: Row Level Security, the spam protection on my contact form and two-step sign-in for my admin page. Explaining your work is the point of a dev log. But I realised some of my notes were also a step-by-step guide to the exact numbers and names behind my defences. So I read every note again, as if I were someone trying to get in.",
+      },
+      { type: "h2", text: "Two kinds of security" },
+      {
+        type: "ul",
+        items: [
+          "Security that depends on secrets staying hidden. If someone learns the detail, the protection is gone. Hiding things is called \"security through obscurity\", and on its own it's weak.",
+          "Security that still works when people know exactly how it's built. My database rules are like this: knowing that only my account, with my authenticator code, can change a project doesn't help anyone become my account.",
+        ],
+      },
+      {
+        type: "p",
+        text: "My portfolio leans on the second kind. Row Level Security, the two-step rule and the rate limit all run inside the database, so they protect my data even from someone who has read all my code. My GitHub repo is public anyway, so the code itself was never a secret.",
+      },
+      { type: "h2", text: "So why remove anything?" },
+      {
+        type: "p",
+        text: "Because some details make an attacker's job easier, even when they can't break the main defence. If you know exactly how many messages you can send before a limit kicks in, you can send just under it. If you know the name of a hidden spam-trap field, a bot can be told to skip it. That doesn't open my database, but it does make my spam protection weaker. A blog post doesn't need those details to teach the idea.",
+      },
+      { type: "h2", text: "What I changed" },
+      {
+        type: "ul",
+        items: [
+          "Exact numbers became descriptions: \"a limit on messages from the same email address in a short time\" instead of the real numbers.",
+          "Hidden field names and internal storage names were left out. The idea is explained; the name isn't needed.",
+          "Code examples stayed, but with placeholders like max_per_sender and 'my-user-id' instead of real values.",
+          "Timings became general, like \"after a while without activity\".",
+          "I stopped naming the address of my admin page in the notes.",
+          "I also updated two notes whose code showed an older, weaker version of my rules, so nobody reads them and thinks a password alone is enough.",
+        ],
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `-- Before: the real limit was in the post
+-- After: the idea is the same, the number stays in the database
+if recent_from_sender >= max_per_sender then
+  raise exception 'Too many messages. Please try again in a few minutes.';
+end if;`,
+      },
+      { type: "h2", text: "What I kept on purpose" },
+      {
+        type: "p",
+        text: "I didn't hide how my defences work, because that is the useful part for anyone learning, and because it shows the defences are strong. Saying \"visitors get an empty list\" or \"only a database trigger can write to the history\" explains why an attack fails. It doesn't help anyone make it succeed.",
+      },
+      { type: "h2", text: "The checklist I use now" },
+      {
+        type: "ul",
+        items: [
+          "No real IDs, emails, passwords, keys or project addresses. Placeholders only.",
+          "No exact limits, thresholds or time windows for security features.",
+          "No names of hidden fields, internal storage keys or private pages.",
+          "Explain why an attack fails, not how to get around a defence.",
+          "If a note shows old code, update it or say clearly that it changed.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: real security should still work when everyone knows how it's built. Writing about it carefully is just good manners: share the idea, keep the numbers.",
+      },
+    ],
+  },
+  {
     slug: "from-47-to-65-tests",
     title: "From 47 to 65 tests: what changed and why",
     description:
