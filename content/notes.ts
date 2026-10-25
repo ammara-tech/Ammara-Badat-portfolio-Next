@@ -90,7 +90,7 @@ export const notes: Note[] = [
     body: [
       {
         type: "p",
-        text: "My /admin page was protected by an email and password. If someone guessed or stole the password, they could read my messages and change my projects. Two-step sign-in (also called MFA, multi-factor authentication) fixes that: after the password, you also need a code that only my phone can make.",
+        text: "My admin page was protected by an email and password. If someone guessed or stole the password, they could read my messages and change my projects. Two-step sign-in (also called MFA, multi-factor authentication) fixes that: after the password, you also need a code that only my phone can make.",
       },
       { type: "h2", text: "Why an authenticator app and not email codes" },
       {
@@ -154,7 +154,7 @@ create policy "Owner can read messages"
     body: [
       {
         type: "p",
-        text: "I noticed a problem with my /admin page: if I signed in on a computer and forgot to press Sign out, the next person to open /admin on that computer went straight into my dashboard. Opening it in a new tab did the same. That's because of where Supabase keeps the sign-in.",
+        text: "I noticed a problem with my admin page: if I signed in on a computer and forgot to press Sign out, the next person to open my admin page on that computer went straight into my dashboard. Opening it in a new tab did the same. That's because of where Supabase keeps the sign-in.",
       },
       { type: "h2", text: "localStorage vs sessionStorage" },
       {
@@ -172,7 +172,7 @@ create policy "Owner can read messages"
       {
         type: "ul",
         items: [
-          "/admin always opens on the sign-in form. Nothing from the dashboard is in the page until Supabase confirms a sign-in made in this tab.",
+          "My admin page always opens on the sign-in form. Nothing from the dashboard is in the page until Supabase confirms a sign-in made in this tab.",
           "A new tab, a new window or another person on the same computer gets the sign-in form, while my own tab stays signed in.",
           "Closing the window signs me out, even if I forget to press Sign out.",
           "Refreshing keeps me signed in, because sessionStorage survives a refresh.",
@@ -212,12 +212,12 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     body: [
       {
         type: "p",
-        text: "Until now, every project I added in /admin went live on my site straight away, and nothing remembered what I had changed. I wanted to work on a project before showing it, see how it would look first, and have a history of my changes.",
+        text: "Until now, every project I added in my admin page went live on my site straight away, and nothing remembered what I had changed. I wanted to work on a project before showing it, see how it would look first, and have a history of my changes.",
       },
       { type: "h2", text: "1. Drafts that are really hidden" },
       {
         type: "p",
-        text: "Each project now has a published column and a Live / Draft switch in /admin. The easy way to hide drafts would be to filter them out in my page code, but then anyone calling the Supabase API directly could still read them. So I changed the Row Level Security rule instead:",
+        text: "Each project now has a published column and a Live / Draft switch in my admin page. The easy way to hide drafts would be to filter them out in my page code, but then anyone calling the Supabase API directly could still read them. So I changed the Row Level Security rule instead:",
       },
       {
         type: "code",
@@ -225,11 +225,11 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
         code: `create policy "Anyone can read published projects"
   on public.projects for select
   to anon, authenticated
-  using (published or (select auth.uid()) = 'my-user-id'::uuid);`,
+  using (published or (select public.is_owner()));`,
       },
       {
         type: "p",
-        text: "Visitors only get published projects. My account gets everything, so drafts still show in /admin with a Draft label. My public pages didn't need any changes at all, because the database now leaves drafts out for them.",
+        text: "Visitors only get published projects. is_owner() is true only for my account (and, since I added two-step sign-in, only after I've entered my authenticator code), so I get everything, so drafts still show in my admin page with a Draft label. My public pages didn't need any changes at all, because the database now leaves drafts out for them.",
       },
       { type: "h2", text: "2. A live preview" },
       {
@@ -282,7 +282,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     body: [
       {
         type: "p",
-        text: "My contact form saves messages to Supabase, and my private /admin page has an inbox to read them. It worked, but I had to press Refresh to see anything new. A real inbox should tell you when something arrives, so I made it live.",
+        text: "My contact form saves messages to Supabase, and my private admin page has an inbox to read them. It worked, but I had to press Refresh to see anything new. A real inbox should tell you when something arrives, so I made it live.",
       },
       { type: "h2", text: "Supabase Realtime" },
       {
@@ -728,7 +728,7 @@ end if;`,
     body: [
       {
         type: "p",
-        text: "My Projects page loads from a Supabase database, and my /admin page lets me add, edit and delete projects. The key that connects my site to Supabase is public (anyone can find it in the browser), so the website alone can't be trusted to keep people out. The database has to do it.",
+        text: "My Projects page loads from a Supabase database, and my admin page lets me add, edit and delete projects. The key that connects my site to Supabase is public (anyone can find it in the browser), so the website alone can't be trusted to keep people out. The database has to do it.",
       },
       { type: "h2", text: "What Row Level Security does" },
       {
@@ -772,6 +772,10 @@ end if;`,
       {
         type: "p",
         text: "That second point caught me out at first. My admin page now checks whether any rows came back, and shows \"Nothing was saved. You may not have permission\" instead of pretending it worked.",
+      },
+      {
+        type: "p",
+        text: "Update: these rules are even stricter now. \"Only my account\" also means I must have entered the code from my authenticator app, so a stolen password isn't enough. My note on two-step sign-in explains how.",
       },
       {
         type: "tip",
