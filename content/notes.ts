@@ -28,6 +28,75 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "keeping-docs-honest",
+    title: "Keeping my docs as honest as my code",
+    description:
+      "My README and code guide fell behind my site without me noticing. I fixed them, and now my tests fail if the docs go stale again.",
+    date: "2026-10-26",
+    tags: ["Documentation", "Testing", "GitHub Actions"],
+    body: [
+      {
+        type: "p",
+        text: "My portfolio has two documents that explain it: the README, which is the first thing anyone sees on GitHub, and Docs/how-it-works.md, a plain-English guide to the code that I study from. Last week I added a lot to my admin page in a few days. The code was tested. The docs weren't, and they quietly fell behind.",
+      },
+      { type: "h2", text: "What had gone stale" },
+      {
+        type: "ul",
+        items: [
+          "The README still said my database had one table. It had three, plus storage for images.",
+          "The code guide still said signing in takes you straight to the dashboard. By then there was a second sign-in step.",
+          "The security tables described the older, weaker version of my rules.",
+          "My Lighthouse scores table was missing its header row, so GitHub didn't show it as a table at all.",
+          "One line named an image format my site no longer uses.",
+        ],
+      },
+      {
+        type: "p",
+        text: "None of this broke the site, which is exactly why nobody noticed. But a README is a promise about what the code does. If my lecturer or an employer reads it and then finds the code does something different, they stop trusting the rest.",
+      },
+      { type: "h2", text: "Fixing it, and a new habit" },
+      {
+        type: "p",
+        text: "I rewrote the out-of-date parts of both documents and added the missing sections. Then I made a rule for myself: every commit updates everything it affects, including the README, the code guide, the dev note count, the test count and the setup steps.",
+      },
+      { type: "h2", text: "Letting the tests check the docs" },
+      {
+        type: "p",
+        text: "Rules you have to remember are easy to forget, so I wrote tests that read my docs as plain text and compare them with the real project. They run on GitHub on every push, with the rest of my tests:",
+      },
+      {
+        type: "ul",
+        items: [
+          "The README's dev note count must match the real number of notes, in numbers and in words.",
+          "Every SQL file in my Supabase folder must appear in the README's setup steps, so nobody setting up the project misses one.",
+          "Every file the README or the code guide mentions must really exist, so a renamed or deleted file can't leave a broken reference behind.",
+        ],
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `it("every SQL file in Supabase/ is in the README's setup steps", () => {
+  const sqlFiles = readdirSync("Supabase").filter((f) => f.endsWith(".sql"));
+  const notListed = sqlFiles.filter((f) => !readme.includes(\`\\\`\${f}\\\`\`));
+  expect(notListed).toEqual([]);
+});`,
+      },
+      {
+        type: "p",
+        text: "To make sure the tests really work, I broke my README on purpose: I changed the note count and misspelt one file name. Two tests failed and named exactly what was wrong. Then I put it back and everything passed.",
+      },
+      { type: "h2", text: "What the tests can't do" },
+      {
+        type: "p",
+        text: "They check numbers and file names, not meaning. A test can't tell whether a sentence still describes what the code does. That part is still my job, which is why the habit matters as much as the tests.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: documentation is part of the product. If something can be checked automatically, check it; if it can't, make updating it part of every change.",
+      },
+    ],
+  },
+  {
     slug: "writing-about-security-safely",
     title: "Writing about security without handing hackers a map",
     description:

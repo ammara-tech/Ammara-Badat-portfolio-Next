@@ -353,17 +353,19 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 65 checks:
+  example inputs and check the answers. There are 69 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes, SEO helpers and the
     contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search and the Reply link, the activity log wording and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
+  - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
+    file is listed in the README's setup steps, and every file the README or this guide mentions exists
 - **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project and runs
   `npm test`. A green tick in the Actions tab means everything passed.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every production deploy, GitHub runs
   Lighthouse on six pages and fails the check if Accessibility or SEO drops below 90.
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 65.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 69.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -418,5 +420,6 @@ My animations hid content at load, and too much JavaScript ran at the start. I m
 slide instead of fade and loaded the extras only when first used.
 
 **What do your tests check, and why did the number grow?**
-Page addresses, the contact form rules, skills evidence, files, notes, SEO and the admin logic. It
-grew from 47 to 65 because every admin feature came with its own tests.
+Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
+It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
+checks that my README and this guide stay in step with the code.

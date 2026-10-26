@@ -106,8 +106,8 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - **Drag-and-drop project order** in `/admin`.
 - **Web CV page** at `/cv`, as well as the PDF.
 - **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
-- **65 automated tests** that run on GitHub on every push.
-- **13 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, and writing about security without helping attackers).
+- **69 automated tests** that run on GitHub on every push, including checks that this README and the code guide stay in step with the code.
+- **14 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, and keeping my docs honest).
 - **Reading progress bar** on dev notes and a **Copy email** button on Contact.
 - **9 certifications** from Certiport, Vercel and Harvard CS50.
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
@@ -366,7 +366,7 @@ See the **Actions** tab.
 | Extra | What it does |
 |---|---|
 | Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
-| Dev notes + RSS | Short posts (thirteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
+| Dev notes + RSS | Short posts (fourteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
 | Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
 | Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
 | Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
@@ -374,7 +374,7 @@ See the **Actions** tab.
 ### More features (after Milestone 5)
 | Feature | What it does |
 |---|---|
-| Automated tests + CI | 65 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in and the two-step sign-in steps. A GitHub Action runs them on every push. |
+| Automated tests + CI | 69 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, and every file the docs mention existing). A GitHub Action runs them on every push. |
 | Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
 | Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
 | Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
