@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { formatDate, notes, readingMinutes } from "@/content/notes";
+import { formatDate, formatShortDate, notes, readingMinutes } from "@/content/notes";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
@@ -55,6 +55,14 @@ export default function Notes() {
             >
               <span className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-widest text-mist">
                 <time dateTime={note.date}>{formatDate(note.date)}</time>
+                {note.updated && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>
+                      Updated <time dateTime={note.updated}>{formatShortDate(note.updated)}</time>
+                    </span>
+                  </>
+                )}
                 <span aria-hidden="true">·</span>
                 <span>{readingMinutes(note)} min read</span>
               </span>

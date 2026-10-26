@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findNote, formatDate, headingIds, noteNeighbours, notes, readingMinutes, type Block } from "@/content/notes";
+import { findNote, formatDate, headingIds, lastChanged, noteNeighbours, notes, readingMinutes, type Block } from "@/content/notes";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
@@ -108,7 +108,7 @@ export default async function NotePage({ params }: Props) {
             headline: note.title,
             description: note.description,
             datePublished: note.date,
-            dateModified: note.date,
+            dateModified: lastChanged(note),
             url: `${siteUrl}/notes/${note.slug}`,
             keywords: note.tags.join(", "),
             author: personRef,
@@ -137,6 +137,16 @@ export default async function NotePage({ params }: Props) {
       <header className="mt-8">
         <p className="fx-rise flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-widest text-teal">
           <time dateTime={note.date}>{formatDate(note.date)}</time>
+          {note.updated && (
+            <>
+              <span aria-hidden="true" className="text-mist">
+                ·
+              </span>
+              <span className="text-mist">
+                Updated <time dateTime={note.updated}>{formatDate(note.updated)}</time>
+              </span>
+            </>
+          )}
           <span aria-hidden="true" className="text-mist">
             ·
           </span>

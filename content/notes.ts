@@ -23,7 +23,8 @@ export type Note = {
   slug: string;
   title: string;
   description: string; // one or two sentences, shown on the list and in Google
-  date: string; // YYYY-MM-DD
+  date: string; // YYYY-MM-DD, when I published it
+  updated?: string; // YYYY-MM-DD, only if I changed the note on a later day (shown as "Updated ...")
   tags: string[];
   body: Block[];
 };
@@ -229,6 +230,7 @@ end if;`,
     description:
       "My admin page now needs a 6-digit code from an authenticator app on my phone, and the database itself refuses owner access without it.",
     date: "2026-10-24",
+    updated: "2026-10-25",
     tags: ["Security", "Supabase", "MFA"],
     body: [
       {
@@ -293,6 +295,7 @@ create policy "Owner can read messages"
     description:
       "If I forgot to sign out of my admin page, anyone using that computer could open it. Now the sign-in lives in one tab and ends when it closes.",
     date: "2026-10-24",
+    updated: "2026-10-25",
     tags: ["Security", "Supabase", "Browser storage"],
     body: [
       {
@@ -351,6 +354,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     description:
       "My admin page now has drafts that visitors can't see, a live preview, a history of every change and an automatic sign-out.",
     date: "2026-10-24",
+    updated: "2026-10-25",
     tags: ["Supabase", "RLS", "Triggers"],
     body: [
       {
@@ -421,6 +425,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     description:
       "New contact messages now pop into my admin page the moment they're sent, without refreshing, and only my account receives them.",
     date: "2026-10-24",
+    updated: "2026-10-25",
     tags: ["Supabase", "Realtime", "Admin"],
     body: [
       {
@@ -484,6 +489,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     description:
       "Tests are small programs that check my code still does what it should. Here's what mine check and how GitHub runs them on every push.",
     date: "2026-10-23",
+    updated: "2026-10-24",
     tags: ["Testing", "Vitest", "GitHub Actions"],
     body: [
       {
@@ -808,6 +814,7 @@ if (localStorage.getItem("motion") === "reduced")
     description:
       "How I protect my portfolio's contact form with a hidden honeypot field, a timing check and a rate limit inside the database.",
     date: "2026-10-21",
+    updated: "2026-10-24",
     tags: ["Security", "Supabase", "Forms"],
     body: [
       {
@@ -867,6 +874,7 @@ end if;`,
     description:
       "My admin page can add, edit and delete projects, but only for my account. Here's how Supabase Row Level Security makes sure of it, and how I proved it.",
     date: "2026-10-21",
+    updated: "2026-10-25",
     tags: ["Supabase", "RLS", "Security"],
     body: [
       {
@@ -951,6 +959,11 @@ export function noteNeighbours(slug: string) {
   return { older: notes[i + 1] ?? null, newer: i > 0 ? notes[i - 1] : null };
 }
 
+/** The date a note last changed: its "updated" date if it has one, otherwise when it was published */
+export function lastChanged(note: Note) {
+  return note.updated ?? note.date;
+}
+
 export function findNote(slug: string) {
   return notes.find((n) => n.slug === slug) ?? null;
 }
@@ -961,6 +974,11 @@ export function readingMinutes(note: Note) {
     .map((b) => (b.type === "ul" ? b.items.join(" ") : b.type === "code" ? b.code : b.text))
     .join(" ");
   return Math.max(1, Math.round(text.split(/\s+/).length / 200));
+}
+
+/** "2026-10-25" -> "25 Oct", for tight spaces like the notes list */
+export function formatShortDate(iso: string) {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString("en-ZA", { day: "numeric", month: "short" });
 }
 
 /** "2026-10-21" -> "21 October 2026" */

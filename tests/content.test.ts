@@ -3,7 +3,8 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { skillGroups, type Skill } from "@/content/skills";
 import { certificationGroups } from "@/content/certifications";
-import { headingIds, noteNeighbours, notes } from "@/content/notes";
+import { headingIds, lastChanged, noteNeighbours, notes } from "@/content/notes";
+import { showBackToTop } from "@/lib/back-to-top";
 import { caseStudy } from "@/content/case-study";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
@@ -72,6 +73,31 @@ describe("dev note navigation", () => {
     expect(middle.older?.slug).toBe(notes[2].slug);
     expect(noteNeighbours(notes[0].slug).newer).toBe(null);
     expect(noteNeighbours(notes[notes.length - 1].slug).older).toBe(null);
+  });
+});
+
+describe("updated dates on dev notes", () => {
+  it("are real dates, and never before the note was published", () => {
+    for (const n of notes.filter((note) => note.updated)) {
+      expect(Number.isNaN(Date.parse(n.updated!))).toBe(false);
+      expect(n.updated! > n.date).toBe(true);
+    }
+  });
+
+  it("use the updated date as the last change, or the published date if there isn't one", () => {
+    expect(lastChanged({ ...notes[0], date: "2026-10-21", updated: "2026-10-25" })).toBe("2026-10-25");
+    expect(lastChanged({ ...notes[0], date: "2026-10-21", updated: undefined })).toBe("2026-10-21");
+  });
+});
+
+describe("back-to-top button", () => {
+  it("stays hidden near the top and on short pages", () => {
+    expect(showBackToTop(0, 800)).toBe(false);
+    expect(showBackToTop(1000, 800)).toBe(false);
+  });
+
+  it("appears after scrolling more than one and a half screens", () => {
+    expect(showBackToTop(1300, 800)).toBe(true);
   });
 });
 

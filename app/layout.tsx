@@ -8,6 +8,7 @@ import Icon from "@/components/Icon";
 import LazyExtras from "@/components/LazyExtras";
 import ScrollReveal from "@/components/ScrollReveal";
 import MobileNav from "@/components/MobileNav";
+import BackToTop from "@/components/BackToTop";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -213,6 +214,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScrollReveal />
 
         {/* Bottom navigation bar on phones only */}
+        <BackToTop />
         <MobileNav />
 
         {/* Vercel Web Analytics (visits, no cookies) and Speed Insights (real visitors' load times) */}

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/site";
 import { loadProjects, slugify } from "@/lib/projects";
-import { notes } from "@/content/notes";
+import { lastChanged, notes } from "@/content/notes";
 
 /*
   Sitemap for search engines, served at /sitemap.xml.
@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const notePages: Entry[] = notes.map((n) => ({
     url: `${siteUrl}/notes/${n.slug}`,
-    lastModified: new Date(`${n.date}T12:00:00`),
+    lastModified: new Date(`${lastChanged(n)}T12:00:00`),
     changeFrequency: "yearly",
     priority: 0.6,
   }));
