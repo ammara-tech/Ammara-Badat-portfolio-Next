@@ -1,0 +1,5 @@
+Milestone 6 reflection
+README: https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/blob/main/README.md
+Video walkthrough: submitted privately to my lecturer with this milestone
+
+With another two weeks, I would first add email alerts for new contact messages, so I don't have to open the admin page to find out someone wrote to me. I would also add backup codes for two-step sign-in, because right now losing my phone means fixing it in the Supabase dashboard. Next, I would turn my manual RLS checks into automatic tests that run on a test database, and add a few browser tests that click through the contact form and the admin page, so a change can't quietly break them. Finally, I would track messages and image uploads in the activity log as well as projects, and make the CV PDF build itself from my CV page instead of remaking it by hand.

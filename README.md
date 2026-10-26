@@ -83,9 +83,14 @@ and my reflection for each milestone is in the [`Reflections/`](Reflections) fol
 - Every page has its own title, description, canonical URL and share image, plus a sitemap and robots.txt.
 - GitHub and LinkedIn linked from the site, and my site linked from LinkedIn ([details](#profile-links)).
 
-#### 🏁 Milestone 6: Video walkthrough and final README (in progress)
-- A 3-minute video walkthrough, submitted privately to my lecturer.
-- This README, kept up to date with every commit.
+#### 🏁 Milestone 6: Video walkthrough and final README
+- A 3-minute silent video walkthrough with short captions: who I am, a tour of the site, the capstone
+  case study, and how Supabase is used (two-step sign-in, RLS, drafts, the live inbox). Submitted
+  privately to my lecturer ([Video walkthrough](#video-walkthrough)).
+- This README, written so someone new can set the site up from scratch ([Setup](#setup-run-it-yourself)),
+  with the [environment variable names](#environment-variables), my [use of AI](#use-of-ai) and the
+  [known gaps](#known-gaps).
+- A [secrets check](#secrets-check) of the files and the whole git history.
 
 ### ⬆️ Upgrades
 Extras beyond the milestones, in the order I built them.
@@ -479,11 +484,48 @@ npm run dev
 ### 3. Deploy
 1. Import the GitHub repo into Vercel.
 2. Add the environment variables from the table above (Settings → Environment Variables).
-3. Deploy. Every push to `main` deploys again; the Tests action runs on every push, and the Lighthouse
+3. Using your own address? Change `siteUrl` in `lib/site.ts` (used for the sitemap, share links and
+   SEO tags) and the page addresses in `.github/workflows/lighthouse.yml`. My name, CV and project
+   text are in the `content/` folder.
+4. Deploy. Every push to `main` deploys again; the Tests action runs on every push, and the Lighthouse
    action waits until the new deploy is live, then checks the live site.
 
 ### How the code works
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
+
+## Secrets check
+Before submitting, I checked that no keys, tokens or `.env` files are in the repo **or its history**:
+
+- **Files:** no `.env` file has ever been committed. `.gitignore` covers `.env` and `.env*.local`.
+- **History:** I searched every commit (not just the latest) for Supabase keys and secret keys,
+  service role keys, JWT tokens, GitHub tokens, private keys and my Supabase project address. Nothing
+  was found.
+- **Screenshots:** the proof images in `Docs/` show no keys. The only ID visible is my user ID in the
+  RLS policies, which is not a secret: it is already in the SQL files, and on its own it cannot sign
+  in or change anything.
+- **The anon key:** it is only in Vercel's settings and my own `.env.local`. It is safe in the browser
+  because RLS decides what it can do, and the service role key is not used anywhere.
+- **Dev notes:** the public dev notes use placeholders for user IDs and leave out exact limits and
+  private addresses, so they don't help anyone attack the site.
+
+## Known gaps
+Things I know are missing or could be better:
+
+- **No email alert for new messages.** I see them in the admin inbox (live), but only when I open it.
+- **No backup codes for two-step sign-in.** If I lose my phone, I have to remove the old authenticator
+  in the Supabase dashboard (see [Setup](#2-run-locally)).
+- **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
+  there is no CAPTCHA.
+- **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
+  without two-step, and fully signed in) and on a local copy of the database; the 83 automatic tests
+  cover the site's code and docs, not the live database.
+- **No end-to-end browser tests.** Clicking through the site and admin is checked by hand.
+- **The activity log only tracks projects**, not messages or images.
+- **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
+- **Some things are hard-coded:** my user ID in the SQL files and my site address in `lib/site.ts`,
+  so someone setting it up must change them (see [Setup](#setup-run-it-yourself)).
+- **The CV PDF is made by hand**, so I have to remake it when my CV page changes.
+- **English only.**
 
 ## Use of AI
 AI use was allowed for this project. I built this site with Claude (by Anthropic) as my AI pair
@@ -499,19 +541,24 @@ programmer, working in short rounds, one feature at a time:
 
 **What I did:** the site's audience, role, pages and design direction; which projects, certificates and
 evidence to show and how to describe them; every account and setting (GitHub, Vercel, Supabase, Google
-Search Console, LinkedIn); every test, screenshot and proof image; recording the clinic demo; editing
-my reflections, About text and dev notes; and every commit and deploy.
+Search Console, LinkedIn); every test, screenshot and proof image; recording the clinic demo and this site's
+video walkthrough; editing my reflections, About text and dev notes; and every commit and deploy.
 
 **What Claude did:** wrote the code from my requirements (pages, components, SQL and RLS policies,
 spam protection, SEO and performance work), made the wireframe images, CV PDF, share images and
-LinkedIn banner, and drafted parts of the README, reflections, case study, dev notes and LinkedIn
+LinkedIn banner, cut my walkthrough recordings to 3 minutes and added the captions and blurring,
+and drafted parts of the README, reflections, case study, dev notes and LinkedIn
 text, which I then edited.
 
 I can explain how every part of the site works. The guide I learned from is
 [Docs/how-it-works.md](Docs/how-it-works.md), which I keep updated as the site changes.
 
 ## Video walkthrough
-My 3-minute video walkthrough is submitted privately to my lecturer with the final submission.
+My 3-minute video walkthrough is submitted privately to my lecturer with the final submission. It is
+silent, with short captions, and shows only the website: who I am, the public pages, the capstone case
+study, the contact form, the footer with my Lighthouse scores and links, and then the admin side
+(two-step sign-in, a message arriving live, drafts hiding a project from visitors, and the live
+preview). Private details are blurred and no keys or settings pages are shown.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
