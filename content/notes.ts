@@ -31,6 +31,116 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "from-65-to-83-tests",
+    title: "From 65 to 83 tests: testing my docs, my buttons and my spreadsheets",
+    description:
+      "Every small feature I added this week came with tests, and some tests now check my documentation too. Here's where the 18 new checks came from.",
+    date: "2026-10-26",
+    tags: ["Testing", "Vitest", "Security"],
+    body: [
+      {
+        type: "p",
+        text: "Two days ago I wrote about my tests growing from 47 to 65. This week I added more small features, and npm test now runs 83 checks. I kept the same rule: if a feature makes a decision, the decision gets a test.",
+      },
+      { type: "h2", text: "Where the 18 new checks came from" },
+      {
+        type: "ul",
+        items: [
+          "65 → 69, my docs (4 checks): the README's dev note count matches the real notes, every database setup file is listed in the setup steps, and every file the README or my code guide mentions really exists.",
+          "69 → 72, dev note navigation (3 checks): every sub-heading gets its own unique address, two headings with the same words get -2 on the end, and each note links to the right older and newer note.",
+          "72 → 76, updated dates and back to top (4 checks): an \"Updated\" date is a real date and never before the note was published, and the back-to-top button stays hidden near the top and appears after scrolling down.",
+          "76 → 78, Back and Forward buttons (2 checks): they follow what the browser says when it can tell us, and make a sensible guess when it can't.",
+          "78 → 79, README links (1 check): every link inside the README points to a heading that exists, so reorganising it can't leave a broken link.",
+          "79 → 83, CSV download (4 checks): cells are quoted correctly, the file has the right header and rows, the file name has the date, and messages can't sneak a formula into a spreadsheet.",
+        ],
+      },
+      { type: "h2", text: "The test I'm proudest of" },
+      {
+        type: "p",
+        text: "My admin inbox can now download messages as a CSV file for Excel or Google Sheets. Those messages come from a public contact form, so anyone can write anything. Spreadsheets treat a cell that starts with = as a formula, so a message written to look like one could run when I open the file. This is called CSV injection. My download puts a ' in front of any cell that starts with a formula character, so it shows as plain text. The test proves it:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `it("stops a message from running as a spreadsheet formula", () => {
+  expect(csvCell("@everyone")).toBe("'@everyone");
+});`,
+      },
+      { type: "h2", text: "Tests that check words, not code" },
+      {
+        type: "p",
+        text: "Five of the new checks don't test my code at all. They read my README and code guide as plain text and compare them with the real project. I proved they work by breaking my README on purpose, with a wrong count, a misspelt file name and a broken link, and each time a test failed and said exactly what was wrong.",
+      },
+      {
+        type: "p",
+        text: "Like before, my database rules aren't in these 83, because they run inside Supabase. I test those separately on a local copy of the database.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: a small feature still deserves a test. The CSV button is about 20 lines of code, but one of those lines is a security fix, and a test makes sure nobody removes it by accident.",
+      },
+    ],
+  },
+  {
+    slug: "lighthouse-check-that-never-ran",
+    title: "The Lighthouse check that never ran, and making it four times faster",
+    description:
+      "My README said Lighthouse tested my site after every deploy. When I looked at GitHub, it had never run once. Here's what I found and how I fixed it.",
+    date: "2026-10-26",
+    tags: ["Lighthouse", "GitHub Actions", "Debugging"],
+    body: [
+      {
+        type: "p",
+        text: "For Milestone 5, I set up Lighthouse CI: a GitHub Action that runs Lighthouse on my live site and fails if Accessibility or SEO drops below 90. My README said it ran after every deploy. Then I opened the Actions tab on GitHub and noticed something: my Tests workflow had 23 green runs, and Lighthouse had none. Not failed, just never started.",
+      },
+      { type: "h2", text: "Why it never ran" },
+      {
+        type: "p",
+        text: "The workflow was set to start on a deployment_status event: a message that some hosting setups send to GitHub when a deployment finishes. My Vercel project doesn't send that message to GitHub, so the trigger never fired. Nothing was broken in a way that showed up as an error. The check just sat there waiting.",
+      },
+      { type: "h2", text: "Fix 1: run after every push" },
+      {
+        type: "p",
+        text: "I changed it to start on every push to main, wait 4 minutes for Vercel to deploy, then test six pages three times each. It worked: the first run was green. But it took 8 minutes 46 seconds, and most of that was waiting.",
+      },
+      { type: "h2", text: "Fix 2: start the moment the new version is live" },
+      {
+        type: "p",
+        text: "Instead of guessing how long Vercel takes, I let the site say which version it is. I added a tiny address, /api/version, that returns the ID of the commit the live site was built from. That ID is already public on GitHub, so it shares nothing private. The workflow checks it every 15 seconds and starts Lighthouse as soon as it matches the commit that was just pushed.",
+      },
+      {
+        type: "code",
+        lang: "bash",
+        code: `for i in $(seq 1 40); do
+  live=$(curl -fsS "$SITE/api/version" | grep -oE '[0-9a-f]{40}')
+  if [ "$live" = "$GITHUB_SHA" ]; then exit 0; fi   # the new version is live
+  sleep 15
+done`,
+      },
+      {
+        type: "p",
+        text: "I made two smaller changes too. Each page is tested once instead of three times, because Accessibility and SEO scores don't change between runs (Performance only gives a warning). And pushes that only change documents, like my README, skip Lighthouse completely, because they don't change the live site.",
+      },
+      { type: "h2", text: "The result" },
+      {
+        type: "ul",
+        items: [
+          "Before: never ran at all.",
+          "Fix 1: 8 minutes 46 seconds, then 8 minutes 7 seconds.",
+          "Fix 2: 2 minutes 14 seconds on the first run, about four times faster.",
+        ],
+      },
+      {
+        type: "p",
+        text: "I also fixed my README and code guide, which had described a check that wasn't happening.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: an automatic check that never runs looks exactly like one that always passes. Every now and then, go and look at the Actions tab and make sure it's really there.",
+      },
+    ],
+  },
+  {
     slug: "keeping-docs-honest",
     title: "Keeping my docs as honest as my code",
     description:
