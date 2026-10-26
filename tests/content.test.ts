@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { skillGroups, type Skill } from "@/content/skills";
 import { certificationGroups } from "@/content/certifications";
-import { notes } from "@/content/notes";
+import { headingIds, noteNeighbours, notes } from "@/content/notes";
 import { caseStudy } from "@/content/case-study";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
@@ -44,6 +44,34 @@ describe("dev notes", () => {
       expect(Number.isNaN(Date.parse(n.date))).toBe(false);
       expect(n.description.length).toBeLessThanOrEqual(160);
     }
+  });
+});
+
+describe("dev note navigation", () => {
+  it("gives every sub-heading in every note its own address", () => {
+    for (const n of notes) {
+      const ids = headingIds(n.body).filter((id): id is string => id !== null);
+      expect(ids.length).toBe(n.body.filter((b) => b.type === "h2").length);
+      expect(new Set(ids).size).toBe(ids.length);
+      for (const id of ids) expect(id).toMatch(/^[a-z0-9-]+$/);
+    }
+  });
+
+  it("numbers two headings with the same words", () => {
+    const ids = headingIds([
+      { type: "h2", text: "What I changed" },
+      { type: "p", text: "..." },
+      { type: "h2", text: "What I changed" },
+    ]);
+    expect(ids).toEqual(["what-i-changed", null, "what-i-changed-2"]);
+  });
+
+  it("links each note to the older and newer note, with nothing past either end", () => {
+    const middle = noteNeighbours(notes[1].slug);
+    expect(middle.newer?.slug).toBe(notes[0].slug);
+    expect(middle.older?.slug).toBe(notes[2].slug);
+    expect(noteNeighbours(notes[0].slug).newer).toBe(null);
+    expect(noteNeighbours(notes[notes.length - 1].slug).older).toBe(null);
   });
 });
 

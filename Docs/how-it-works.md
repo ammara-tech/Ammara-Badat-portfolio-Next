@@ -310,7 +310,7 @@ with **429** ("Too Many Requests").
 | Spotlight cards | `Spotlight.tsx` + `.spotlight` in globals.css | One mouse listener sets `--mx` and `--my` (the mouse position) on the card, and CSS draws a glow there. |
 | Live GitHub repos | `GitHubActivity.tsx` | Asks the GitHub API for my latest repos on the server, **cached** (saved and reused) for an hour. Hidden if GitHub can't be reached. |
 | Page transitions | `app/template.tsx` | A red-to-teal stripe and a short slide-up on every page change. |
-| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed and a reading progress bar (`ReadingProgress.tsx`). |
+| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed and a reading progress bar (`ReadingProgress.tsx`). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. |
 | Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". |
 | Save my contact | `app/ammara-badat.vcf/route.ts` | Builds a **vCard** (the standard contact-card file phones understand) from `content/about.ts`. |
 | Web CV | `app/cv/page.tsx`, `content/cv.ts` | My CV as a page that prints cleanly, next to the PDF download. |
@@ -353,10 +353,10 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 69 checks:
+  example inputs and check the answers. There are 72 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
-  - every skill having evidence, every linked file existing, the dev notes, SEO helpers and the
-    contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+  - every skill having evidence, every linked file existing, the dev notes (including unique heading
+    addresses and the older/newer links), SEO helpers and the contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search and the Reply link, the activity log wording and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
@@ -365,7 +365,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   `npm test`. A green tick in the Actions tab means everything passed.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every production deploy, GitHub runs
   Lighthouse on six pages and fails the check if Accessibility or SEO drops below 90.
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 69.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 72.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -422,4 +422,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code.
+checks that my README and this guide stay in step with the code, and 72 with the dev note navigation.

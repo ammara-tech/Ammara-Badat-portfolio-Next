@@ -10,6 +10,8 @@
   These are drafts — read them and change anything so it sounds like me.
 */
 
+import { slugify } from "@/lib/slug";
+
 export type Block =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
@@ -925,6 +927,29 @@ end if;`,
     ],
   },
 ];
+
+/**
+ * Gives each sub-heading in a note its own address, like #what-had-gone-stale, so a link
+ * can point straight to that section. Blocks that aren't headings get null.
+ * Two headings with the same words get -2, -3 on the end so every address is unique.
+ */
+export function headingIds(body: Block[]) {
+  const used = new Map<string, number>();
+  return body.map((block) => {
+    if (block.type !== "h2") return null;
+    const base = slugify(block.text) || "section";
+    const count = (used.get(base) ?? 0) + 1;
+    used.set(base, count);
+    return count === 1 ? base : `${base}-${count}`;
+  });
+}
+
+/** The notes either side of this one. The list is newest first, so "older" is the next one in it. */
+export function noteNeighbours(slug: string) {
+  const i = notes.findIndex((n) => n.slug === slug);
+  if (i === -1) return { older: null, newer: null };
+  return { older: notes[i + 1] ?? null, newer: i > 0 ? notes[i - 1] : null };
+}
 
 export function findNote(slug: string) {
   return notes.find((n) => n.slug === slug) ?? null;

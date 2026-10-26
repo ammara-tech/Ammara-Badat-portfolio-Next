@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findNote, formatDate, notes, readingMinutes, type Block } from "@/content/notes";
+import { findNote, formatDate, headingIds, noteNeighbours, notes, readingMinutes, type Block } from "@/content/notes";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
@@ -30,10 +30,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-function Content({ block }: { block: Block }) {
+function Content({ block, id }: { block: Block; id: string | null }) {
   switch (block.type) {
     case "h2":
-      return <h2 className="pt-4 font-display text-2xl font-black uppercase tracking-tight text-snow">{block.text}</h2>;
+      // Each sub-heading has its own address (#its-words). The # link shows on hover or keyboard focus
+      // (and faintly on touch screens), so readers can link straight to a section.
+      // scroll-mt-24 stops the sticky navbar covering the heading when you jump to it.
+      return (
+        <h2 id={id ?? undefined} className="group scroll-mt-24 pt-4 font-display text-2xl font-black uppercase tracking-tight text-snow">
+          {block.text}
+          {id && (
+            <a
+              href={`#${id}`}
+              aria-label={`Link to this section: ${block.text}`}
+              className="ml-3 inline-block font-mono text-xl text-teal no-underline opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-50"
+            >
+              #
+            </a>
+          )}
+        </h2>
+      );
     case "ul":
       return (
         <ul className="space-y-2">
@@ -74,7 +90,8 @@ export default async function NotePage({ params }: Props) {
   const note = findNote(slug);
   if (!note) notFound();
 
-  const others = notes.filter((n) => n.slug !== note.slug).slice(0, 2);
+  const { older, newer } = noteNeighbours(note.slug);
+  const ids = headingIds(note.body);
 
   return (
     <article className="mx-auto max-w-3xl">
@@ -146,7 +163,7 @@ export default async function NotePage({ params }: Props) {
 
       <div id="note-body" className="mt-10 space-y-5 text-lg leading-relaxed text-mist">
         {note.body.map((block, i) => (
-          <Content key={i} block={block} />
+          <Content key={i} block={block} id={ids[i]} />
         ))}
       </div>
 
@@ -158,27 +175,38 @@ export default async function NotePage({ params }: Props) {
         </Link>
       </footer>
 
-      {others.length > 0 && (
-        <section aria-labelledby="more-notes" className="mt-14">
-          <h2 id="more-notes" className="font-display text-2xl font-black uppercase tracking-tight">
-            More notes
-          </h2>
-          <ul className="mt-5 grid gap-4 sm:grid-cols-2">
-            {others.map((n) => (
-              <li key={n.slug}>
-                <Link
-                  href={`/notes/${n.slug}`}
-                  className={`${card} spotlight group block h-full p-5 transition hover:-translate-y-0.5 hover:border-teal/50`}
-                >
-                  <span className="block font-display text-lg font-black uppercase leading-tight tracking-tight group-hover:text-teal">
-                    {n.title}
-                  </span>
-                  <span className="mt-2 block text-sm text-mist">{n.description}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Older and newer notes, so readers can move through them like a blog */}
+      {(older || newer) && (
+        <nav aria-label="More dev notes" className="mt-14 grid gap-4 sm:grid-cols-2">
+          {older && (
+            <Link
+              href={`/notes/${older.slug}`}
+              className={`${card} spotlight group block h-full p-5 transition hover:-translate-y-0.5 hover:border-teal/50`}
+            >
+              <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-mist">
+                <Icon name="arrow-left" className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
+                Older note
+              </span>
+              <span className="mt-2 block font-display text-lg font-black uppercase leading-tight tracking-tight group-hover:text-teal">
+                {older.title}
+              </span>
+            </Link>
+          )}
+          {newer && (
+            <Link
+              href={`/notes/${newer.slug}`}
+              className={`${card} spotlight group block h-full p-5 transition hover:-translate-y-0.5 hover:border-teal/50 sm:col-start-2 sm:text-right`}
+            >
+              <span className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-mist sm:justify-end">
+                Newer note
+                <Icon name="arrow-right" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </span>
+              <span className="mt-2 block font-display text-lg font-black uppercase leading-tight tracking-tight group-hover:text-teal">
+                {newer.title}
+              </span>
+            </Link>
+          )}
+        </nav>
       )}
     </article>
   );
