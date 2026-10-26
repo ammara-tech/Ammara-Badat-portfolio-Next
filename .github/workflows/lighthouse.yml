@@ -1,21 +1,28 @@
 # Lighthouse CI (Milestone 5 upgrade)
 #
-# After every push to main, GitHub waits a few minutes for Vercel to finish deploying,
-# then runs Lighthouse on the live site (as a phone, like Google does), 3 times per page,
-# and checks the scores:
+# After every push to main that changes the site, GitHub waits until Vercel is serving
+# that commit (it checks /api/version every 15 seconds), then runs Lighthouse on the live
+# site (as a phone, like Google does), once per page, and checks the scores:
 #   - Accessibility and SEO must be 90 or more, or this check fails (red X)
 #   - Performance and Best practices below 90 show a warning
 # The full reports are uploaded and linked in the run summary.
 # You can also start it by hand: Actions tab -> Lighthouse -> Run workflow.
 #
-# (It used to wait for a "deployment finished" message from Vercel, but my Vercel
-# project doesn't send those to GitHub, so it never ran. Waiting after a push works everywhere.)
+# Speed: it used to wait a fixed 4 minutes and test each page 3 times (about 9 minutes).
+# Now it starts as soon as the deploy is live, tests each page once (Accessibility and SEO
+# scores don't change between runs), and skips pushes that only change documents.
 
 name: Lighthouse
 
 on:
   push:
     branches: [main]
+    # Documents don't change the live site, so they don't need a Lighthouse run
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+      - "Reflections/**"
+      - "tests/**"
   workflow_dispatch:
 
 # If I push again while one is waiting, only the newest run carries on
@@ -29,9 +36,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Wait for Vercel to finish deploying
+      - name: Wait until Vercel is serving this commit
         if: github.event_name == 'push'
-        run: sleep 240
+        run: |
+          for i in $(seq 1 40); do
+            live=$(curl -fsS https://ammara-badat-portfolio-next.vercel.app/api/version | grep -o '[0-9a-f]\{40\}' || true)
+            if [ "$live" = "$GITHUB_SHA" ]; then
+              echo "The live site is on this commit after about $(((i - 1) * 15)) seconds."
+              exit 0
+            fi
+            echo "Waiting for Vercel (live site is on ${live:-an older version})..."
+            sleep 15
+          done
+          echo "::warning::Vercel didn't show this commit within 10 minutes, so Lighthouse is testing what is live now."
 
       - name: Run Lighthouse on the live site
         uses: treosh/lighthouse-ci-action@v12

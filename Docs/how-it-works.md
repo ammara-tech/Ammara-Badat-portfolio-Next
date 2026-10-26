@@ -66,6 +66,7 @@ Next.js uses **file-based routing**: the folder name is the address.
 | `app/cv/page.tsx` | `/cv`, my CV as a web page |
 | `app/admin/page.tsx` | `/admin`, my private admin page |
 | `app/api/contact/route.ts` | `/api/contact`, an **API route** (code that runs on the server and answers requests instead of showing a page) |
+| `app/api/version/route.ts` | `/api/version`, which says which commit the live site was built from (used by Lighthouse CI) |
 
 Special files:
 - `app/layout.tsx` wraps **every** page: the `<html>`, fonts, navbar, footer, phone navigation bar and the skip link.
@@ -355,7 +356,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 78 checks:
+  example inputs and check the answers. There are 79 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
@@ -363,14 +364,20 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - the admin logic (`admin.test.ts`): inbox search and the Reply link, the activity log wording and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
-    file is listed in the README's setup steps, and every file the README or this guide mentions exists
+    file is listed in the README's setup steps, every file the README or this guide mentions exists, and
+    every link inside the README points to a heading that exists
 - **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project on Node.js 22 and runs
   `npm test`. A green tick in the Actions tab means everything passed.
-- **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main, GitHub waits a few
-  minutes for Vercel to deploy, then runs Lighthouse on six pages of the live site and fails the check if
-  Accessibility or SEO drops below 90. (It first waited for a "deployment finished" message from Vercel,
-  but my Vercel project doesn't send those, so it never ran. I found this by checking the Actions tab.)
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 78.
+- **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main that changes the site,
+  GitHub checks `/api/version` every 15 seconds until Vercel is serving that commit, then runs Lighthouse
+  once on six pages of the live site and fails the check if Accessibility or SEO drops below 90.
+  Pushes that only change documents skip it.
+  - It first waited for a "deployment finished" message from Vercel, but my Vercel project doesn't send
+    those, so it never ran. I found this by checking the Actions tab.
+  - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
+    as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
+    change between runs (Performance is only a warning).
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 79.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -427,4 +434,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, and 78 with the back/forward buttons.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, and 79 with a check for broken links inside the README.

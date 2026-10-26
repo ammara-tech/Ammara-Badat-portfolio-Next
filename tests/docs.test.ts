@@ -81,6 +81,15 @@ describe("docs stay in step with the code", () => {
     expect(missingIn("README.md")).toEqual([]);
   });
 
+  it("every link inside the README points to a heading that exists", () => {
+    // GitHub turns "### Contact form" into #contact-form: lower case, punctuation and emoji removed, spaces to dashes
+    const slugs = [...readme.matchAll(/^#{1,6} (.+)$/gm)].map((m) =>
+      m[1].trim().toLowerCase().replace(/[^\p{L}\p{N}\- ]/gu, "").replace(/ /g, "-"),
+    );
+    const links = [...readme.matchAll(/\]\(#([^)]+)\)/g)].map((m) => m[1]);
+    expect(links.filter((l) => !slugs.includes(l))).toEqual([]);
+  });
+
   it("every file the code guide (Docs/how-it-works.md) mentions really exists", () => {
     expect(missingIn("Docs/how-it-works.md")).toEqual([]);
   });

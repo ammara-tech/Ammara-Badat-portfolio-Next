@@ -13,26 +13,6 @@ IT Programming (ITProg26) course at Unicollege, Krugersdorp.
 - **Front end:** HTML, CSS and JavaScript, plus React and Next.js, building responsive, interactive interfaces
 - **Back end and data:** SQL and Supabase (Auth, Row Level Security)
 - **Tools:** Git and GitHub, Vercel and AI prompting
-
-## Pages
-| Page | Route | What it shows |
-|------|-------|---------------|
-| Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
-| Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
-| Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
-| Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
-| Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs and "More projects" |
-| Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
-| Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
-| CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
-| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
-
-## Wireframes
-- [Home](Docs/wireframe-home.png)
-- [Projects](Docs/wireframe-projects.png)
-- [Contact](Docs/wireframe-contact.png)
-
 ## Tech stack
 Next.js (App Router) · React · TypeScript · Tailwind CSS · Supabase (Postgres, Auth with two-step sign-in,
 Row Level Security, Storage, Realtime) · Vitest and GitHub Actions · deployed on Vercel
@@ -49,11 +29,26 @@ tests/       Vitest tests (npm test)
 Docs/        Wireframes, proof screenshots and the code guide (how-it-works.md)
 ```
 
-## Milestones at a glance
-What I built in each milestone, plus the extras I added on top. The details for each part are
-further down this README, and my reflection for each milestone is in the [`Reflections/`](Reflections) folder.
+## Wireframes
+- [Home](Docs/wireframe-home.png)
+- [Projects](Docs/wireframe-projects.png)
+- [Contact](Docs/wireframe-contact.png)
 
-### Milestone 1: Plan, set up and deploy
+## Milestones, upgrades and what the site has now
+Everything I built, in one place. Each part has a label:
+
+| Label | Meaning |
+|---|---|
+| 🏁 **Milestone** | The course milestones for the final project (weeks 32 to 38) |
+| ⬆️ **Upgrade** | Extras I added on top of the milestones, in the order I built them |
+| ✅ **Now** | What the live site does today, grouped by area |
+
+The proof for each part (tables, tests and screenshots) is in [Details and proof](#details-and-proof) further down,
+and my reflection for each milestone is in the [`Reflections/`](Reflections) folder.
+
+### 🏁 Milestones
+
+#### 🏁 Milestone 1: Plan, set up and deploy
 - Chose my audience (South African recruiters and tech leads) and my target role (Junior Full Stack Developer).
 - Drew wireframes for [Home](Docs/wireframe-home.png), [Projects](Docs/wireframe-projects.png) and [Contact](Docs/wireframe-contact.png).
 - Started a Next.js app with TypeScript and Tailwind CSS, split my old one-page portfolio into separate
@@ -61,64 +56,145 @@ further down this README, and my reflection for each milestone is in the [`Refle
 - Peer review: a classmate said the site stands out but has a lot of colour and animation, which led to
   the animations switch I added later ([Reflections/Peer review.txt](Reflections/Peer%20review.txt)).
 
-### Milestone 2: Database and security
+#### 🏁 Milestone 2: Database and security
 - Created the `projects` table in Supabase, and the Projects page now loads from it instead of text in the code.
 - Turned on Row Level Security with four policies: anyone can read, only my account can add, edit or delete.
 - Built an owner-only `/admin` page with sign-in, where I can add, edit and delete projects.
 - Proved a signed-out visitor can't change anything ([see the test](#how-i-proved-a-visitor-cannot-write)).
 
-### Milestone 3: Case study, About and Skills
+#### 🏁 Milestone 3: Case study, About and Skills
 - Wrote a case study of my capstone (Family Clinic Platform) with screenshots and a demo video,
   with my private details blurred.
 - Wrote an About page that explains who I am in about 30 seconds, and added my certifications with an image viewer.
 - Built a Skills page where every skill links to proof (a file, a commit or a live page).
 - Restyled the site to match my first portfolio, and added animations, icons, a 404 page and a share preview.
 
-### Milestone 4: Contact form, CV and accessibility
+#### 🏁 Milestone 4: Contact form, CV and accessibility
 - Contact form saved to a `messages` table, with spam protection: a hidden honeypot field, a speed check and a
-  rate limit inside the database ([details](#contact-form-milestone-4)).
+  rate limit inside the database ([details](#contact-form)).
 - An inbox on `/admin` that only my account can read.
 - One-page CV download.
 - Checked every page at 360, 390, 768, 1024 and 1440px, with the keyboard, and for WCAG AA contrast
-  ([details](#responsive-and-accessibility-checks-milestone-4)).
+  ([details](#responsive-and-accessibility-checks)).
 
-### Upgrade pack 2 (between Milestones 4 and 5)
-Interactive terminal, spotlight cards, project filters, a lightbox, screenshot uploads to Supabase Storage,
-an admin overview with a chart, light and dark mode, and a sitemap, robots.txt and structured data
-([details](#upgrade-pack-2-improves-milestones-14)).
-
-### Milestone 5: SEO, Lighthouse and profile links
+#### 🏁 Milestone 5: SEO, Lighthouse and profile links
 - Lighthouse on mobile: **Performance 96, Accessibility 100, Best Practices 100, SEO 100**
   (Performance started at 74, [here's how I fixed it](#lighthouse-scores-mobile)).
-- Every page has its own title, description, canonical URL and share image.
-- A page for every project, faster images, live GitHub activity, Ctrl+K search, an installable site,
-  Vercel Analytics and Lighthouse CI.
-- GitHub and LinkedIn linked from the site, and my site linked from LinkedIn.
-- **Extras:** verified in Google Search Console, dev notes with an RSS feed, page transitions, a
-  "Save my contact" card with a QR code, and a Lighthouse badge in the footer
-  ([details](#milestone-5-extras)).
+- Every page has its own title, description, canonical URL and share image, plus a sitemap and robots.txt.
+- GitHub and LinkedIn linked from the site, and my site linked from LinkedIn ([details](#profile-links)).
 
-### After Milestone 5: what the site has now
-- **Mobile first:** tested on my own phone and fixed the tech marquee, light mode, the animations,
-  slow screenshots and the QR code on phones, without changing the desktop look.
-- **Phone navigation bar** at the bottom (Home, Projects, Search, Notes, Contact) that always stays in place.
-- **Animations switch** in the top bar, so visitors who find the site busy can calm it down.
-- **Drag-and-drop project order** in `/admin`.
-- **Web CV page** at `/cv`, as well as the PDF.
-- **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
-- **78 automated tests** that run on GitHub on every push, including checks that this README and the code guide stay in step with the code.
+#### 🏁 Milestone 6: Video walkthrough and final README (in progress)
+- A 3-minute video walkthrough, submitted privately to my lecturer.
+- This README, kept up to date with every commit.
+
+### ⬆️ Upgrades
+Extras beyond the milestones, in the order I built them.
+
+| # | ⬆️ Upgrade | When | What it added |
+|---|---|---|---|
+| 1 | Upgrade pack 2 | After Milestone 4 | Interactive terminal, spotlight cards, project filters, image viewer, screenshot uploads to Supabase Storage, an admin overview with a chart, light and dark mode, sitemap, robots.txt and structured data |
+| 2 | Milestone 5 upgrades | With Milestone 5 | A page for every project, faster images, live GitHub activity, Ctrl+K search, an installable site, Vercel Analytics and Lighthouse CI |
+| 3 | Milestone 5 extras | With Milestone 5 | Google Search Console, dev notes with an RSS feed, page transitions, a "Save my contact" card with a QR code, and a Lighthouse badge |
+| 4 | Mobile first | After testing on my phone | Fixed the tech marquee, light mode, animations, slow screenshots and the QR code on phones, without changing the desktop look |
+| 5 | Feature pack | After Milestone 5 | Automated tests on GitHub, error, loading and empty states, drag-and-drop project order, the animations switch (from peer review), the web CV and the phone navigation bar |
+| 6 | Reading and contact extras | After Milestone 5 | A reading progress bar on dev notes and a Copy email button |
+| 7 | Live admin inbox | Admin upgrades | Messages appear live (Supabase Realtime), search, filters, Reply and Undo delete |
+| 8 | Drafts and history | Admin upgrades | Drafts hidden by RLS, a live preview card, an activity log written by a database trigger, and auto sign-out |
+| 9 | One-tab sign-in | Admin upgrades | The admin sign-in lasts for one tab and ends when the window closes |
+| 10 | Two-step sign-in | Admin upgrades | An authenticator code after the password, enforced by the database (`aal2`) |
+| 11 | Docs checks | Polish | Tests that fail if this README or the code guide fall behind the code |
+| 12 | Dev note navigation | Polish | Heading links and Older / Newer note links |
+| 13 | Updated dates and back to top | Polish | "Updated" dates on changed dev notes, and a back-to-top button |
+| 14 | Back, Forward and Refresh | Polish | Browser-style buttons on the site itself, and GitHub Actions updated to Node.js 22 |
+| 15 | Faster Lighthouse checks | Polish | Lighthouse starts as soon as Vercel is serving the new commit, runs once per page, and skips document-only changes |
+
+### ✅ What the site has now
+
+#### ✅ Pages
+| Page | Route | What it shows |
+|------|-------|---------------|
+| Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
+| Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
+| Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
+| Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
+| Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs and "More projects" |
+| Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
+| Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
+| CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
+| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
+
+#### ✅ Admin and security
+| Feature | What it does |
+|---|---|
+| Owner-only admin | Add, edit and delete projects, upload screenshots to Supabase Storage, and drag projects into order (mouse or finger, or ↑/↓). RLS makes sure only my account can change anything. |
+| Two-step sign-in | After the password, `/admin` asks for a 6-digit code from an authenticator app (TOTP, set up once with a QR code). Every owner RLS policy uses `public.is_owner()`, which needs my user ID **and** an `aal2` login token, so a guessed password alone can't read or change anything, even through the API (`components/TwoStep.tsx`, `Supabase/008-two-step-sign-in.sql`). |
+| One-tab sign-in | The sign-in is kept in `sessionStorage`, not `localStorage`, so it belongs to one tab: `/admin` always opens on the sign-in form, a new tab, window or person gets the sign-in form, and closing the window signs me out. A closed tab reopened later is signed out too (`lib/admin-session.ts`). |
+| Auto sign-out | After 30 minutes without activity, `/admin` signs me out, with a 60-second "Still there?" warning first (`components/IdleSignOut.tsx`). |
+| Live inbox | New contact messages appear straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count, there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
+| Drafts | A Live / Draft switch on every project. The read policy lets visitors see only published projects, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
+| Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
+| Activity log | A database trigger records every project added, edited, published, moved to drafts, reordered or deleted, shown as a live timeline. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`). |
+| Overview | Cards for projects, drafts, unread messages and messages this week, plus a 7-day bar chart. |
+
+#### ✅ Contact
+| Feature | What it does |
+|---|---|
+| Contact form | Saves to Supabase, protected from spam by a hidden honeypot field, a speed check and a rate limit inside the database ([details](#contact-form)). |
+| Copy email | A **Copy** button on my email. One tap copies the address and shows "Copied!", which helps people who use webmail (`components/CopyEmail.tsx`). |
+| Save my contact + QR code | A vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
+| CV | A web CV at `/cv` that prints cleanly, and a one-page PDF download. |
+
+#### ✅ Design, accessibility and mobile
+| Feature | What it does |
+|---|---|
+| Light / dark mode | Sun/moon button. The choice is saved in `localStorage` and applied before the page paints, so there's no flash. Every colour was checked for WCAG AA contrast in both themes. |
+| Animations switch | Added after peer review (a classmate found the site busy): turn animations off in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
+| Mobile first | Checked at 360 to 1440 pixels wide and on my own phone. A phone navigation bar at the bottom (Home, Projects, Search, Notes, Contact) always stays in place. |
+| Back, Forward and Refresh | Browser-style buttons next to my name on laptops and desktops, and at the top of the phone menu. They matter most when the site is installed on a phone's home screen, where there is no browser bar. Back and Forward grey out when there's nowhere to go (`components/NavArrows.tsx`, `lib/nav-arrows.ts`). |
+| Back to top | On long pages, a small arrow appears after scrolling down, jumps back to the top and moves keyboard focus there. It sits above the phone navigation bar and is hidden on the admin page (`components/BackToTop.tsx`). |
+| Interactive terminal | The `developer.ts` card on Home takes commands: `help`, `about`, `skills`, `projects`, `certs`, `contact`, `cv`, `open <page>`, `theme`, `motion`, `clear`. ↑/↓ repeat commands, Tab finishes a word, and quick buttons work on phones. |
+| Ctrl+K search | Search every page, project, skill, note and certificate, or download my CV, from anywhere. |
+| Project filters | Filter projects by tech. The choice is kept in the address (`?tag=Next.js`) so it can be shared, and cards slide into place with the View Transitions API. |
+| Image viewer | A full-screen viewer for certificates and screenshots, built on the native `<dialog>`: Escape closes it, focus is trapped and returns to the button, arrow keys and swiping move between images. |
+| Spotlight cards and page transitions | A glow follows the mouse on cards (`components/Spotlight.tsx`, nothing on touch screens), and a red-to-teal stripe sweeps across the top on every page change (`app/template.tsx`). |
+| Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
+| Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
+
+#### ✅ Dev notes
 - **14 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, and keeping my docs honest).
-- **Reading progress bar**, **heading links**, **older / newer note links** and **"Updated" dates** on dev notes, a **Copy email** button on Contact, a **back-to-top** button on long pages, and **Back / Forward / Refresh** buttons on the site itself.
-- **9 certifications** from Certiport, Vercel and Harvard CS50.
-- A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
+- Short posts (fourteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, and an "Updated" date on notes I changed later (`components/ReadingProgress.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
-## Database
+#### ✅ SEO and performance
+| Feature | What it does |
+|---|---|
+| Lighthouse | **Performance 96, Accessibility 100, Best Practices 100, SEO 100** on mobile, with my latest scores as a badge in the footer ([details](#lighthouse-scores-mobile)). |
+| Findable | Titles, descriptions, canonical URLs, share images, a sitemap, robots.txt and structured data on every page ([details](#findable-what-every-page-has)). |
+| Google Search Console | The site is verified with Google and the sitemap is submitted. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
+| Faster images | Screenshots use Next.js `<Image>`: smaller WebP files in the size the screen needs, lazy loading, and no layout jumps. |
+| Live GitHub activity | My six most recently updated repos on the Home page, cached for an hour. |
+| Speed Insights and Analytics | Vercel's cookie-free visit counts and real visitors' loading times. |
+
+#### ✅ Quality checks
+| Feature | What it does |
+|---|---|
+| Automated tests | 79 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
+| Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
+
+Also: **9 certifications** from Certiport, Vercel and Harvard CS50, shown on the About page.
+
+## Details and proof
+The tables, tests and screenshots behind everything above.
+
+### Database
 Three tables, plus Supabase Storage for images:
 
 | Table | What it holds | Defined in |
 |---|---|---|
 | `projects` | My projects (below) | `schema.sql`, `003`, `007` |
-| `messages` | Contact form messages ([details](#contact-form-milestone-4)) | `004` |
+| `messages` | Contact form messages ([details](#contact-form)) | `004` |
 | `activity_log` | The history of every change to a project, written only by a database trigger | `007` |
 | `storage.objects` | Screenshots uploaded from `/admin` ([details](#storage-security-rls-on-files)) | `005` |
 
@@ -144,7 +220,7 @@ The `projects` table, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
 and `published` by [`Supabase/007-drafts-activity-log.sql`](Supabase/007-drafts-activity-log.sql), which also
 creates the `activity_log` table (the history shown in `/admin`).
 
-## Content
+### Content
 The page text lives in the `content/` folder, separate from the code:
 `content/about.ts` (About, Home and Contact), `content/case-study.ts` (capstone case study),
 `content/skills.ts` (skills and their evidence links), `content/certifications.ts` (my certificates,
@@ -152,7 +228,7 @@ shown on the About page; the images are in `public/certificates/`), `content/not
 `content/cv.ts` (the web CV at `/cv`). Every skill must have at least one evidence
 link, or the site will not build, so I can't list a skill I can't back up.
 
-## Security: Row Level Security
+### Security: Row Level Security
 RLS is enabled on every table. On `projects` there are four policies:
 
 | Policy | Who | Rule |
@@ -177,7 +253,7 @@ Public sign-ups are turned off in Supabase Auth, so mine is the only account. Ev
 account existed, the policies check my exact user ID and the two-step level, so "any signed-in user"
 still cannot write.
 
-### How I proved a visitor cannot write
+#### How I proved a visitor cannot write
 Signed out, in an incognito window, I used the public anon key from the browser console to try
 every operation against the live database:
 
@@ -190,7 +266,7 @@ every operation against the live database:
 
 Screenshot: [RLS test in the browser console](Docs/rls-test-console.png)
 
-### How I tested the admin security (drafts, activity log, two-step sign-in)
+#### How I tested the admin security (drafts, activity log, two-step sign-in)
 Before running `007` and `008` on Supabase, I ran every SQL file in order on a local PostgreSQL set up
 like Supabase, and tested as a visitor, as another signed-in account and as me:
 
@@ -209,7 +285,7 @@ like Supabase, and tested as a visitor, as another signed-in account and as me:
 I also tested the sign-in screens in a browser: a fresh visit, the QR set-up, a wrong code, a pasted
 code with a space, the code step on the next sign-in, refreshing, a second tab and reopening a closed tab.
 
-## Contact form (Milestone 4)
+### Contact form
 Messages from `/contact` are saved to a `messages` table, defined in
 [`Supabase/004-messages-contact-form.sql`](Supabase/004-messages-contact-form.sql).
 
@@ -223,7 +299,7 @@ Messages from `/contact` are saved to a `messages` table, defined in
 | `is_read` | boolean | Whether I've read it in `/admin` |
 | `created_at` | timestamptz | When it was sent |
 
-### Who can do what (RLS)
+#### Who can do what (RLS)
 | Policy | Who | Rule |
 |--------|-----|------|
 | Anyone can send a message | `anon`, `authenticated` | `insert` only, and it must arrive unread |
@@ -234,7 +310,7 @@ Messages from `/contact` are saved to a `messages` table, defined in
 Visitors can add a message but can never read, change or delete one, including their own.
 The inbox is on the `/admin` page, which only my account can use, after both sign-in steps.
 
-### Spam protection: honeypot + rate limit
+#### Spam protection: honeypot + rate limit
 I chose a **honeypot** and a **rate limit**, so real visitors never have to solve a CAPTCHA:
 
 1. **Honeypot:** the form has a hidden "website" field that people never see and keyboard users
@@ -246,7 +322,7 @@ I chose a **honeypot** and a **rate limit**, so real visitors never have to solv
    visitor every 10 minutes**, and 30 messages per hour in total. Because it runs inside Supabase,
    it also stops anyone who skips my form and calls the database directly.
 
-### How I tested it
+#### How I tested it
 Before running the SQL on Supabase, I tested it on a local PostgreSQL set up like Supabase:
 
 | Test | Result |
@@ -263,35 +339,6 @@ The form itself: a filled-in honeypot or a 1-second submission is silently dropp
 friendly error, and the rate limit shows this message to the visitor:
 [screenshot](Docs/contact-form-rate-limit.png).
 
-## Responsive and accessibility checks (Milestone 4)
-Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and 1440px (desktop)**.
-
-- **Layout:** no page scrolls sideways or cuts off text at any of those widths.
-  [Home](Docs/responsive-home.png) · [Projects](Docs/responsive-projects.png) · [Contact](Docs/responsive-contact.png)
-- **Keyboard:** every link, button and form field can be reached with Tab, in a sensible order, with a
-  visible teal focus outline. A "Skip to content" link appears on the first Tab press, the phone menu
-  closes with Escape, and the hidden honeypot field is skipped.
-- **Contrast:** every piece of text was measured against its background and passes WCAG AA
-  (4.5:1 for normal text, 3:1 for large text). Fixes: the dim grey went from `#63667a` (3.0:1) to
-  `#868a9c` (4.7:1 or better), small red text uses a brighter red `#ff3b5c`, and the red buttons use
-  white text (4.32:1 → 4.70:1). My racing red is kept for large headings, where it passes.
-- **Worst layout bug fixed:** on phones the Home page scrolled sideways, because the long line in the
-  `developer.ts` code card forced the hero column wider than the screen. I fixed it by limiting the
-  grid column (`grid-cols-1` = `minmax(0, 1fr)`), letting the role line wrap, and making the code
-  smaller on phones.
-
-## Upgrade pack 2 (improves Milestones 1–4)
-| Feature | Where | What it shows |
-|---|---|---|
-| Interactive terminal | Home | The `developer.ts` card from my first portfolio now takes commands: `help`, `about`, `skills`, `projects`, `certs`, `contact`, `cv`, `open <page>`, `theme`, `clear`. ↑/↓ repeat commands, Tab finishes a word, and quick buttons work on phones. |
-| Spotlight cards | Projects, Skills, About, case study, admin | A glow and a bright edge follow the mouse. One listener for the whole site (`components/Spotlight.tsx`); does nothing on touch screens. |
-| Project filters | Projects | Filter by tech. Tags come from the database, the choice is kept in the address (`?tag=Next.js`) so it can be shared, and cards slide into place with the View Transitions API. |
-| Lightbox | About (certificates), case study | Full-screen viewer built on the native `<dialog>`: Escape closes it, focus is trapped and returns to the button, arrow keys and swiping move between images. |
-| Image upload | /admin | Drop a screenshot into the form and it uploads to Supabase Storage, then fills in the image URL. Checks type and size (5 MB) first. |
-| Admin overview | /admin | Cards for projects, unread messages and messages this week, plus a 7-day bar chart. |
-| Light / dark mode | Navbar | Sun/moon button. The choice is saved in `localStorage` and applied before the page paints, so there's no flash. Every colour in light mode was checked for WCAG AA contrast. |
-| Search engine extras | `app/sitemap.ts`, `app/robots.ts`, `app/layout.tsx` | `/sitemap.xml`, `/robots.txt` (keeps `/admin` and `/api` out of search), and JSON-LD structured data describing me, my job title and certifications. |
-
 ### Storage security (RLS on files)
 `Supabase/005-project-images-storage.sql` creates a public `project-images` bucket (images only,
 5 MB max) and four policies on `storage.objects`:
@@ -307,13 +354,26 @@ authenticator code). I tested the policies on a local Postgres copy: a visitor a
 "new row violates row-level security policy", a visitor listed 0 files, another user's delete
 removed 0 rows, and only the owner could upload, rename and delete.
 
-After the upgrade the responsive (360–1440px), keyboard and contrast checks were run again in
-**both** themes, and everything still passes.
+### Responsive and accessibility checks
+Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and 1440px (desktop)**.
 
-## SEO, Lighthouse and profile links (Milestone 5)
-**Live site:** https://ammara-badat-portfolio-next.vercel.app
+- **Layout:** no page scrolls sideways or cuts off text at any of those widths.
+  [Home](Docs/responsive-home.png) · [Projects](Docs/responsive-projects.png) · [Contact](Docs/responsive-contact.png)
+- **Keyboard:** every link, button and form field can be reached with Tab, in a sensible order, with a
+  visible teal focus outline. A "Skip to content" link appears on the first Tab press, the phone menu
+  closes with Escape, and the hidden honeypot field is skipped.
+- **Contrast:** every piece of text was measured against its background and passes WCAG AA
+  (4.5:1 for normal text, 3:1 for large text). Fixes: the dim grey went from `#63667a` (3.0:1) to
+  `#868a9c` (4.7:1 or better), small red text uses a brighter red `#ff3b5c`, and the red buttons use
+  white text (4.32:1 → 4.70:1). My racing red is kept for large headings, where it passes.
+- **Worst layout bug fixed:** on phones the Home page scrolled sideways, because the long line in the
+  `developer.ts` code card forced the hero column wider than the screen. I fixed it by limiting the
+  grid column (`grid-cols-1` = `minmax(0, 1fr)`), letting the role line wrap, and making the code
+  smaller on phones.
+- **Re-checked:** after Upgrade pack 2 added light mode, every check was run again in **both** themes, and everything still passes.
 
-### Lighthouse scores (mobile)
+### Lighthouse and SEO
+#### Lighthouse scores (mobile)
 | Page | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|
 | Home | 96 | 100 | 100 | 100 |
@@ -327,12 +387,13 @@ animations slide in without hiding the content, loaded the Ctrl+K search, image 
 effect only after the page appears, and cut the heading font from 4 weights to 2. Performance went
 74 → 88 → 96.
 
-Lighthouse also runs automatically: after every push to `main`, a GitHub Action
-(`.github/workflows/lighthouse.yml`) waits a few minutes for Vercel to deploy, then checks six pages (Home, About, Projects, the case study, Skills and
-Contact) and fails if Accessibility or SEO drops below 90.
-See the **Actions** tab.
+Lighthouse also runs automatically: after every push to `main` that changes the site, a GitHub Action
+(`.github/workflows/lighthouse.yml`) checks `/api/version` (`app/api/version/route.ts`) every 15 seconds until
+Vercel is serving that commit, then runs Lighthouse once on each of six pages (Home, About, Projects, the case
+study, Skills and Contact) and fails if Accessibility or SEO drops below 90. Pushes that only change documents
+(like this README) skip it. See the **Actions** tab.
 
-### Findable: what every page has
+#### Findable: what every page has
 - **Title and meta description** written for that page (`lib/seo.ts`), all under 160 characters.
 - **Canonical URL**, so `/projects` and `/projects?tag=CSS` count as one page.
 - **Open Graph and Twitter tags** with a share image made for each page
@@ -345,54 +406,11 @@ See the **Actions** tab.
 - **Structured data (JSON-LD)** describing me (Person, with my certifications), the website, each
   page's breadcrumbs, the projects and the case study, so Google can show richer results.
 
-### Profile links
+#### Profile links
 - **GitHub:** linked in the footer, on the Contact page, in the Ctrl+K search and in the terminal
   (`github`), and listed in my structured data. The Home page shows my latest repositories live from GitHub.
 - **LinkedIn:** [linkedin.com/in/ammara-badat](https://www.linkedin.com/in/ammara-badat) — linked in the footer,
   on the Contact page and in Ctrl+K search. My portfolio URL is on my LinkedIn profile (Contact info → Website and Featured).
-
-### Milestone 5 upgrades
-| Upgrade | What it does |
-|---|---|
-| A page for every project | `/projects/neon-arcade` and so on, built from Supabase, with breadcrumbs, a share image and "More projects". |
-| Faster images | Screenshots use Next.js `<Image>`: smaller WebP files in the size the screen needs, lazy loading, and no layout jumps. The certificate thumbnails went from about 160 KB each to a few KB. |
-| Live GitHub activity | My six most recently updated repos on the Home page, cached for an hour. |
-| Ctrl+K search | Search every page, project, skill and certificate, or download my CV, from anywhere. Also opens from the navbar and the terminal (`search`). |
-| Installable site | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
-| Speed Insights and Analytics | Vercel's cookie-free visit counts and real visitors' loading times. |
-| Lighthouse CI | The GitHub Action above. |
-
-### Milestone 5 extras
-| Extra | What it does |
-|---|---|
-| Google Search Console | The site is verified with Google and the sitemap is submitted, so Google indexes every page. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
-| Dev notes + RSS | Short posts (fourteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically. |
-| Page transitions | `app/template.tsx`: a red-to-teal stripe sweeps across the top and the new page glides up on every page change. The page is never hidden, so it doesn't hurt Lighthouse. |
-| Save my contact + QR code | On the Contact page: a vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
-| Lighthouse badge | My latest scores in the footer, linked to the screenshot that proves them. |
-
-### More features (after Milestone 5)
-| Feature | What it does |
-|---|---|
-| Automated tests + CI | 78 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, and every file the docs mention existing). A GitHub Action runs them on every push. |
-| Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
-| Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
-| Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
-| Web CV (`/cv`) | My CV as a page: easy to read on a phone, readable by Google, and it prints cleanly on white paper. The PDF download stays. |
-| Phone navigation bar | On phones, a bar at the bottom with Home, Projects, Search, Notes and Contact. It always stays in place at the bottom of the screen. |
-| Reading progress | On every dev note, a red-to-teal bar at the top fills as you read, and is full when you reach the last paragraph. It works in every browser, including Safari on iPhones (`components/ReadingProgress.tsx`). |
-| Copy email | A **Copy** button next to my email on the Contact page. One tap copies the address and shows "Copied!", which helps people who use webmail, where email links don't open anything (`components/CopyEmail.tsx`). |
-| Dev note navigation | Every sub-heading in a dev note has its own address: hover it (or Tab to it) and a **#** appears, so you can link straight to that section. At the end of each note, **Older note** and **Newer note** links move through them like a blog (`app/notes/[slug]/page.tsx`, `headingIds()` and `noteNeighbours()` in `content/notes.ts`). |
-| Updated dates | A dev note I changed on a later day shows "Updated" next to its date, on the note and on the notes list. The sitemap and the note's structured data use that date too, so Google knows it changed (`updated` in `content/notes.ts`). |
-| Back to top | On long pages, a small arrow appears after scrolling down and jumps back to the top, moving keyboard focus there too. On phones it sits above the navigation bar; it's hidden on the admin page (`components/BackToTop.tsx`). |
-| Back, Forward and Refresh | Browser-style buttons on the site itself: next to my name on laptops and desktops, and at the top of the phone menu. They matter most when the site is installed on a phone's home screen, where there is no browser bar. Back and Forward are greyed out when there's nowhere to go, using the browser's Navigation API where it exists (`components/NavArrows.tsx`, `lib/nav-arrows.ts`). |
-| Live admin inbox | New contact messages appear in `/admin` straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count, there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
-| Drafts | A Live / Draft switch on every project in `/admin`. A new RLS policy lets visitors read only published projects, while my account reads them all, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
-| Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
-| Activity log | A database trigger records every project added, edited, published, moved to drafts, reordered or deleted, shown as a live timeline in `/admin`. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`). |
-| Two-step sign-in | After the password, `/admin` asks for a 6-digit code from an authenticator app (TOTP, set up once with a QR code). Every owner RLS policy now uses `public.is_owner()`, which needs my user ID **and** an `aal2` login token, so a guessed password alone can't read or change anything, even through the API (`components/TwoStep.tsx`, `Supabase/008-two-step-sign-in.sql`). |
-| One-tab sign-in | The admin sign-in is kept in `sessionStorage`, not `localStorage`, so it belongs to one tab: `/admin` always opens on the sign-in form, a new tab, window or person gets the sign-in form, and closing the window signs me out. A closed tab reopened more than 10 seconds later is signed out too (`lib/admin-session.ts`). |
-| Auto sign-out | After 30 minutes without activity, `/admin` signs me out, with a 60-second "Still there?" warning first (`components/IdleSignOut.tsx`). |
 
 ## Environment variables
 Set in Vercel (Settings → Environment Variables) and, for local development, in `.env.local`
@@ -460,7 +478,7 @@ npm run dev
 1. Import the GitHub repo into Vercel.
 2. Add the environment variables from the table above (Settings → Environment Variables).
 3. Deploy. Every push to `main` deploys again; the Tests action runs on every push, and the Lighthouse
-   action waits a few minutes for the deploy, then checks the live site.
+   action waits until the new deploy is live, then checks the live site.
 
 ### How the code works
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).
