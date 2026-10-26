@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getBrowserClient, type Message } from "@/lib/supabase";
 import Icon from "@/components/Icon";
 import { matchesSearch, replyLink } from "@/lib/inbox";
+import { csvFileName, messagesCsv } from "@/lib/csv";
 
 /*
   Contact form inbox for /admin. Reading only works for my account,
@@ -16,6 +17,7 @@ import { matchesSearch, replyLink } from "@/lib/inbox";
   - Search and All / Unread / Read filters.
   - Reply opens my email app with the sender, a subject and their message quoted.
   - Delete waits 5 seconds so I can press Undo.
+  - Download CSV saves the messages I'm looking at (after search and filters) as a spreadsheet file.
 */
 
 const TAB_TITLE = "Admin — Ammara Badat";
@@ -175,6 +177,18 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
     [messages, pending, filter, query],
   );
 
+  // Builds the CSV in the browser and downloads it. Nothing is sent anywhere.
+  function downloadCsv() {
+    const csv = "\uFEFF" + messagesCsv(visible); // the BOM at the start makes Excel read accents and emoji correctly
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = csvFileName();
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast(`Downloaded ${visible.length} ${visible.length === 1 ? "message" : "messages"}`);
+  }
+
   const counts = {
     all: messages.filter((m) => m.id !== pending?.id).length,
     unread,
@@ -199,6 +213,17 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
             <span aria-hidden="true" className={`h-2 w-2 rounded-full ${live ? "bg-teal fx-live" : "bg-line-strong"}`} />
             {live ? "Live" : "Connecting"}
           </span>
+          <button
+            type="button"
+            onClick={downloadCsv}
+            disabled={visible.length === 0}
+            title="Download the messages shown below as a spreadsheet (CSV)"
+            className="flex items-center gap-1.5 rounded border border-line-strong px-3 py-1 text-sm hover:border-teal hover:text-teal disabled:opacity-40 disabled:hover:border-line-strong disabled:hover:text-snow"
+          >
+            <Icon name="download" className="h-4 w-4" />
+            CSV
+            <span className="sr-only">: download the {visible.length} messages shown</span>
+          </button>
           <button
             onClick={() => {
               load();
@@ -231,7 +256,7 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
               type="button"
               aria-pressed={filter === f}
               onClick={() => setFilter(f)}
-              className={`flex-1 rounded-sm px-3 py-1.5 text-sm capitalize transition ${
+              className={`flex-1 whitespace-nowrap rounded-sm px-3 py-1.5 text-sm capitalize transition ${
                 filter === f ? "bg-teal/15 text-teal" : "text-mist hover:text-snow"
               }`}
             >
@@ -263,7 +288,7 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
                 <button
                   onClick={() => open(msg)}
                   aria-expanded={openId === msg.id}
-                  className="min-w-0 flex-1 text-left"
+                  className="min-w-0 flex-1 basis-56 text-left"
                 >
                   <span className="flex items-center gap-2">
                     {!msg.is_read && <span className="h-2 w-2 shrink-0 rounded-full bg-teal" aria-label="Unread" />}

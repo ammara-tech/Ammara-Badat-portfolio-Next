@@ -209,6 +209,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Unread count in the tab | `Inbox.tsx` | The browser tab title becomes "(2) Admin — Ammara Badat". |
 | Search and filters | `lib/inbox.ts` → `matchesSearch()` | Finds messages by name, email or text in any capitals; All / Unread / Read buttons. |
 | Reply | `lib/inbox.ts` → `replyLink()` | A `mailto:` link with the sender's address, a subject, a greeting with their first name and their message quoted. |
+| Download CSV | `Inbox.tsx`, `lib/csv.ts` | Saves the messages I'm viewing (after search and filters) as a **CSV** file (a simple spreadsheet format). It is built in the browser, so nothing is sent anywhere. Cells with commas, quotes or line breaks are wrapped in quotes. Because messages come from a public form, a cell starting with `=`, `+`, `-` or `@` gets a `'` in front, so a spreadsheet shows it as text instead of running it as a formula (**CSV injection**). A hidden mark at the start (a **BOM**) makes Excel read accents and emoji correctly. |
 | Undo delete | `Inbox.tsx` | The message disappears straight away, but the delete is only sent to Supabase after 5 seconds. Undo cancels the timer. If the delete fails, the message comes back with an error. |
 | Add / edit form | `app/admin/page.tsx` | Saves to `projects`, then checks a row came back (RLS can block silently). |
 | Draft / Live switch | `ProjectOrderList.tsx` | Updates `published`. Visitors never receive drafts, because of the read policy, so the public pages needed no changes. |
@@ -356,12 +357,13 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 79 checks:
+  example inputs and check the answers. There are 83 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     and the contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
-  - the admin logic (`admin.test.ts`): inbox search and the Reply link, the activity log wording and
+  - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
+    formula protection), the activity log wording and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -377,7 +379,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 79.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 83.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -434,4 +436,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, and 79 with a check for broken links inside the README.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, and 83 with the CSV download.

@@ -4,6 +4,7 @@ import { describe as describeActivity, groupActivity, timeAgo } from "@/lib/acti
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
 import { cleanCode, nextStep } from "@/lib/two-step";
+import { csvCell, csvFileName, messagesCsv } from "@/lib/csv";
 import type { ActivityEntry } from "@/lib/supabase";
 
 // A message like one sent from the Contact page
@@ -123,5 +124,32 @@ describe("admin two-step sign-in", () => {
   it("accepts a pasted code with spaces, and never more than 6 digits", () => {
     expect(cleanCode("123 456")).toBe("123456");
     expect(cleanCode("12a34567")).toBe("123456");
+  });
+});
+
+describe("admin inbox: Download CSV", () => {
+  it("wraps cells with commas, quotes or line breaks, and doubles the quotes", () => {
+    expect(csvCell("plain")).toBe("plain");
+    expect(csvCell('Hi, I said "hello"\nBye')).toBe('"Hi, I said ""hello""\nBye"');
+  });
+
+  it("stops a message from running as a spreadsheet formula", () => {
+    expect(csvCell("=HYPERLINK(\"x\")")).toBe('"\'=HYPERLINK(""x"")"');
+    expect(csvCell("+27 60 000 0000")).toBe("'+27 60 000 0000");
+    expect(csvCell("@everyone")).toBe("'@everyone");
+  });
+
+  it("has a header row and one row per message", () => {
+    const csv = messagesCsv([
+      { name: "Thabo", email: "thabo@example.com", message: "Hello, Ammara", is_read: false, created_at: "2026-10-26T10:00:00Z" },
+    ]);
+    const lines = csv.split("\r\n");
+    expect(lines[0]).toBe("Sent,Name,Email,Message,Read");
+    expect(lines.length).toBe(2);
+    expect(lines[1]).toContain('Thabo,thabo@example.com,"Hello, Ammara",No');
+  });
+
+  it("names the file after the day it was downloaded", () => {
+    expect(csvFileName(new Date(2026, 9, 6))).toBe("messages-2026-10-06.csv");
   });
 });

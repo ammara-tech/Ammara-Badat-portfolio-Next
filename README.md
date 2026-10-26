@@ -107,6 +107,7 @@ Extras beyond the milestones, in the order I built them.
 | 13 | Updated dates and back to top | Polish | "Updated" dates on changed dev notes, and a back-to-top button |
 | 14 | Back, Forward and Refresh | Polish | Browser-style buttons on the site itself, and GitHub Actions updated to Node.js 22 |
 | 15 | Faster Lighthouse checks | Polish | Lighthouse starts as soon as Vercel is serving the new commit, runs once per page, and skips document-only changes |
+| 16 | Download messages as CSV | Admin upgrades | A "CSV" button in the inbox that saves the messages being viewed as a spreadsheet file, protected against formula tricks |
 
 ### ✅ What the site has now
 
@@ -122,7 +123,7 @@ Extras beyond the milestones, in the order I built them.
 | Dev notes | `/notes` | Short posts about what I built and learned, with an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
 | Contact | `/contact` | Contact form (saved to Supabase, spam-protected), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
 | CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
-| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
+| Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete, download as CSV), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
 
 #### ✅ Admin and security
 | Feature | What it does |
@@ -135,6 +136,7 @@ Extras beyond the milestones, in the order I built them.
 | Drafts | A Live / Draft switch on every project. The read policy lets visitors see only published projects, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
 | Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
 | Activity log | A database trigger records every project added, edited, published, moved to drafts, reordered or deleted, shown as a live timeline. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`). |
+| Download CSV | A **CSV** button in the inbox saves the messages I'm viewing (after search and filters) as a spreadsheet file that Excel and Google Sheets open. It's built in the browser, so nothing is sent anywhere. Messages come from a public form, so any cell starting with `=`, `+`, `-` or `@` gets a `'` in front, which stops a spreadsheet running it as a formula ("CSV injection") (`lib/csv.ts`). |
 | Overview | Cards for projects, drafts, unread messages and messages this week, plus a 7-day bar chart. |
 
 #### ✅ Contact
@@ -179,7 +181,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 79 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 83 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
