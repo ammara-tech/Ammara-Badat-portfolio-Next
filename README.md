@@ -106,9 +106,9 @@ an admin overview with a chart, light and dark mode, and a sitemap, robots.txt a
 - **Drag-and-drop project order** in `/admin`.
 - **Web CV page** at `/cv`, as well as the PDF.
 - **Error, loading and empty states**, so nothing breaks badly if Supabase is down.
-- **76 automated tests** that run on GitHub on every push, including checks that this README and the code guide stay in step with the code.
+- **78 automated tests** that run on GitHub on every push, including checks that this README and the code guide stay in step with the code.
 - **14 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, and keeping my docs honest).
-- **Reading progress bar**, **heading links**, **older / newer note links** and **"Updated" dates** on dev notes, a **Copy email** button on Contact, and a **back-to-top** button on long pages.
+- **Reading progress bar**, **heading links**, **older / newer note links** and **"Updated" dates** on dev notes, a **Copy email** button on Contact, a **back-to-top** button on long pages, and **Back / Forward / Refresh** buttons on the site itself.
 - **9 certifications** from Certiport, Vercel and Harvard CS50.
 - A plain-English guide to the code: [Docs/how-it-works.md](Docs/how-it-works.md).
 
@@ -374,7 +374,7 @@ See the **Actions** tab.
 ### More features (after Milestone 5)
 | Feature | What it does |
 |---|---|
-| Automated tests + CI | 76 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, and every file the docs mention existing). A GitHub Action runs them on every push. |
+| Automated tests + CI | 78 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar and the admin inbox search and Reply link, the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, and every file the docs mention existing). A GitHub Action runs them on every push. |
 | Error, loading and empty states | A branded "Pit stop" page with **Try again** if a page fails (`app/error.tsx`), loading skeletons, and friendly messages if Supabase is down or there are no projects yet. |
 | Drag-and-drop project order | In `/admin`, drag projects (mouse or finger) or use the ↑/↓ buttons. The order is saved to Supabase straight away, and RLS makes sure only I can change it. |
 | Animations switch | After peer review (a classmate found the site busy), visitors can turn animations off with the switch in the top bar, in Ctrl+K or with the terminal's `motion` command. Devices that ask for less motion always get it. |
@@ -385,6 +385,7 @@ See the **Actions** tab.
 | Dev note navigation | Every sub-heading in a dev note has its own address: hover it (or Tab to it) and a **#** appears, so you can link straight to that section. At the end of each note, **Older note** and **Newer note** links move through them like a blog (`app/notes/[slug]/page.tsx`, `headingIds()` and `noteNeighbours()` in `content/notes.ts`). |
 | Updated dates | A dev note I changed on a later day shows "Updated" next to its date, on the note and on the notes list. The sitemap and the note's structured data use that date too, so Google knows it changed (`updated` in `content/notes.ts`). |
 | Back to top | On long pages, a small arrow appears after scrolling down and jumps back to the top, moving keyboard focus there too. On phones it sits above the navigation bar; it's hidden on the admin page (`components/BackToTop.tsx`). |
+| Back, Forward and Refresh | Browser-style buttons on the site itself: next to my name on laptops and desktops, and at the top of the phone menu. They matter most when the site is installed on a phone's home screen, where there is no browser bar. Back and Forward are greyed out when there's nowhere to go, using the browser's Navigation API where it exists (`components/NavArrows.tsx`, `lib/nav-arrows.ts`). |
 | Live admin inbox | New contact messages appear in `/admin` straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count, there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
 | Drafts | A Live / Draft switch on every project in `/admin`. A new RLS policy lets visitors read only published projects, while my account reads them all, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
 | Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
@@ -407,7 +408,7 @@ Set in Vercel (Settings → Environment Variables) and, for local development, i
 The Supabase service role / secret key is not used anywhere in this project.
 
 ## Setup (run it yourself)
-You need Node.js 20 or newer, a free [Supabase](https://supabase.com) project and, to deploy, a
+You need Node.js 22 or newer, a free [Supabase](https://supabase.com) project and, to deploy, a
 free [Vercel](https://vercel.com) account.
 
 ### 1. Supabase

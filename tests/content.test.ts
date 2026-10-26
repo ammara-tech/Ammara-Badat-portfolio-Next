@@ -5,6 +5,7 @@ import { skillGroups, type Skill } from "@/content/skills";
 import { certificationGroups } from "@/content/certifications";
 import { headingIds, lastChanged, noteNeighbours, notes } from "@/content/notes";
 import { showBackToTop } from "@/lib/back-to-top";
+import { historyButtons } from "@/lib/nav-arrows";
 import { caseStudy } from "@/content/case-study";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
@@ -98,6 +99,17 @@ describe("back-to-top button", () => {
 
   it("appears after scrolling more than one and a half screens", () => {
     expect(showBackToTop(1300, 800)).toBe(true);
+  });
+});
+
+describe("back, forward and refresh buttons", () => {
+  it("use what the browser says when it supports the Navigation API", () => {
+    expect(historyButtons({ canGoBack: true, canGoForward: false }, 5)).toEqual({ canBack: true, canForward: false });
+  });
+
+  it("allow Back only after visiting more than one page in other browsers", () => {
+    expect(historyButtons(undefined, 1)).toEqual({ canBack: false, canForward: true });
+    expect(historyButtons(null, 3)).toEqual({ canBack: true, canForward: true });
   });
 });
 

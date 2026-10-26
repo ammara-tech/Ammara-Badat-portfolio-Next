@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Icon from "@/components/Icon";
 import ThemeToggle from "@/components/ThemeToggle";
 import MotionToggle from "@/components/MotionToggle";
+import NavArrows from "@/components/NavArrows";
 import { about } from "@/content/about";
 
 const links = [
@@ -50,10 +51,16 @@ export default function Navbar() {
       }`}
     >
       <nav aria-label="Main" className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8">
-        <Link href="/" className="group shrink-0 whitespace-nowrap font-display text-lg font-black uppercase tracking-wide">
-          Ammara Badat
-          <span className="inline-block text-racing-text transition-transform duration-300 group-hover:scale-150">.</span>
-        </Link>
+        <div className="flex shrink-0 items-center">
+          {/* Back, Forward and Refresh, like a browser (laptops and desktops; phones have them in the menu) */}
+          <div className="mr-3 hidden border-r border-line pr-2 lg:block">
+            <NavArrows />
+          </div>
+          <Link href="/" className="group shrink-0 whitespace-nowrap font-display text-lg font-black uppercase tracking-wide">
+            Ammara Badat
+            <span className="inline-block text-racing-text transition-transform duration-300 group-hover:scale-150">.</span>
+          </Link>
+        </div>
 
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
@@ -96,8 +103,11 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-9 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-7 md:border-0 md:bg-transparent md:p-0`}
         >
+          <li className="border-b border-line pb-5 md:hidden">
+            <NavArrows variant="menu" onUse={() => setOpen(false)} />
+          </li>
           {links.map(({ href, label }) => {
             const active = isActive(href);
             return (

@@ -312,6 +312,7 @@ with **429** ("Too Many Requests").
 | Page transitions | `app/template.tsx` | A red-to-teal stripe and a short slide-up on every page change. |
 | Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed and a reading progress bar (`ReadingProgress.tsx`). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. |
 | Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". |
+| Back, Forward, Refresh | `NavArrows.tsx`, `lib/nav-arrows.ts` | Browser-style buttons next to my name (laptops and desktops) and at the top of the phone menu, for when the site is installed on a phone and has no browser bar. Back and Forward use `history.back()` and `history.forward()`; Refresh reloads the page. The **Navigation API** (a newer browser feature) says whether there is a page to go back or forward to, so the buttons grey out when there isn't. |
 | Back to top | `BackToTop.tsx`, `lib/back-to-top.ts` | Appears after scrolling more than one and a half screens. Jumps to the top (smoothly, unless motion is reduced) and moves keyboard focus to the page content. Sits above the phone navigation bar; hidden on the admin page. |
 | Save my contact | `app/ammara-badat.vcf/route.ts` | Builds a **vCard** (the standard contact-card file phones understand) from `content/about.ts`. |
 | Web CV | `app/cv/page.tsx`, `content/cv.ts` | My CV as a page that prints cleanly, next to the PDF download. |
@@ -354,22 +355,22 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 76 checks:
+  example inputs and check the answers. There are 78 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
-    addresses, the older/newer links and updated dates), the back-to-top button, SEO helpers and the
-    contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+    addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
+    and the contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search and the Reply link, the activity log wording and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, and every file the README or this guide mentions exists
-- **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project and runs
+- **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project on Node.js 22 and runs
   `npm test`. A green tick in the Actions tab means everything passed.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main, GitHub waits a few
   minutes for Vercel to deploy, then runs Lighthouse on six pages of the live site and fails the check if
   Accessibility or SEO drops below 90. (It first waited for a "deployment finished" message from Vercel,
   but my Vercel project doesn't send those, so it never ran. I found this by checking the Actions tab.)
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 76.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 78.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -426,4 +427,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, and 76 with updated dates and the back-to-top button.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, and 78 with the back/forward buttons.
