@@ -327,8 +327,8 @@ animations slide in without hiding the content, loaded the Ctrl+K search, image 
 effect only after the page appears, and cut the heading font from 4 weights to 2. Performance went
 74 → 88 → 96.
 
-Lighthouse also runs automatically: after every production deploy, a GitHub Action
-(`.github/workflows/lighthouse.yml`) checks six pages (Home, About, Projects, the case study, Skills and
+Lighthouse also runs automatically: after every push to `main`, a GitHub Action
+(`.github/workflows/lighthouse.yml`) waits a few minutes for Vercel to deploy, then checks six pages (Home, About, Projects, the case study, Skills and
 Contact) and fails if Accessibility or SEO drops below 90.
 See the **Actions** tab.
 
@@ -459,7 +459,7 @@ npm run dev
 1. Import the GitHub repo into Vercel.
 2. Add the environment variables from the table above (Settings → Environment Variables).
 3. Deploy. Every push to `main` deploys again; the Tests action runs on every push, and the Lighthouse
-   action then checks the live site.
+   action waits a few minutes for the deploy, then checks the live site.
 
 ### How the code works
 A plain-English guide to every part of the code is in [Docs/how-it-works.md](Docs/how-it-works.md).

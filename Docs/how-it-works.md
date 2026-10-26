@@ -19,7 +19,7 @@ It has three parts that work together:
 |---|---|---|
 | **Vercel** | Hosts the site. Every push to `main` on GitHub builds and publishes it. | vercel.com |
 | **Supabase** | The **database** (where data is stored), **Auth** (sign-in), **Storage** (uploaded images) and **Realtime** (live updates). Holds my projects, contact messages, images and the admin activity log. | supabase.com |
-| **GitHub** | Stores the code and its history. Runs my tests on every push and Lighthouse after every deploy. | github.com |
+| **GitHub** | Stores the code and its history. Runs my tests on every push, and Lighthouse on the live site a few minutes after every push. | github.com |
 
 ```
 Visitor's browser ──► Vercel (my Next.js code) ──► Supabase (database, sign-in, images, live updates)
@@ -41,7 +41,7 @@ public/         Files served as they are: screenshots, certificates, CV, video, 
 Supabase/       The SQL I ran in Supabase to create tables and security rules, in order (schema.sql, 003 to 008)
 tests/          Automated tests (Vitest)
 Docs/           Wireframes, screenshots that prove things work, and this guide
-.github/        The GitHub Actions: tests on every push, Lighthouse after every deploy
+.github/        The GitHub Actions: tests on every push, Lighthouse on the live site after every push
 ```
 
 **Why my words are in `content/`:** the pages only handle layout. To change my About text or add a
@@ -365,8 +365,10 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
     file is listed in the README's setup steps, and every file the README or this guide mentions exists
 - **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project and runs
   `npm test`. A green tick in the Actions tab means everything passed.
-- **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every production deploy, GitHub runs
-  Lighthouse on six pages and fails the check if Accessibility or SEO drops below 90.
+- **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main, GitHub waits a few
+  minutes for Vercel to deploy, then runs Lighthouse on six pages of the live site and fails the check if
+  Accessibility or SEO drops below 90. (It first waited for a "deployment finished" message from Vercel,
+  but my Vercel project doesn't send those, so it never ran. I found this by checking the Actions tab.)
 - **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 76.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 

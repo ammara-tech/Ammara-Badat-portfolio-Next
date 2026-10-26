@@ -489,7 +489,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     description:
       "Tests are small programs that check my code still does what it should. Here's what mine check and how GitHub runs them on every push.",
     date: "2026-10-23",
-    updated: "2026-10-24",
+    updated: "2026-10-26",
     tags: ["Testing", "Vitest", "GitHub Actions"],
     body: [
       {
@@ -553,7 +553,7 @@ jobs:
       },
       {
         type: "p",
-        text: "This sits next to my Lighthouse check, another GitHub Action that tests speed, accessibility and SEO after every deploy. Together they mean a mistake shows up in minutes, not when a recruiter finds it.",
+        text: "This sits next to my Lighthouse check, another GitHub Action that tests the live site's speed, accessibility and SEO a few minutes after every push. Together they mean a mistake shows up in minutes, not when a recruiter finds it.",
       },
       {
         type: "tip",

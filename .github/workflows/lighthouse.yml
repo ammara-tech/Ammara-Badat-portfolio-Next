@@ -1,28 +1,37 @@
 # Lighthouse CI (Milestone 5 upgrade)
 #
-# Every time Vercel finishes a production deployment, GitHub runs Lighthouse
-# on the live site (as a phone, like Google does), 3 times per page, and checks the scores:
+# After every push to main, GitHub waits a few minutes for Vercel to finish deploying,
+# then runs Lighthouse on the live site (as a phone, like Google does), 3 times per page,
+# and checks the scores:
 #   - Accessibility and SEO must be 90 or more, or this check fails (red X)
 #   - Performance and Best practices below 90 show a warning
 # The full reports are uploaded and linked in the run summary.
 # You can also start it by hand: Actions tab -> Lighthouse -> Run workflow.
+#
+# (It used to wait for a "deployment finished" message from Vercel, but my Vercel
+# project doesn't send those to GitHub, so it never ran. Waiting after a push works everywhere.)
 
 name: Lighthouse
 
 on:
-  deployment_status:
+  push:
+    branches: [main]
   workflow_dispatch:
+
+# If I push again while one is waiting, only the newest run carries on
+concurrency:
+  group: lighthouse
+  cancel-in-progress: true
 
 jobs:
   lighthouse:
-    # Only run after a successful production deployment (or when started by hand)
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.deployment_status.state == 'success' &&
-       github.event.deployment.environment == 'Production')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Wait for Vercel to finish deploying
+        if: github.event_name == 'push'
+        run: sleep 240
 
       - name: Run Lighthouse on the live site
         uses: treosh/lighthouse-ci-action@v12
