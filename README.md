@@ -85,11 +85,11 @@ and my reflection for each milestone is in the [`Reflections/`](Reflections) fol
 
 #### 🏁 Milestone 6: Video walkthrough and final README
 - A 3-minute silent video walkthrough with short captions: who I am, a tour of the site, the capstone
-  case study, and how Supabase is used (two-step sign-in, RLS, drafts, the live inbox). Submitted
-  privately to my lecturer ([Video walkthrough](#video-walkthrough)).
+  case study, and how Supabase is used (two-step sign-in, RLS, drafts, the live inbox)
+  ([watch it](#video-walkthrough)).
 - This README, written so someone new can set the site up from scratch ([Setup](#setup-run-it-yourself)),
   with the [environment variable names](#environment-variables), my [use of AI](#use-of-ai) and the
-  [known gaps](#known-gaps).
+  [known gaps](#known-gaps), and my [reflection](#reflection-another-two-weeks).
 - A [secrets check](#secrets-check) of the files and the whole git history.
 
 ### ⬆️ Upgrades
@@ -554,11 +554,15 @@ I can explain how every part of the site works. The guide I learned from is
 [Docs/how-it-works.md](Docs/how-it-works.md), which I keep updated as the site changes.
 
 ## Video walkthrough
-My 3-minute video walkthrough is submitted privately to my lecturer with the final submission. It is
-silent, with short captions, and shows only the website: who I am, the public pages, the capstone case
+**[Watch the 3-minute video walkthrough](https://1drv.ms/v/c/7cc660eb74e9d986/IQARVhGGtuMETK0S-vdwfR0bAaW8cJhqqj8wvZvdgqLVquM?e=PyO4WK)** (OneDrive)
+
+It is silent, with short captions, and shows only the website: who I am, the public pages, the capstone case
 study, the contact form, the footer with my Lighthouse scores and links, and then the admin side
 (two-step sign-in, a message arriving live, drafts hiding a project from visitors, and the live
 preview). Private details are blurred and no keys or settings pages are shown.
+
+## Reflection: another two weeks
+With another two weeks, I would first add email alerts for new contact messages, so I don't have to open the admin page to find out someone wrote to me. I would also add backup codes for two-step sign-in, because right now losing my phone means fixing it in the Supabase dashboard. Next, I would turn my manual RLS checks into automatic tests that run on a test database, and add a few browser tests that click through the contact form and the admin page, so a change can't quietly break them. Finally, I would track messages and image uploads in the activity log as well as projects, and make the CV PDF build itself from my CV page instead of remaking it by hand.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
