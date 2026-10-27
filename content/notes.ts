@@ -31,6 +31,54 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "why-my-missing-pages-said-200",
+    title: "Why my missing project pages said 200, not 404",
+    description:
+      "A made-up project address showed my \"not found\" page, but told browsers and Google everything was fine. Here's why, and the fix.",
+    date: "2026-10-27",
+    tags: ["Next.js", "SEO", "Debugging"],
+    body: [
+      {
+        type: "p",
+        text: "While checking my live site today, I tried a project address that doesn't exist. The page said \"Project not found\", which looked right. But when I checked the status code, the number a server sends back with every page, it was 200, which means \"OK\". A missing page should say 404, \"Not Found\". My made-up note addresses already returned 404. Only project pages didn't.",
+      },
+      { type: "h2", text: "Why it happened" },
+      {
+        type: "p",
+        text: "My Projects page has a loading screen: a loading.tsx file that shows grey placeholder cards while my projects load from Supabase. What I didn't know is that a loading screen also covers every page in the folders below it, so it was covering each project page too.",
+      },
+      {
+        type: "p",
+        text: "To show a loading screen straight away, Next.js has to start sending the page before the data arrives, and the status code is sent first. So by the time my project page found out the project didn't exist, the 200 had already been sent and couldn't be taken back. Next.js did the next best thing: it showed my not-found page and added a tag telling Google not to list it. Google calls this a \"soft 404\".",
+      },
+      { type: "h2", text: "The fix: a route group" },
+      {
+        type: "p",
+        text: "I still wanted the loading screen on the Projects list, just not above each project. Next.js has route groups for this: a folder whose name is in brackets organises files without becoming part of the address. I moved the Projects page and its loading screen into a (list) folder:",
+      },
+      {
+        type: "code",
+        lang: "text",
+        code: `app/projects/(list)/page.tsx      → still /projects
+app/projects/(list)/loading.tsx   → only covers /projects
+app/projects/[slug]/page.tsx      → no loading screen above it`,
+      },
+      {
+        type: "p",
+        text: "Now a project page checks Supabase before sending anything, so a wrong address gets a real 404. I also added a test that fails if anyone puts a loading screen back above the project pages, because nothing on screen would show the problem: the page looks exactly the same either way.",
+      },
+      { type: "h2", text: "Also today: numbers on the filters" },
+      {
+        type: "p",
+        text: "On my admin activity log, the All / Projects / Messages / Images buttons now show how many recent entries each kind has, so I can see at a glance if a new message has arrived. Counting is a small tested function, and entries from before I added kinds still count as projects.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: \"it looks right\" and \"it is right\" aren't the same. The page looked perfect; only the status code showed the problem. Checking what the server actually sends is part of testing.",
+      },
+    ],
+  },
+  {
     slug: "one-timeline-for-projects-messages-and-images",
     title: "One timeline for projects, messages and images",
     description:

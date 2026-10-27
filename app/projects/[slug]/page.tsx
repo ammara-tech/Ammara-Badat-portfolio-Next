@@ -45,6 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
   const found = await findProject(slug);
+  // No loading screen on this route, so this runs before anything is sent:
+  // a wrong address gets a real 404 status, not a 200 page that says "not found"
   if (!found) notFound();
 
   const { project, others } = found;

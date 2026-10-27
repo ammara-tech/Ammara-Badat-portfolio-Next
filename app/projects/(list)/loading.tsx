@@ -1,6 +1,14 @@
 import { Accent, Eyebrow, PageTitle } from "@/components/ui";
 
-/* Shown automatically by Next.js while the projects load from Supabase */
+/*
+  Shown automatically by Next.js while the projects load from Supabase.
+
+  It lives in the (list) folder with the Projects page, so it only covers /projects.
+  The brackets make (list) a "route group": it organises files without changing the
+  address. If this file sat directly in app/projects/, it would also wrap every
+  project page, and Next.js would start sending the loading screen (with status 200)
+  before it knew whether the project exists, so a wrong address could never be a 404.
+*/
 
 function Bar({ className }: { className: string }) {
   return <div className={`animate-pulse rounded bg-panel-alt ${className}`} />;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { matchesSearch, replyLink } from "@/lib/inbox";
-import { describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
+import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
 import { cleanCode, nextStep } from "@/lib/two-step";
@@ -87,6 +87,17 @@ describe("admin activity log", () => {
     expect(filterActivity(list, "project").map((e) => e.id)).toEqual([7]);
     expect(filterActivity(list, "message").map((e) => e.id)).toEqual([8]);
     expect(filterActivity(list, "image").map((e) => e.id)).toEqual([9]);
+  });
+
+  it("counts each kind for the numbers on the filter buttons", () => {
+    const list: ActivityEntry[] = [
+      { ...entry(12, "received", 3), kind: "message" },
+      { ...entry(11, "received", 2), kind: "message" },
+      { ...entry(10, "uploaded", 1), kind: "image" },
+      entry(9, "edited", 0), // no kind: counts as a project
+    ];
+    expect(countByKind(list)).toEqual({ all: 4, project: 1, message: 2, image: 1 });
+    expect(countByKind([])).toEqual({ all: 0, project: 0, message: 0, image: 0 });
   });
 
   it("says how long ago something happened", () => {

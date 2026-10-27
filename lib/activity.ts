@@ -22,6 +22,13 @@ export function filterActivity<T extends Pick<ActivityEntry, "kind">>(entries: T
   return kind === "all" ? entries : entries.filter((e) => kindOf(e) === kind);
 }
 
+/** How many entries there are of each kind, for the numbers on the filter buttons */
+export function countByKind(entries: Pick<ActivityEntry, "kind">[]): Record<ActivityKind | "all", number> {
+  const counts = { all: entries.length, project: 0, message: 0, image: 0 };
+  for (const e of entries) counts[kindOf(e)] += 1;
+  return counts;
+}
+
 /** Turns a log entry into a short sentence, e.g. "Edited MyFlix (summary, tags)" */
 export function describe(item: Pick<TimelineItem, "kind" | "action" | "project_title" | "details" | "count">) {
   const t = item.project_title;

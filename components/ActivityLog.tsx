@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getBrowserClient, type ActivityEntry } from "@/lib/supabase";
-import { describe, filterActivity, groupActivity, kindOf, timeAgo, type ActivityKind } from "@/lib/activity";
+import { countByKind, describe, filterActivity, groupActivity, kindOf, timeAgo, type ActivityKind } from "@/lib/activity";
 import Icon, { type IconName } from "@/components/Icon";
 
 /*
@@ -10,7 +10,7 @@ import Icon, { type IconName } from "@/components/Icon";
   - projects: added, edited, published, moved to drafts, reordered or deleted
   - messages: a new message arrived, or I deleted one
   - images: a project image was uploaded or deleted
-  Buttons above the list show one kind at a time.
+  Buttons above the list show one kind at a time, each with how many recent entries it has.
 
   The entries are written by triggers inside Supabase, not by this page
   (Supabase/007-drafts-activity-log.sql and 009-activity-log-messages-images.sql),
@@ -107,6 +107,7 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
   }, []);
 
   const items = useMemo(() => groupActivity(filterActivity(entries, show)).slice(0, 12), [entries, show]);
+  const counts = useMemo(() => countByKind(entries), [entries]);
 
   return (
     <section className="mt-10 rounded-xl border border-line bg-panel p-5" aria-labelledby="activity-title">
@@ -118,7 +119,11 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
         Written by the database itself every time a project, message or image changes.
       </p>
 
-      <div role="group" aria-label="Show activity" className="mt-4 flex max-w-md rounded border border-line-strong p-0.5">
+      <div
+        role="group"
+        aria-label="Show activity"
+        className="mt-4 grid grid-cols-2 gap-0.5 rounded border border-line-strong p-0.5 sm:flex sm:max-w-md"
+      >
         {filters.map((f) => (
           <button
             key={f.value}
@@ -129,7 +134,14 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
               show === f.value ? "bg-teal/15 text-teal" : "text-mist hover:text-snow"
             }`}
           >
-            {f.label}
+            {f.label}{" "}
+            <span
+              className={`ml-1 rounded-full px-1.5 font-mono text-xs ${
+                show === f.value ? "bg-teal/20 text-teal" : "bg-panel-alt text-mist"
+              }`}
+            >
+              {counts[f.value]}
+            </span>
           </button>
         ))}
       </div>

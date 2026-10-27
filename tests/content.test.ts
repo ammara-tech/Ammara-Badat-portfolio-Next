@@ -113,6 +113,24 @@ describe("back, forward and refresh buttons", () => {
   });
 });
 
+describe("project pages can return a real 404", () => {
+  // A loading.tsx above a page makes Next.js start sending the page (with status 200)
+  // before the page can call notFound(). The Projects loading screen lives in the
+  // (list) route group so it only covers /projects, not /projects/[slug].
+  const appFile = (path: string) => existsSync(join(process.cwd(), "app", path));
+
+  it("has no loading screen above the project pages", () => {
+    expect(appFile("loading.tsx")).toBe(false);
+    expect(appFile("projects/loading.tsx")).toBe(false);
+    expect(appFile("projects/[slug]/loading.tsx")).toBe(false);
+  });
+
+  it("keeps the loading screen for the Projects list", () => {
+    expect(appFile("projects/(list)/page.tsx")).toBe(true);
+    expect(appFile("projects/(list)/loading.tsx")).toBe(true);
+  });
+});
+
 describe("SEO helpers", () => {
   it("gives every page a canonical address and matching share tags", () => {
     const meta = pageMetadata({ title: "Skills — Ammara Badat", description: "My skills.", path: "/skills" });
