@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { matchesSearch, replyLink } from "@/lib/inbox";
-import { describe as describeActivity, groupActivity, timeAgo } from "@/lib/activity";
+import { describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
 import { cleanCode, nextStep } from "@/lib/two-step";
@@ -63,6 +63,30 @@ describe("admin activity log", () => {
     const grouped = groupActivity([entry(4, "reordered", 3), entry(3, "reordered", 2), entry(2, "reordered", 2), entry(1, "edited", 1)]);
     expect(grouped.map((g) => [g.action, g.count])).toEqual([["reordered", 3], ["edited", 1]]);
     expect(describeActivity(grouped[0])).toBe("Changed the project order (3 projects moved)");
+  });
+
+  it("describes new and deleted messages by the sender's name only", () => {
+    const msg = { ...entry(5, "received", 0), kind: "message" as const, project_title: "Thabo", count: 1 };
+    expect(describeActivity(msg)).toBe("New message from Thabo");
+    expect(describeActivity({ ...msg, action: "deleted" })).toBe("Deleted the message from Thabo");
+  });
+
+  it("describes uploaded and deleted images by file name", () => {
+    const img = { ...entry(6, "uploaded", 0), kind: "image" as const, project_title: "cover.png", count: 1 };
+    expect(describeActivity(img)).toBe("Uploaded the image cover.png");
+    expect(describeActivity({ ...img, action: "deleted" })).toBe("Deleted the image cover.png");
+  });
+
+  it("filters by kind, and treats older entries without a kind as projects", () => {
+    const list: ActivityEntry[] = [
+      { ...entry(9, "uploaded", 3), kind: "image" },
+      { ...entry(8, "received", 2), kind: "message" },
+      entry(7, "edited", 1), // logged before the kind column existed
+    ];
+    expect(filterActivity(list, "all").map((e) => e.id)).toEqual([9, 8, 7]);
+    expect(filterActivity(list, "project").map((e) => e.id)).toEqual([7]);
+    expect(filterActivity(list, "message").map((e) => e.id)).toEqual([8]);
+    expect(filterActivity(list, "image").map((e) => e.id)).toEqual([9]);
   });
 
   it("says how long ago something happened", () => {

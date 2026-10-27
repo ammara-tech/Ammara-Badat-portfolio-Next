@@ -2,26 +2,55 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getBrowserClient, type ActivityEntry } from "@/lib/supabase";
-import { describe, groupActivity, timeAgo } from "@/lib/activity";
+import { describe, filterActivity, groupActivity, kindOf, timeAgo, type ActivityKind } from "@/lib/activity";
 import Icon, { type IconName } from "@/components/Icon";
 
 /*
-  "Recent activity" timeline on /admin: every project added, edited, published,
-  moved to drafts, reordered or deleted.
+  "Recent activity" timeline on /admin:
+  - projects: added, edited, published, moved to drafts, reordered or deleted
+  - messages: a new message arrived, or I deleted one
+  - images: a project image was uploaded or deleted
+  Buttons above the list show one kind at a time.
 
-  The entries are written by a trigger inside Supabase, not by this page
-  (Supabase/007-drafts-activity-log.sql), so they can't be faked from a browser.
-  Only my account can read them (RLS), and new ones appear live (Realtime).
+  The entries are written by triggers inside Supabase, not by this page
+  (Supabase/007-drafts-activity-log.sql and 009-activity-log-messages-images.sql),
+  so they can't be faked from a browser. Only my account can read them (RLS),
+  and new ones appear live (Realtime).
 */
 
-const icons: Record<ActivityEntry["action"], IconName> = {
+const projectIcons: Record<ActivityEntry["action"], IconName> = {
   added: "upload",
   edited: "document",
   published: "sparkles",
   unpublished: "pause",
   reordered: "grip",
   deleted: "trash",
+  received: "mail",
+  uploaded: "photo",
 };
+
+function iconFor(entry: ActivityEntry): IconName {
+  if (entry.action === "deleted") return "trash";
+  if (kindOf(entry) === "message") return "mail";
+  if (kindOf(entry) === "image") return "photo";
+  return projectIcons[entry.action];
+}
+
+const filters: { value: ActivityKind | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "project", label: "Projects" },
+  { value: "message", label: "Messages" },
+  { value: "image", label: "Images" },
+];
+
+const emptyText: Record<ActivityKind | "all", string> = {
+  all: "Nothing yet. Add, edit or reorder a project and it shows up here.",
+  project: "No project changes yet.",
+  message: "No messages yet. New ones show up here as they arrive.",
+  image: "No images uploaded or deleted yet.",
+};
+
+const LOAD = 60; // entries kept in memory; 12 are shown
 
 export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number }) {
   const supabase = getBrowserClient();
@@ -29,18 +58,21 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(() => Date.now());
+  const [show, setShow] = useState<ActivityKind | "all">("all");
 
   const load = useCallback(async () => {
     const { data, error } = await supabase
       .from("activity_log")
-      .select("id, action, project_id, project_title, details, created_at")
+      .select("id, kind, action, project_id, project_title, details, created_at")
       .order("created_at", { ascending: false })
-      .limit(40);
+      .limit(LOAD);
     if (error) {
       setError(
-        error.message.includes("activity_log")
-          ? "The activity log isn't set up yet. Run Supabase/007-drafts-activity-log.sql in the SQL Editor."
-          : error.message,
+        error.message.includes("kind")
+          ? "The activity log needs updating. Run Supabase/009-activity-log-messages-images.sql in the SQL Editor."
+          : error.message.includes("activity_log")
+            ? "The activity log isn't set up yet. Run Supabase/007-drafts-activity-log.sql in the SQL Editor."
+            : error.message,
       );
     } else {
       setError(null);
@@ -60,7 +92,7 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
       .channel("admin-activity")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "activity_log" }, (payload) => {
         const entry = payload.new as ActivityEntry;
-        setEntries((list) => (list.some((e) => e.id === entry.id) ? list : [entry, ...list].slice(0, 40)));
+        setEntries((list) => (list.some((e) => e.id === entry.id) ? list : [entry, ...list].slice(0, LOAD)));
       })
       .subscribe();
     return () => {
@@ -74,7 +106,7 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
     return () => clearInterval(timer);
   }, []);
 
-  const items = useMemo(() => groupActivity(entries).slice(0, 12), [entries]);
+  const items = useMemo(() => groupActivity(filterActivity(entries, show)).slice(0, 12), [entries, show]);
 
   return (
     <section className="mt-10 rounded-xl border border-line bg-panel p-5" aria-labelledby="activity-title">
@@ -82,7 +114,25 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
         <Icon name="chart" className="h-5 w-5 text-teal" />
         Recent activity
       </h2>
-      <p className="mt-1 text-sm text-mist">Written by the database itself every time a project changes.</p>
+      <p className="mt-1 text-sm text-mist">
+        Written by the database itself every time a project, message or image changes.
+      </p>
+
+      <div role="group" aria-label="Show activity" className="mt-4 flex max-w-md rounded border border-line-strong p-0.5">
+        {filters.map((f) => (
+          <button
+            key={f.value}
+            type="button"
+            aria-pressed={show === f.value}
+            onClick={() => setShow(f.value)}
+            className={`flex-1 whitespace-nowrap rounded-sm px-2 py-1.5 text-sm transition sm:px-3 ${
+              show === f.value ? "bg-teal/15 text-teal" : "text-mist hover:text-snow"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
 
       {error ? (
         <p role="alert" className="mt-4 rounded border border-racing/40 bg-racing/10 p-3 text-sm text-snow">
@@ -91,7 +141,7 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
       ) : loading ? (
         <p className="mt-4 text-sm text-mist">Loading activity…</p>
       ) : items.length === 0 ? (
-        <p className="mt-4 text-sm text-mist">Nothing yet. Add, edit or reorder a project and it shows up here.</p>
+        <p className="mt-4 text-sm text-mist">{emptyText[show]}</p>
       ) : (
         <ol className="relative mt-5 space-y-4 border-l border-line pl-6">
           {items.map((item) => (
@@ -102,7 +152,7 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
                   item.action === "deleted" ? "border-racing/60 text-racing-text" : "border-teal/50 text-teal"
                 }`}
               >
-                <Icon name={icons[item.action]} className="h-3.5 w-3.5" />
+                <Icon name={iconFor(item)} className="h-3.5 w-3.5" />
               </span>
               <p className="text-sm text-snow">{describe(item)}</p>
               <time dateTime={item.created_at} className="font-mono text-xs text-mist" title={new Date(item.created_at).toLocaleString("en-ZA")}>

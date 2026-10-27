@@ -2,16 +2,36 @@ import type { ActivityEntry } from "@/lib/supabase";
 
 /*
   Helpers for the activity log on /admin (components/ActivityLog.tsx).
-  The log itself is written by a trigger inside Supabase
-  (Supabase/007-drafts-activity-log.sql). Tested in tests/admin.test.ts.
+  The log itself is written by triggers inside Supabase: projects in
+  Supabase/007-drafts-activity-log.sql, messages and images in
+  Supabase/009-activity-log-messages-images.sql. Tested in tests/admin.test.ts.
 */
 
 /** One line of the timeline, after reorders made together have been grouped */
 export type TimelineItem = ActivityEntry & { count: number };
 
+export type ActivityKind = NonNullable<ActivityEntry["kind"]>;
+
+/** Old rows (before the kind column existed) are all about projects */
+export function kindOf(entry: Pick<ActivityEntry, "kind">): ActivityKind {
+  return entry.kind ?? "project";
+}
+
+/** Keeps only one kind of entry ("all" keeps everything) */
+export function filterActivity<T extends Pick<ActivityEntry, "kind">>(entries: T[], kind: ActivityKind | "all"): T[] {
+  return kind === "all" ? entries : entries.filter((e) => kindOf(e) === kind);
+}
+
 /** Turns a log entry into a short sentence, e.g. "Edited MyFlix (summary, tags)" */
-export function describe(item: Pick<TimelineItem, "action" | "project_title" | "details" | "count">) {
+export function describe(item: Pick<TimelineItem, "kind" | "action" | "project_title" | "details" | "count">) {
   const t = item.project_title;
+  const kind = kindOf(item);
+  if (kind === "message") {
+    return item.action === "received" ? `New message from ${t}` : `Deleted the message from ${t}`;
+  }
+  if (kind === "image") {
+    return item.action === "uploaded" ? `Uploaded the image ${t}` : `Deleted the image ${t}`;
+  }
   switch (item.action) {
     case "added":
       return `Added ${t}${item.details ? ` ${item.details}` : ""}`;
@@ -25,6 +45,8 @@ export function describe(item: Pick<TimelineItem, "action" | "project_title" | "
       return `Deleted ${t}`;
     case "reordered":
       return item.count > 1 ? `Changed the project order (${item.count} projects moved)` : `Moved ${t} ${item.details ?? ""}`.trim();
+    default:
+      return `${t}: ${item.action}`;
   }
 }
 

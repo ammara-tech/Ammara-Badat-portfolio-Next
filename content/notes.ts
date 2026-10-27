@@ -31,6 +31,64 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "one-timeline-for-projects-messages-and-images",
+    title: "One timeline for projects, messages and images",
+    description:
+      "My admin activity log only knew about projects. Now the database also records messages and images, without keeping anything private.",
+    date: "2026-10-27",
+    tags: ["Supabase", "Triggers", "Privacy"],
+    body: [
+      {
+        type: "p",
+        text: "My admin page has an activity log: a timeline of changes, written by the database itself. Until today it only recorded projects. If a message arrived and I deleted it, or I uploaded a screenshot and then removed it, there was no record. For my final project, I wanted one place that answers the question \"what happened on my site recently?\"",
+      },
+      { type: "h2", text: "Two more triggers" },
+      {
+        type: "p",
+        text: "The project history is written by a trigger: code that runs inside the database every time a row changes. I added two more in the same style. One runs when a message is saved or deleted, and one runs when a file in my project images folder in Supabase Storage is uploaded or deleted. Storage keeps a row for every file, so a trigger can watch it like any other table.",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: `create trigger messages_activity
+  after insert or delete on public.messages
+  for each row execute function public.log_message_activity();`,
+      },
+      {
+        type: "p",
+        text: "Each entry now also says what kind of thing it is about: a project, a message or an image. Older entries were all about projects, so the page treats an entry without a kind as a project, and nothing from before is lost.",
+      },
+      { type: "h2", text: "Keeping private things private" },
+      {
+        type: "p",
+        text: "Messages come from strangers, so I thought about what the log should keep. It only copies the sender's name, never their email address or what they wrote. That's enough for \"New message from Thabo\", and if I delete a message, its text really is gone, not hiding in my history. For images, the log keeps only the file name.",
+      },
+      { type: "h2", text: "Same rules as before" },
+      {
+        type: "ul",
+        items: [
+          "Only my account, signed in with my authenticator code, can read the log.",
+          "Nobody can add, change or delete entries from a browser, not even me. Only the triggers can write.",
+          "The trigger functions can't be called directly through the API either; they only run when a row changes.",
+          "New entries appear live, so a message shows up in the timeline the moment it arrives.",
+        ],
+      },
+      { type: "h2", text: "Filters" },
+      {
+        type: "p",
+        text: "With three kinds of entry, the timeline got busy, so I added All / Projects / Messages / Images buttons above it, in the same style as my inbox filters. The filtering is a small function with its own tests, including one that checks older entries still count as projects.",
+      },
+      {
+        type: "p",
+        text: "Before running the new setup file on Supabase, I ran all my setup files on a local copy of the database and acted out a real day: a visitor sent a message, then I uploaded an image, deleted it and deleted the message. The log had exactly four new entries, a visitor could still read none of them, and trying to call the trigger functions directly was refused.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: a log is only useful if you trust it, and only safe if it doesn't keep more than it needs. Letting the database write it handles the first part; choosing what to copy handles the second.",
+      },
+    ],
+  },
+  {
     slug: "from-65-to-83-tests",
     title: "From 65 to 83 tests: testing my docs, my buttons and my spreadsheets",
     description:
@@ -464,7 +522,7 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
     description:
       "My admin page now has drafts that visitors can't see, a live preview, a history of every change and an automatic sign-out.",
     date: "2026-10-24",
-    updated: "2026-10-25",
+    updated: "2026-10-27",
     tags: ["Supabase", "RLS", "Triggers"],
     body: [
       {
@@ -513,6 +571,10 @@ if (Date.now() - leftAt > REOPEN_LIMIT) await supabase.auth.signOut({ scope: "lo
           "Dragging one project can move several others, so entries made within a few seconds are grouped into one line: \"Changed the project order (3 projects moved)\".",
           "New entries appear live, using Realtime like my inbox.",
         ],
+      },
+      {
+        type: "p",
+        text: "Update: the log now also records messages and project images, not just projects. My note \"One timeline for projects, messages and images\" explains how.",
       },
       {
         type: "p",

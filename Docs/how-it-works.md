@@ -1,8 +1,8 @@
 # How my portfolio works
 
 A plain-English guide to the code, so I can explain any part of it.
-Words in **bold** are explained the first time they appear. Last updated after the admin
-upgrades (live inbox, drafts, activity log, one-tab sign-in and two-step sign-in).
+Words in **bold** are explained the first time they appear. Last updated on 27 October 2026,
+after adding messages and images to the admin activity log.
 
 ---
 
@@ -38,7 +38,7 @@ content/        My words: about.ts, case-study.ts, skills.ts, certifications.ts,
 lib/            Helpers: Supabase connection, SEO, theme, projects, and small "decision" functions
                 (inbox.ts, activity.ts, idle.ts, admin-session.ts, two-step.ts) that the tests check
 public/         Files served as they are: screenshots, certificates, CV, video, icons
-Supabase/       The SQL I ran in Supabase to create tables and security rules, in order (schema.sql, 003 to 008)
+Supabase/       The SQL I ran in Supabase to create tables and security rules, in order (schema.sql, 003 to 009)
 tests/          Automated tests (Vitest)
 Docs/           Wireframes, screenshots that prove things work, and this guide
 .github/        The GitHub Actions: tests on every push, Lighthouse on the live site after every push
@@ -109,7 +109,7 @@ keyboard listener or start a live connection.
 |---|---|---|
 | `projects` | title, summary, links, image, tags, order, and `published` (false = draft) | `schema.sql`, `003`, `007` |
 | `messages` | contact form messages: name, email, message, read/unread, a hashed IP | `004` |
-| `activity_log` | the history of every change to a project (written only by a trigger) | `007` |
+| `activity_log` | the history of every change to a project, message or project image (written only by triggers) | `007`, `009` |
 | `storage.objects` | images uploaded from /admin (Supabase Storage keeps files as rows too) | `005` |
 
 ### Row Level Security (RLS): the heart of the security
@@ -124,7 +124,7 @@ My policies:
 |---|---|---|---|---|
 | projects | everyone, but only **published** ones; the owner also sees drafts | owner only | owner only | owner only |
 | messages | owner only | **everyone** (it's a contact form) | owner only | owner only |
-| activity_log | owner only | nobody (only the trigger) | nobody | nobody |
+| activity_log | owner only | nobody (only the triggers) | nobody | nobody |
 | project images | everyone (public bucket) | owner only | owner only | owner only |
 
 **"Owner only"** is one function, `public.is_owner()` (`008-two-step-sign-in.sql`):
@@ -214,13 +214,13 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Add / edit form | `app/admin/page.tsx` | Saves to `projects`, then checks a row came back (RLS can block silently). |
 | Draft / Live switch | `ProjectOrderList.tsx` | Updates `published`. Visitors never receive drafts, because of the read policy, so the public pages needed no changes. |
 | Live preview | `app/admin/page.tsx` + `ProjectCard` from `ProjectGrid.tsx` | The real project card, built from the form as I type. It has the **inert** attribute, so its links can't be clicked or reached with Tab. |
-| Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database trigger (section 7), live through Realtime. Reorders from one drag are grouped into one line. |
+| Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database triggers (section 7), live through Realtime. All / Projects / Messages / Images buttons show one kind at a time (`filterActivity()`). Reorders from one drag are grouped into one line. |
 | Image upload | `ImageUpload.tsx` | Checks the type and size (5 MB), uploads to the `project-images` bucket with a timestamp in the name (so nothing is overwritten), then fills in the image URL. |
 | Drag-and-drop order | `ProjectOrderList.tsx` | Drag with a mouse or finger, or use ↑/↓. Saves each project's `sort_order` straight away. |
 
 ---
 
-## 7. The activity log trigger (`007-drafts-activity-log.sql`)
+## 7. The activity log triggers (`007` and `009`)
 
 A **trigger** is code the database runs automatically when a row changes. Mine runs after every
 insert, update or delete on `projects` and writes a row to `activity_log`:
@@ -234,6 +234,19 @@ It is **security definer** (it runs with the database owner's rights), which is 
 table that the website can't. `activity_log` has a read policy for me only and **no** insert, update or
 delete policies, so nobody can add, change or remove entries from a browser. A history written by the
 browser could be faked or skipped; this one can't.
+
+`009-activity-log-messages-images.sql` adds two more triggers in the same style, and a `kind` column
+(`project`, `message` or `image`) so the page knows what each entry is about:
+
+- **Messages** (`messages_activity`): "New message from Thabo" when one arrives, and "Deleted the message
+  from Thabo" when I delete it. Only the sender's **name** is copied, never their email or message, so
+  deleting a message really removes its text.
+- **Images** (`project_images_activity` on `storage.objects`): "Uploaded the image cover.png" and
+  "Deleted the image cover.png". Supabase Storage keeps a row for every file, so a trigger can watch it.
+  It ignores any other bucket.
+- The trigger functions have `execute` taken away from the API roles, so they can't be called directly;
+  they only run when a row changes.
+- Entries from before `009` have no kind; `kindOf()` treats them as projects.
 
 ---
 
@@ -357,13 +370,13 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 83 checks:
+  example inputs and check the answers. There are 86 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     and the contact card (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
-    formula protection), the activity log wording and
+    formula protection), the activity log wording, filters and
     grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -379,7 +392,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 83.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 86.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -407,8 +420,12 @@ Supabase Realtime pushes new rows from the messages table to my admin page. It f
 my account receives them.
 
 **Why is the activity log a trigger and not code in the page?**
-A history written by the browser could be faked or skipped. The trigger runs inside the database on
-every change, and there are no write policies on the log, so only the trigger can add entries.
+A history written by the browser could be faked or skipped. The triggers run inside the database on
+every change, and there are no write policies on the log, so only the triggers can add entries.
+
+**Why does the log keep a sender's name but not their message?**
+It only needs enough to say "New message from Thabo". Keeping less means less private data stored,
+and deleting a message really removes what they wrote.
 
 **Why does a new tab show the sign-in form?**
 The sign-in is kept in sessionStorage, which belongs to one tab and is wiped when it closes.
@@ -436,4 +453,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, and 83 with the CSV download.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, and 86 with the activity log for messages and images.

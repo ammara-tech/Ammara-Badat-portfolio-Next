@@ -70,7 +70,9 @@ export type Message = {
 /** One row of the admin activity log, written by a database trigger */
 export type ActivityEntry = {
   id: number;
-  action: "added" | "edited" | "published" | "unpublished" | "reordered" | "deleted";
+  /** What the entry is about. Rows from before 009-activity-log-messages-images.sql have no kind: they are projects. */
+  kind?: "project" | "message" | "image";
+  action: "added" | "edited" | "published" | "unpublished" | "reordered" | "deleted" | "received" | "uploaded";
   project_id: string | null;
   project_title: string;
   details: string | null;

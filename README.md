@@ -24,7 +24,7 @@ components/  Reusable building blocks (Navbar, ContactForm, Inbox, TwoStep, ...)
 content/     My words: about, case study, skills, certifications, dev notes, CV
 lib/         Supabase connection, SEO, theme, project loading and small tested helper functions
 public/      Screenshots, certificates, CV PDF, demo video, icons
-Supabase/    The SQL files, run in order (schema.sql, then 003 to 008)
+Supabase/    The SQL files, run in order (schema.sql, then 003 to 009)
 tests/       Vitest tests (npm test)
 Docs/        Wireframes, proof screenshots and the code guide (how-it-works.md)
 ```
@@ -113,6 +113,7 @@ Extras beyond the milestones, in the order I built them.
 | 14 | Back, Forward and Refresh | Polish | Browser-style buttons on the site itself, and GitHub Actions updated to Node.js 22 |
 | 15 | Faster Lighthouse checks | Polish | Lighthouse starts as soon as Vercel is serving the new commit, runs once per page, and skips document-only changes |
 | 16 | Download messages as CSV | Admin upgrades | A "CSV" button in the inbox that saves the messages being viewed as a spreadsheet file, protected against formula tricks |
+| 17 | Activity log for messages and images | Final project | The activity log also records new and deleted messages and uploaded and deleted images, with All / Projects / Messages / Images buttons |
 
 ### ✅ What the site has now
 
@@ -140,7 +141,7 @@ Extras beyond the milestones, in the order I built them.
 | Live inbox | New contact messages appear straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count, there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
 | Drafts | A Live / Draft switch on every project. The read policy lets visitors see only published projects, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
 | Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
-| Activity log | A database trigger records every project added, edited, published, moved to drafts, reordered or deleted, shown as a live timeline. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`). |
+| Activity log | Database triggers record every project added, edited, published, moved to drafts, reordered or deleted, every message that arrives or is deleted, and every image uploaded or deleted. It is shown as a live timeline with All / Projects / Messages / Images buttons. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`, `Supabase/009-activity-log-messages-images.sql`). |
 | Download CSV | A **CSV** button in the inbox saves the messages I'm viewing (after search and filters) as a spreadsheet file that Excel and Google Sheets open. It's built in the browser, so nothing is sent anywhere. Messages come from a public form, so any cell starting with `=`, `+`, `-` or `@` gets a `'` in front, which stops a spreadsheet running it as a formula ("CSV injection") (`lib/csv.ts`). |
 | Overview | Cards for projects, drafts, unread messages and messages this week, plus a 7-day bar chart. |
 
@@ -169,8 +170,8 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **16 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, and how my tests grew from 65 to 83).
-- Short posts (sixteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- **17 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, and one timeline for projects, messages and images).
+- Short posts (seventeen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
 - A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, and an "Updated" date on notes I changed later (`components/ReadingProgress.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
@@ -186,7 +187,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 83 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 86 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording and filters, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
@@ -202,7 +203,7 @@ Three tables, plus Supabase Storage for images:
 |---|---|---|
 | `projects` | My projects (below) | `schema.sql`, `003`, `007` |
 | `messages` | Contact form messages ([details](#contact-form)) | `004` |
-| `activity_log` | The history of every change to a project, written only by a database trigger | `007` |
+| `activity_log` | The history of every change to a project, message or project image, written only by database triggers | `007`, `009` |
 | `storage.objects` | Screenshots uploaded from `/admin` ([details](#storage-security-rls-on-files)) | `005` |
 
 The `projects` table, defined in [`Supabase/schema.sql`](Supabase/schema.sql):
@@ -254,7 +255,8 @@ the code from my authenticator app. A sign-in with only the password gets nothin
 Before two-step sign-in, these rules checked my user ID alone.
 
 `activity_log` has RLS too: only my account can `select`, and there are no insert, update or delete
-policies, so only the database trigger can write to it.
+policies, so only the database triggers can write to it. For messages, the log keeps only the sender's
+name, never their email or message.
 
 Public sign-ups are turned off in Supabase Auth, so mine is the only account. Even if another
 account existed, the policies check my exact user ID and the two-step level, so "any signed-in user"
@@ -288,6 +290,7 @@ like Supabase, and tested as a visitor, as another signed-in account and as me:
 | Me with the authenticator code (`aal2`): everything | ✅ Works |
 | Another account with `aal2` reads messages | ❌ 0 rows |
 | Visitor sends a contact message | ✅ Still works |
+| Visitor sends a message, then I upload and delete an image and delete the message (`009`) | ✅ 4 log entries; a visitor still reads 0 rows and can't call the trigger functions |
 
 I also tested the sign-in screens in a browser: a fresh visit, the QR set-up, a wrong code, a pasted
 code with a space, the code step on the next sign-in, refreshing, a second tab and reopening a closed tab.
@@ -454,7 +457,8 @@ free [Vercel](https://vercel.com) account.
 | 4 | `005-project-images-storage.sql` | `project-images` Storage bucket and owner-only upload policies |
 | 5 | `006-realtime-inbox.sql` | Turns on Realtime for `messages`, for the live admin inbox |
 | 6 | `007-drafts-activity-log.sql` | `published` column and "Anyone can read published projects" policy, the owner-only `activity_log` table and its trigger |
-| 7 | `008-two-step-sign-in.sql` | `is_owner()` (my user ID + two-step sign-in) used by every owner policy. Run it **last**, after setting up your authenticator app in `/admin` (step 2 below) |
+| 7 | `008-two-step-sign-in.sql` | `is_owner()` (my user ID + two-step sign-in) used by every owner policy. Run it after setting up your authenticator app in `/admin` (step 2 below) |
+| 8 | `009-activity-log-messages-images.sql` | Adds messages and project images to the activity log (a `kind` column and two more triggers). Run it after `008` |
 
 6. Check that two-step sign-in with an authenticator app is allowed: Authentication → Multi-Factor
    (or Sign In / Providers) → **TOTP** switched on. It is on by default.
@@ -517,10 +521,9 @@ Things I know are missing or could be better:
 - **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
   there is no CAPTCHA.
 - **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
-  without two-step, and fully signed in) and on a local copy of the database; the 83 automatic tests
+  without two-step, and fully signed in) and on a local copy of the database; the 86 automatic tests
   cover the site's code and docs, not the live database.
 - **No end-to-end browser tests.** Clicking through the site and admin is checked by hand.
-- **The activity log only tracks projects**, not messages or images.
 - **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
 - **Some things are hard-coded:** my user ID in the SQL files and my site address in `lib/site.ts`,
   so someone setting it up must change them (see [Setup](#setup-run-it-yourself)).
