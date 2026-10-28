@@ -1,8 +1,8 @@
 # How my portfolio works
 
 A plain-English guide to the code, so I can explain any part of it.
-Words in **bold** are explained the first time they appear. Last updated on 27 October 2026,
-after adding messages and images to the admin activity log and fixing 404s for project pages.
+Words in **bold** are explained the first time they appear. Last updated on 28 October 2026,
+after adding security headers, messages and images in the activity log, and real 404s.
 
 ---
 
@@ -164,6 +164,21 @@ update matches nothing. That's why the admin page checks that a row came back, a
 Sign-ups are switched off in Supabase, so nobody else can even create an account. `/admin` isn't in
 the navbar, and `robots` tells search engines not to list it.
 
+### Security headers (`lib/security-headers.ts`)
+A **header** is extra information sent with every response, before the page itself. Security headers
+tell the browser to switch protections on. `next.config.ts` adds mine to every address (`source: "/(.*)"`).
+
+- **No framing** (`X-Frame-Options: DENY` and CSP `frame-ancestors 'none'`): other sites can't put my
+  pages inside an `<iframe>`, which stops **clickjacking** (my real page hidden under a fake button).
+- **CSP** (Content Security Policy) also stops my relative links being redirected (`base-uri`), forms
+  sending anywhere but my site (`form-action`) and old plugins (`object-src`). It has **no** `script-src`
+  on purpose: Next.js, the theme script and Vercel Analytics use inline scripts, and blocking them would
+  break the site. Doing it properly needs a **nonce** (a random code made for every page load).
+- `nosniff`: the browser never guesses a file's type. `Referrer-Policy`: other sites only see my domain.
+  `Permissions-Policy`: camera, microphone, location and payments are off. `COOP`: a page I open can't
+  reach back through `window.opener`. `HSTS`: always https, for two years (ignored on `localhost`).
+- `tests/security.test.ts` checks they're on every page and that no script rule sneaks in.
+
 ---
 
 ## 5. Signing in to `/admin` (three layers)
@@ -213,7 +228,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 |---|---|---|
 | Overview | `AdminOverview.tsx` | Cards for projects (and drafts), unread messages and messages this week, plus a 7-day bar chart. |
 | Live inbox | `Inbox.tsx`, `lib/inbox.ts` | **Supabase Realtime** keeps a connection open and pushes new, changed and deleted rows from `messages`, so a message appears without refreshing, with a "New message from …" pop-up. Realtime follows RLS, so only my account receives them (`006-realtime-inbox.sql` switches it on). |
-| Unread count in the tab | `Inbox.tsx` | The browser tab title becomes "(2) Admin — Ammara Badat". |
+| Unread count in the tab | `Inbox.tsx`, `TabIconBadge.tsx`, `lib/tab-badge.ts` | The browser tab title becomes "(2) Admin — Ammara Badat", and the tab icon gets a teal number badge. My icon is an SVG (plain text), so `addBadge()` shrinks the logo into the bottom-left corner and adds a circle with the number in the top-right, so it never covers "AB". The tab icon is pointed at that new picture, and back to the normal one when everything is read. |
 | Search and filters | `lib/inbox.ts` → `matchesSearch()` | Finds messages by name, email or text in any capitals; All / Unread / Read buttons. |
 | Reply | `lib/inbox.ts` → `replyLink()` | A `mailto:` link with the sender's address, a subject, a greeting with their first name and their message quoted. |
 | Download CSV | `Inbox.tsx`, `lib/csv.ts` | Saves the messages I'm viewing (after search and filters) as a **CSV** file (a simple spreadsheet format). It is built in the browser, so nothing is sent anywhere. Cells with commas, quotes or line breaks are wrapped in quotes. Because messages come from a public form, a cell starting with `=`, `+`, `-` or `@` gets a `'` in front, so a spreadsheet shows it as text instead of running it as a formula (**CSV injection**). A hidden mark at the start (a **BOM**) makes Excel read accents and emoji correctly. |
@@ -378,14 +393,15 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 89 checks:
+  example inputs and check the answers. There are 95 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
-    grouping, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
+    grouping, the tab icon badge, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
+  - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
     every link inside the README points to a heading that exists
@@ -400,7 +416,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 89.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 95.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -453,6 +469,12 @@ project didn't exist. I moved the Projects loading screen into a route group so 
 `/projects`, and now a wrong project address returns a real 404. A test stops the loading screen
 coming back above project pages.
 
+**What are your security headers for?**
+They're instructions sent with every page that switch browser protections on. The main one stops other
+sites putting my pages in a frame (clickjacking). Others stop type guessing, force https and switch off
+the camera and microphone. I didn't add a script rule because Next.js needs inline scripts; doing that
+properly needs nonces, which is in my known gaps.
+
 **How does a new project get its own page?**
 `[slug]` is a dynamic segment. `slugify()` turns the title into the address, and the page finds the
 matching project in Supabase. The sitemap adds it automatically too.
@@ -467,4 +489,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, and 89 with the activity counts and the 404 check.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, and 95 with the security headers and the tab badge.

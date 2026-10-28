@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getBrowserClient, type Message } from "@/lib/supabase";
 import Icon from "@/components/Icon";
+import TabIconBadge from "@/components/TabIconBadge";
 import { matchesSearch, replyLink } from "@/lib/inbox";
 import { csvFileName, messagesCsv } from "@/lib/csv";
 
@@ -13,7 +14,8 @@ import { csvFileName, messagesCsv } from "@/lib/csv";
   - Live: new messages appear without refreshing (Supabase Realtime,
     switched on by Supabase/006-realtime-inbox.sql). Realtime follows the
     same RLS rules, so only my account is sent the messages.
-  - The browser tab shows how many are unread, e.g. "(2) Admin — Ammara Badat".
+  - The browser tab shows how many are unread, e.g. "(2) Admin — Ammara Badat",
+    and the tab icon gets a number badge (components/TabIconBadge.tsx).
   - Search and All / Unread / Read filters.
   - Reply opens my email app with the sender, a subject and their message quoted.
   - Delete waits 5 seconds so I can press Undo.
@@ -197,6 +199,7 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
 
   return (
     <section className="mt-10 rounded-xl border border-line bg-panel p-5" aria-labelledby="inbox-title">
+      <TabIconBadge count={unread} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="inbox-title" className="flex items-center gap-2 text-xl font-semibold">
           <Icon name="inbox" className="h-5 w-5 text-teal" />

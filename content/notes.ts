@@ -31,6 +31,65 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "security-headers",
+    title: "Security headers: telling the browser to be stricter",
+    description:
+      "Seven lines of config that switch on browser protections for every page, why I left one rule out, and a tab badge for unread messages.",
+    date: "2026-10-28",
+    tags: ["Security", "Next.js", "Headers"],
+    body: [
+      {
+        type: "p",
+        text: "Most of my site's security lives in the database: Row Level Security decides who can read or change anything. But the browser has protections too, and they're switched off unless the website asks for them. A website asks using headers: short instructions sent with every page, before the page itself.",
+      },
+      { type: "h2", text: "What I switched on" },
+      {
+        type: "ul",
+        items: [
+          "No framing: other sites can't show my pages inside a frame. This stops clickjacking, where a real page is hidden under a fake button so you click something you didn't mean to.",
+          "No type guessing: a file sent as text is never run as a script.",
+          "Always https: browsers remember to use the secure version of my site for two years, even if someone types http://.",
+          "Less shared: when a visitor clicks a link to another site, that site only sees my domain, not the exact page.",
+          "Unused features off: my site never needs the camera, microphone, location or payments, so nothing on it can ask for them.",
+          "Forms only send to my own site, and old browser plugins are blocked.",
+        ],
+      },
+      {
+        type: "p",
+        text: "In Next.js, they all go in next.config.ts, and one rule adds them to every address:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `async headers() {
+  return [{ source: "/(.*)", headers: securityHeaders }];
+},`,
+      },
+      {
+        type: "p",
+        text: "Headers aren't secret. Anyone can see them in the Network tab of the browser's developer tools, so writing about them doesn't help an attacker. They only switch protections on.",
+      },
+      { type: "h2", text: "The rule I left out on purpose" },
+      {
+        type: "p",
+        text: "The strongest header is a Content Security Policy with a script rule, which says exactly which scripts may run. I didn't add that part. Next.js, my dark-mode script and Vercel Analytics all use small scripts written inside the page, and a strict rule would block them. The site would look fine in some places and quietly break in others. Doing it properly needs a nonce, a new random code for every page load, which is a bigger change. So it's listed in my README's known gaps instead of half-done.",
+      },
+      {
+        type: "p",
+        text: "A test checks that every header is sent on every page, and it also fails if a script rule is ever added by accident. I proved it works by adding one: the test failed straight away.",
+      },
+      { type: "h2", text: "Also today: a badge on the admin tab" },
+      {
+        type: "p",
+        text: "My admin tab already showed \"(2) Admin\" when I had unread messages, but with lots of tabs open the title gets cut off. Now the tab icon gets a small number badge too, like an app on a phone. My icon is an SVG, which is just text, so the page shrinks the logo into the corner, adds a circle with the number, and swaps the tab icon for the new picture. I made sure the badge never covers my initials. When everything is read, the normal icon comes back.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: security has layers. The database protects the data, and headers protect the visitor's browser. Knowing which rule to leave out, and saying so, is part of doing it well.",
+      },
+    ],
+  },
+  {
     slug: "why-my-missing-pages-said-200",
     title: "Why my missing project pages said 200, not 404",
     description:

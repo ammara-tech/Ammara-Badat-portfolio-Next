@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { addBadge, badgeLabel } from "@/lib/tab-badge";
 import { matchesSearch, replyLink } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
@@ -186,5 +187,23 @@ describe("admin inbox: Download CSV", () => {
 
   it("names the file after the day it was downloaded", () => {
     expect(csvFileName(new Date(2026, 9, 6))).toBe("messages-2026-10-06.csv");
+  });
+});
+
+describe("admin tab icon badge", () => {
+  const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64"/></svg>';
+
+  it("leaves the icon unchanged with no unread messages", () => {
+    expect(addBadge(icon, 0)).toBe(icon);
+    expect(badgeLabel(-1)).toBe("");
+  });
+
+  it("adds the number inside the icon, and 9+ for ten or more", () => {
+    const three = addBadge(icon, 3);
+    expect(three).toContain(">3</text>");
+    expect(three.endsWith("</svg>")).toBe(true);
+    expect(three).toContain('<rect width="64" height="64"/>'); // the original logo is still there
+    expect(three).toContain("scale(0.7)"); // ...made smaller, so the badge doesn't cover it
+    expect(badgeLabel(12)).toBe("9+");
   });
 });
