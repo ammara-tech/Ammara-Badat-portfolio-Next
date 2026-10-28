@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { addBadge, badgeLabel } from "@/lib/tab-badge";
+import { changedFields, leavesPage } from "@/lib/unsaved";
 import { matchesSearch, replyLink } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
@@ -205,5 +206,29 @@ describe("admin tab icon badge", () => {
     expect(three).toContain('<rect width="64" height="64"/>'); // the original logo is still there
     expect(three).toContain("scale(0.7)"); // ...made smaller, so the badge doesn't cover it
     expect(badgeLabel(12)).toBe("9+");
+  });
+});
+
+describe("admin unsaved changes warning", () => {
+  const start = { title: "MyFlix", tags: "React", published: true };
+
+  it("notices changed fields, but not extra spaces", () => {
+    expect(changedFields(start, start)).toEqual([]);
+    expect(changedFields({ ...start, title: "MyFlix " }, start)).toEqual([]);
+    expect(changedFields({ ...start, tags: "React, CSS", published: false }, start)).toEqual(["tags", "published"]);
+  });
+
+  it("warns for links that leave the page in this tab", () => {
+    const here = "https://example.com/admin";
+    expect(leavesPage({ href: "/projects" }, here)).toBe(true);
+    expect(leavesPage({ href: "https://github.com/" }, here)).toBe(true);
+  });
+
+  it("doesn't warn for new tabs, Ctrl-clicks, same-page links or email links", () => {
+    const here = "https://example.com/admin";
+    expect(leavesPage({ href: "https://github.com/", target: "_blank" }, here)).toBe(false);
+    expect(leavesPage({ href: "/projects" }, here, true)).toBe(false);
+    expect(leavesPage({ href: "#inbox-title" }, here)).toBe(false);
+    expect(leavesPage({ href: "mailto:someone@example.com" }, here)).toBe(false);
   });
 });

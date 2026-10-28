@@ -236,6 +236,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Add / edit form | `app/admin/page.tsx` | Saves to `projects`, then checks a row came back (RLS can block silently). |
 | Draft / Live switch | `ProjectOrderList.tsx` | Updates `published`. Visitors never receive drafts, because of the read policy, so the public pages needed no changes. |
 | Live preview | `app/admin/page.tsx` + `ProjectCard` from `ProjectGrid.tsx` | The real project card, built from the form as I type. It has the **inert** attribute, so its links can't be clicked or reached with Tab. |
+| Unsaved changes | `UnsavedChangesGuard.tsx`, `lib/unsaved.ts` | The form remembers what it started with (empty, or the project being edited). `changedFields()` compares, ignoring spaces at the ends. While something changed: "Unsaved changes" shows, the **beforeunload** event makes the browser ask "Leave site?" on close or refresh, and a click listener asks "Leave without saving?" before a link moves to another page. That second one is needed because Next.js changes pages without reloading, so the browser's own box never appears. `leavesPage()` skips new tabs, Ctrl-clicks, `#` links and `mailto:`. Auto sign-out still signs me out, because security comes first. |
 | Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database triggers (section 7), live through Realtime. All / Projects / Messages / Images buttons show one kind at a time (`filterActivity()`), each with a count (`countByKind()`). Reorders from one drag are grouped into one line. |
 | Image upload | `ImageUpload.tsx` | Checks the type and size (5 MB), uploads to the `project-images` bucket with a timestamp in the name (so nothing is overwritten), then fills in the image URL. |
 | Drag-and-drop order | `ProjectOrderList.tsx` | Drag with a mouse or finger, or use ↑/↓. Saves each project's `sort_order` straight away. |
@@ -348,7 +349,7 @@ with **429** ("Too Many Requests").
 | Spotlight cards | `Spotlight.tsx` + `.spotlight` in globals.css | One mouse listener sets `--mx` and `--my` (the mouse position) on the card, and CSS draws a glow there. |
 | Live GitHub repos | `GitHubActivity.tsx` | Asks the GitHub API for my latest repos on the server, **cached** (saved and reused) for an hour. Hidden if GitHub can't be reached. |
 | Page transitions | `app/template.tsx` | A red-to-teal stripe and a short slide-up on every page change. |
-| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed and a reading progress bar (`ReadingProgress.tsx`). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. |
+| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed, a reading progress bar (`ReadingProgress.tsx`) and a **Copy** button on every code example (`CopyCode.tsx`, a small client component inside the server-rendered note; it shares `lib/clipboard.ts` with the Copy email button). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. |
 | Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". |
 | Back, Forward, Refresh | `NavArrows.tsx`, `lib/nav-arrows.ts` | Browser-style buttons next to my name (laptops and desktops) and at the top of the phone menu, for when the site is installed on a phone and has no browser bar. Back and Forward use `history.back()` and `history.forward()`; Refresh reloads the page. The **Navigation API** (a newer browser feature) says whether there is a page to go back or forward to, so the buttons grey out when there isn't. |
 | Back to top | `BackToTop.tsx`, `lib/back-to-top.ts` | Appears after scrolling more than one and a half screens. Jumps to the top (smoothly, unless motion is reduced) and moves keyboard focus to the page content. Sits above the phone navigation bar; hidden on the admin page. |
@@ -393,14 +394,14 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 95 checks:
+  example inputs and check the answers. There are 98 checks:
   - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
-    grouping, the tab icon badge, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
+    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -416,7 +417,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 95.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 98.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -489,4 +490,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, and 95 with the security headers and the tab badge.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, and 98 with the unsaved changes warning.

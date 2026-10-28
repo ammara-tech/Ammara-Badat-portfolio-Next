@@ -8,6 +8,7 @@ import JsonLd from "@/components/JsonLd";
 import ReadingProgress from "@/components/ReadingProgress";
 import Icon from "@/components/Icon";
 import { card } from "@/components/ui";
+import CopyCode from "@/components/CopyCode";
 
 /* One dev note, e.g. /notes/lighthouse-74-to-96. The text lives in content/notes.ts. */
 
@@ -64,8 +65,9 @@ function Content({ block, id }: { block: Block; id: string | null }) {
     case "code":
       return (
         <figure className="overflow-hidden rounded-xl border border-line-strong bg-panel">
-          <figcaption className="border-b border-line bg-panel-alt px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-mist">
+          <figcaption className="flex items-center justify-between border-b border-line bg-panel-alt py-1 pl-4 pr-2 font-mono text-[11px] uppercase tracking-widest text-mist">
             {block.lang}
+            <CopyCode code={block.code} lang={block.lang} />
           </figcaption>
           {/* tabIndex lets keyboard users scroll long lines sideways */}
           <pre tabIndex={0} aria-label={`${block.lang} code example`} className="overflow-x-auto p-4 font-mono text-[13px] leading-6 text-snow">

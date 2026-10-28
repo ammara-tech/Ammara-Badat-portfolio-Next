@@ -31,6 +31,52 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "small-things-that-save-work",
+    title: "Small things that save people's work: copy buttons and unsaved changes",
+    description:
+      "A Copy button on every code example, and a warning before I lose what I've typed in my admin page. Small features, but each one saves someone a bad minute.",
+    date: "2026-10-28",
+    tags: ["UX", "React", "Next.js"],
+    body: [
+      {
+        type: "p",
+        text: "Not every feature has to be big. Today I added two small ones that each stop a small, annoying moment: selecting code by hand and missing a line, and losing a project description I'd half-written.",
+      },
+      { type: "h2", text: "1. A Copy button on code examples" },
+      {
+        type: "p",
+        text: "My dev notes have code examples. Selecting them by hand is fiddly, especially on a phone. Now each example has a Copy button in its top bar, and it says \"Copied!\" for two seconds. My contact page already had a Copy email button, so I moved the copying into one shared helper that both buttons use, with a fallback for older browsers.",
+      },
+      {
+        type: "p",
+        text: "The note pages are server components, which means they're built on the server and send finished HTML. Only the small button is a client component that runs in the browser, so the rest of the page stays just as fast.",
+      },
+      { type: "h2", text: "2. A warning before I lose my typing" },
+      {
+        type: "p",
+        text: "In my admin page I write project summaries, tags and links. If I clicked the navbar or closed the tab halfway through, it was all gone. Now the form remembers what it started with, empty or the project I'm editing, and compares. As soon as something is different, \"Unsaved changes\" appears next to the Save button.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Closing the tab or refreshing: the browser shows its own \"Leave site?\" box. Browsers choose that wording, so sites can't use it to trick people.",
+          "Clicking a link on my site: Next.js changes pages without reloading, so the browser's box never appears. I listen for link clicks and ask \"Leave without saving?\" first.",
+          "Editing a different project or signing out asks too.",
+          "It doesn't ask for links that open a new tab, Ctrl-clicks, links further down the same page, or email links, because none of those lose anything.",
+          "Adding a space at the end of a field doesn't count as a change.",
+        ],
+      },
+      {
+        type: "p",
+        text: "One thing deliberately doesn't ask: my automatic sign-out after a long time without activity. If I've walked away from my laptop, signing out matters more than a half-typed summary.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: the best small features remove a moment of frustration. If you've ever lost your typing, you know which one I mean.",
+      },
+    ],
+  },
+  {
     slug: "security-headers",
     title: "Security headers: telling the browser to be stricter",
     description:

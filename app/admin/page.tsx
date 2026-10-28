@@ -13,6 +13,8 @@ import ProjectOrderList from "@/components/ProjectOrderList";
 import ActivityLog from "@/components/ActivityLog";
 import IdleSignOut, { IDLE_FLAG } from "@/components/IdleSignOut";
 import { ProjectCard } from "@/components/ProjectGrid";
+import UnsavedChangesGuard, { DISCARD_MESSAGE } from "@/components/UnsavedChangesGuard";
+import { changedFields } from "@/lib/unsaved";
 
 type FormState = {
   title: string;
@@ -219,6 +221,8 @@ function Dashboard({ email }: { email: string }) {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
+  // What the form started with (empty, or the project being edited), to spot unsaved changes
+  const [formStart, setFormStart] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -246,9 +250,11 @@ function Dashboard({ email }: { email: string }) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
+  const unsaved = changedFields(form, formStart).length > 0;
+
   function startEdit(project: Project) {
-    setEditingId(project.id);
-    setForm({
+    if (unsaved && !window.confirm(DISCARD_MESSAGE)) return;
+    const loaded: FormState = {
       title: project.title,
       summary: project.summary ?? "",
       live_url: project.live_url ?? "",
@@ -259,7 +265,10 @@ function Dashboard({ email }: { email: string }) {
       tags: project.tags.join(", "),
       sort_order: String(project.sort_order),
       published: project.published !== false,
-    });
+    };
+    setEditingId(project.id);
+    setForm(loaded);
+    setFormStart(loaded);
     setMessage(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -267,6 +276,7 @@ function Dashboard({ email }: { email: string }) {
   function cancelEdit() {
     setEditingId(null);
     setForm(emptyForm);
+    setFormStart(emptyForm);
     setMessage(null);
   }
 
@@ -310,6 +320,7 @@ function Dashboard({ email }: { email: string }) {
       });
       setEditingId(null);
       setForm(emptyForm);
+      setFormStart(emptyForm);
       await loadProjects();
     }
 
@@ -334,6 +345,7 @@ function Dashboard({ email }: { email: string }) {
   }
 
   async function handleSignOut() {
+    if (unsaved && !window.confirm(DISCARD_MESSAGE)) return;
     await supabase.auth.signOut();
   }
 
@@ -387,6 +399,7 @@ function Dashboard({ email }: { email: string }) {
       <Inbox onChange={() => setStatsKey((k) => k + 1)} />
 
       {/* Add / edit form */}
+      <UnsavedChangesGuard dirty={unsaved} />
       <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-5">
         <h2 className="text-xl font-semibold">{editingId ? "Edit project" : "Add a project"}</h2>
 
@@ -519,6 +532,7 @@ function Dashboard({ email }: { email: string }) {
               Cancel
             </button>
           )}
+          {unsaved && <span className="self-center text-sm text-mist">Unsaved changes</span>}
         </div>
       </form>
 

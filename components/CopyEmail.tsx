@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
+import { copyText } from "@/lib/clipboard";
 
 /*
   "Copy" button inside the email card on the Contact page.
@@ -17,26 +18,7 @@ export default function CopyEmail({ email }: { email: string }) {
   useEffect(() => () => clearTimeout(timer.current), []);
 
   async function copy() {
-    let ok = false;
-    try {
-      await navigator.clipboard.writeText(email);
-      ok = true;
-    } catch {
-      // Older browsers or no permission: copy from a hidden text box instead
-      const box = document.createElement("textarea");
-      box.value = email;
-      box.setAttribute("readonly", "");
-      box.style.position = "fixed";
-      box.style.opacity = "0";
-      document.body.appendChild(box);
-      box.select();
-      try {
-        ok = document.execCommand("copy");
-      } catch {
-        ok = false;
-      }
-      box.remove();
-    }
+    const ok = await copyText(email);
     setState(ok ? "copied" : "failed");
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setState("idle"), 2000);

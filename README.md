@@ -116,6 +116,7 @@ Extras beyond the milestones, in the order I built them.
 | 17 | Activity log for messages and images | Final project | The activity log also records new and deleted messages and uploaded and deleted images, with All / Projects / Messages / Images buttons |
 | 18 | Real 404s and activity counts | Final project | A wrong project address now returns a real 404 (not a 200 page saying "not found"), and the activity filter buttons show how many entries each kind has |
 | 19 | Security headers and a tab badge | Final project | Browser protections on every page (no framing by other sites, no type guessing, https only, unused features switched off), and a number badge on the admin tab icon for unread messages |
+| 20 | Copy code and unsaved changes | Final project | A Copy button on every code example in the dev notes, and a warning before I lose typing in the admin project form |
 
 ### ✅ What the site has now
 
@@ -143,6 +144,7 @@ Extras beyond the milestones, in the order I built them.
 | Live inbox | New contact messages appear straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count and the tab icon gets a number badge (`components/TabIconBadge.tsx`), there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
 | Drafts | A Live / Draft switch on every project. The read policy lets visitors see only published projects, so a draft can't be seen even through the API (`Supabase/007-drafts-activity-log.sql`). |
 | Live preview | While adding or editing a project, the real Projects page card updates as I type. It's `inert`, so its links can't be clicked by accident. |
+| Unsaved changes warning | Once I've typed in the project form, "Unsaved changes" shows next to the buttons, and leaving asks first: the browser's "Leave site?" box when closing or refreshing, and a "Leave without saving?" box when clicking a link, editing another project or signing out (`components/UnsavedChangesGuard.tsx`, `lib/unsaved.ts`). |
 | Activity log | Database triggers record every project added, edited, published, moved to drafts, reordered or deleted, every message that arrives or is deleted, and every image uploaded or deleted. It is shown as a live timeline with All / Projects / Messages / Images buttons, each showing how many recent entries it has. Only my account can read it, and there are no write policies, so entries can't be faked or deleted from a browser (`components/ActivityLog.tsx`, `Supabase/009-activity-log-messages-images.sql`). |
 | Download CSV | A **CSV** button in the inbox saves the messages I'm viewing (after search and filters) as a spreadsheet file that Excel and Google Sheets open. It's built in the browser, so nothing is sent anywhere. Messages come from a public form, so any cell starting with `=`, `+`, `-` or `@` gets a `'` in front, which stops a spreadsheet running it as a formula ("CSV injection") (`lib/csv.ts`). |
 | Overview | Cards for projects, drafts, unread messages and messages this week, plus a 7-day bar chart. |
@@ -174,9 +176,9 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **19 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, and security headers).
-- Short posts (nineteen so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
-- A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, and an "Updated" date on notes I changed later (`components/ReadingProgress.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
+- **20 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, and small things that save people's work).
+- Short posts (twenty so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, an "Updated" date on notes I changed later, and a **Copy** button on every code example (`components/ReadingProgress.tsx`, `components/CopyCode.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
 | Feature | What it does |
@@ -191,7 +193,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 95 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 98 checks in `tests/` (Vitest): project addresses, the contact form's spam rules, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
@@ -545,7 +547,7 @@ Things I know are missing or could be better:
 - **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
   there is no CAPTCHA.
 - **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
-  without two-step, and fully signed in) and on a local copy of the database; the 95 automatic tests
+  without two-step, and fully signed in) and on a local copy of the database; the 98 automatic tests
   cover the site's code and docs, not the live database.
 - **No end-to-end browser tests.** Clicking through the site and admin is checked by hand.
 - **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
