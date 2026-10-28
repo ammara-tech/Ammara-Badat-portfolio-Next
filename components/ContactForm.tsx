@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Icon from "@/components/Icon";
 import { btnIcon, btnPrimary } from "@/components/ui";
+import { DRAFT_KEY, hasText, readDraft } from "@/lib/contact-draft";
 
 type Status = { state: "idle" | "sending" | "sent" | "error"; text?: string };
 
@@ -11,6 +12,10 @@ const MAX = 3000;
 const field =
   "mt-1.5 w-full rounded-lg border border-line-strong bg-ink px-4 py-3 text-snow placeholder:text-mist-dim transition focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/30";
 
+/*
+  Contact form: sends to /api/contact, which saves to Supabase with spam checks.
+  It also keeps a draft in this tab while the visitor types (see below).
+*/
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,10 +23,61 @@ export default function ContactForm() {
   const [website, setWebsite] = useState(""); // honeypot: stays empty for real people
   const [status, setStatus] = useState<Status>({ state: "idle" });
   const openedAt = useRef(0);
+  // Draft: what the visitor typed is kept in this tab (sessionStorage) until they send it
+  // or close the tab, so a refresh doesn't lose it (lib/contact-draft.ts)
+  const [ready, setReady] = useState(false);
+  const [restored, setRestored] = useState(false);
 
   useEffect(() => {
     openedAt.current = Date.now();
+    try {
+      const draft = readDraft(sessionStorage.getItem(DRAFT_KEY));
+      if (draft) {
+        setName(draft.name);
+        setEmail(draft.email);
+        setMessage(draft.message);
+        openedAt.current = draft.startedAt; // when they first opened the form
+        setRestored(true);
+      }
+    } catch {
+      /* storage blocked (private mode in some browsers): just start empty */
+    }
+    setReady(true);
   }, []);
+
+  // Save the draft half a second after they stop typing
+  useEffect(() => {
+    if (!ready) return;
+    const timer = setTimeout(() => {
+      try {
+        if (hasText({ name, email, message })) {
+          sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ name, email, message, startedAt: openedAt.current }));
+        } else {
+          sessionStorage.removeItem(DRAFT_KEY);
+        }
+      } catch {
+        /* storage blocked: the form still works, it just won't remember */
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [ready, name, email, message]);
+
+  function forgetDraft() {
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* nothing to remove */
+    }
+    setRestored(false);
+  }
+
+  function startOver() {
+    setName("");
+    setEmail("");
+    setMessage("");
+    forgetDraft();
+    openedAt.current = Date.now();
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +100,7 @@ export default function ContactForm() {
       setName("");
       setEmail("");
       setMessage("");
+      forgetDraft();
     } catch {
       setStatus({ state: "error", text: "You seem to be offline. Please try again." });
     }
@@ -79,6 +136,19 @@ export default function ContactForm() {
         <p className="font-display text-2xl font-black uppercase">Send a message</p>
         <p className="mt-1 text-sm text-mist">All fields are required.</p>
       </div>
+
+      {restored && (
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-teal/40 bg-teal/10 px-4 py-3 text-sm text-snow">
+          <span>I kept what you typed earlier. It stays in this tab until you send it or close the tab.</span>
+          <button
+            type="button"
+            onClick={startOver}
+            className="font-mono text-xs uppercase tracking-widest text-teal underline-offset-4 hover:underline"
+          >
+            Start over
+          </button>
+        </p>
+      )}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block">

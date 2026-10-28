@@ -9,6 +9,7 @@ import Screenshot from "@/components/Screenshot";
 import Icon from "@/components/Icon";
 import { LightboxTrigger } from "@/components/Lightbox";
 import { Accent, Eyebrow, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
+import CopyLink from "@/components/CopyLink";
 
 /*
   A page for every project, e.g. /projects/myflix.
@@ -161,6 +162,7 @@ export default async function ProjectPage({ params }: Props) {
                 Watch the video
               </SmartLink>
             )}
+            <CopyLink url={`${siteUrl}/projects/${slug}`} label={project.title} />
           </div>
         </div>
 

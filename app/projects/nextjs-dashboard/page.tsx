@@ -8,6 +8,7 @@ import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnIcon, btnP
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import { siteUrl } from "@/lib/site";
+import CopyLink from "@/components/CopyLink";
 
 export const metadata: Metadata = pageMetadata({
   title: `${caseStudy.title} — Case study — Ammara Badat`,
@@ -87,6 +88,7 @@ export default function CaseStudy() {
               Watch the demo
             </SmartLink>
           )}
+          <CopyLink url={`${siteUrl}/projects/nextjs-dashboard`} label="this case study" />
         </div>
 
         {/* Quick facts */}

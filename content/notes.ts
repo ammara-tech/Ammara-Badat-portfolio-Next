@@ -31,6 +31,53 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "keeping-a-visitors-message-safe",
+    title: "Keeping a visitor's message safe, and a Copy link button",
+    description:
+      "My contact form now remembers what a visitor typed if they refresh by accident, without sending anything anywhere. Plus an easy way to share a project.",
+    date: "2026-10-28",
+    tags: ["UX", "Privacy", "React"],
+    body: [
+      {
+        type: "p",
+        text: "Earlier today I added a warning so I don't lose what I type in my admin page. Then I thought about the people writing to me. If a recruiter writes a long message on my contact form and their phone refreshes the page, it's gone, and they might not write it again.",
+      },
+      { type: "h2", text: "A draft that stays in the tab" },
+      {
+        type: "p",
+        text: "Now, half a second after a visitor stops typing, the form saves their name, email and message in their own browser. If the page refreshes or they press Back by accident, everything comes back, with a short note saying so and a Start over button.",
+      },
+      { type: "h2", text: "Where it's kept, and why there" },
+      {
+        type: "p",
+        text: "Browsers have two kinds of storage for this. One keeps things until they're deleted, even after the browser closes. The other, session storage, belongs to one tab and is wiped when that tab closes. I chose session storage. A message to a stranger shouldn't stay on a shared computer for the next person to find.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Nothing is sent to my site or to Supabase until the visitor presses Send. The draft never leaves their device.",
+          "Once the message is sent, the draft is deleted straight away.",
+          "The hidden spam field is never saved.",
+          "If the saved draft is broken or too long, the form ignores it and starts empty instead of crashing.",
+          "Some private browsing modes block storage. Then the form still works; it just doesn't remember.",
+        ],
+      },
+      {
+        type: "p",
+        text: "There was one catch. My spam protection rejects forms sent faster than a person could type. After a refresh, the timer would restart, and a visitor whose message came back could send it straight away and be treated as a bot. So the draft also remembers when the form was first opened, and the check uses that.",
+      },
+      { type: "h2", text: "A Copy link button" },
+      {
+        type: "p",
+        text: "Each project page and my case study now has a Copy link button, for sharing a project on LinkedIn or WhatsApp. It copies the clean address, without any filter or heading on the end. It uses the same copy helper as my other Copy buttons, so all three behave the same way.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: when you store something for a visitor, choose the place that keeps it the shortest time that still does the job.",
+      },
+    ],
+  },
+  {
     slug: "small-things-that-save-work",
     title: "Small things that save people's work: copy buttons and unsaved changes",
     description:

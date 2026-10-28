@@ -287,6 +287,13 @@ browser could be faked or skipped; this one can't.
 3. **Rate limit in the database:** a **trigger** in `004-...sql` limits messages per email address,
    per visitor and per hour in total. It runs inside Supabase, so it can't be skipped.
 
+**Draft kept on refresh** (`lib/contact-draft.ts`): while a visitor types, the form saves their name,
+email and message to **sessionStorage** half a second after they stop typing. sessionStorage belongs to one
+browser tab and is wiped when it closes, so nothing leaves their device until they press Send. After a
+refresh or Back, `readDraft()` brings it back (it ignores anything broken, too long or empty) with a "Start
+over" button, and the draft is deleted once the message is sent. The hidden honeypot field is never saved.
+The draft also keeps when the form was first opened, so the "too fast" check still sees the real time.
+
 **The visitor's IP address is never stored.** The server stores a **hash** instead (a one-way
 scramble with SHA-256; the same IP always gives the same hash, but you can't turn the hash back into
 the IP). That's enough to count messages per visitor.
@@ -311,6 +318,8 @@ with **429** ("Too Many Requests").
   `app/projects/[slug]/page.tsx` finds the project with that slug. The capstone **redirects** to its
   case study page instead. A slug that matches no project calls `notFound()`, which sends a real 404
   (see "Loading screens and 404s" in section 3).
+- **Copy link** (`CopyLink.tsx`): on project pages and the case study, copies the page's clean address
+  (built from `siteUrl`, so no `?tag=` or `#heading` on the end) for sharing on LinkedIn or WhatsApp.
 
 ---
 
@@ -350,7 +359,7 @@ with **429** ("Too Many Requests").
 | Live GitHub repos | `GitHubActivity.tsx` | Asks the GitHub API for my latest repos on the server, **cached** (saved and reused) for an hour. Hidden if GitHub can't be reached. |
 | Page transitions | `app/template.tsx` | A red-to-teal stripe and a short slide-up on every page change. |
 | Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed, a reading progress bar (`ReadingProgress.tsx`) and a **Copy** button on every code example (`CopyCode.tsx`, a small client component inside the server-rendered note; it shares `lib/clipboard.ts` with the Copy email button). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. |
-| Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". |
+| Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". It shares `lib/clipboard.ts` with the Copy code and Copy link buttons. |
 | Back, Forward, Refresh | `NavArrows.tsx`, `lib/nav-arrows.ts` | Browser-style buttons next to my name (laptops and desktops) and at the top of the phone menu, for when the site is installed on a phone and has no browser bar. Back and Forward use `history.back()` and `history.forward()`; Refresh reloads the page. The **Navigation API** (a newer browser feature) says whether there is a page to go back or forward to, so the buttons grey out when there isn't. |
 | Back to top | `BackToTop.tsx`, `lib/back-to-top.ts` | Appears after scrolling more than one and a half screens. Jumps to the top (smoothly, unless motion is reduced) and moves keyboard focus to the page content. Sits above the phone navigation bar; hidden on the admin page. |
 | Save my contact | `app/ammara-badat.vcf/route.ts` | Builds a **vCard** (the standard contact-card file phones understand) from `content/about.ts`. |
@@ -394,8 +403,8 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 98 checks:
-  - page addresses (`slug.test.ts`), the contact form rules (`contact.test.ts`)
+  example inputs and check the answers. There are 101 checks:
+  - page addresses (`slug.test.ts`), the contact form rules and its draft (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
@@ -417,7 +426,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 98.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 101.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -490,4 +499,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, and 98 with the unsaved changes warning.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, and 101 with the contact form draft.
