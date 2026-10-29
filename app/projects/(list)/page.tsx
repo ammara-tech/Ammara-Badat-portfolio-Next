@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { loadProjects, projectHref } from "@/lib/projects";
 import ProjectGrid from "@/components/ProjectGrid";
+import CurrentlyBuilding from "@/components/CurrentlyBuilding";
 import { Accent, Eyebrow, PageTitle } from "@/components/ui";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
@@ -76,6 +77,9 @@ export default async function Projects() {
 
       {/* Tag filter and cards (components/ProjectGrid.tsx) */}
       {projects.length > 0 && <ProjectGrid projects={projects} />}
+
+      {/* What I'm working on now (content/currently-building.ts); hidden when the list is empty */}
+      <CurrentlyBuilding />
     </section>
   );
 }

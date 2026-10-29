@@ -31,6 +31,43 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "showing-work-in-progress",
+    title: "Showing work in progress honestly",
+    description:
+      "My Projects page now has a Currently building section for two apps I'm working on, designed so nobody mistakes them for finished work.",
+    date: "2026-10-29",
+    tags: ["Portfolio", "Design", "Next.js"],
+    body: [
+      {
+        type: "p",
+        text: "I'm building two new apps: an F1 Prediction League, where friends predict the podium before each race, and a Booking + Client Portal for South African small businesses. They're not live yet, but I wanted visitors to see what I'm working on next.",
+      },
+      { type: "h2", text: "Not pretending they're finished" },
+      {
+        type: "p",
+        text: "The risk with showing unfinished work is that it looks finished. So the cards for these projects are deliberately different from my real project cards:",
+      },
+      {
+        type: "ul",
+        items: [
+          "A dashed border instead of a solid card, and no screenshot.",
+          "An \"In progress\" label with a small pulsing dot, which stays still for people who turn animations off.",
+          "No buttons or links, because there's nothing to open yet.",
+          "They sit under my finished projects, never above them.",
+        ],
+      },
+      { type: "h2", text: "Built to disappear" },
+      {
+        type: "p",
+        text: "The list lives in one small file in my code. When a project goes live, I add its real card in my admin page and delete it from the list. When the list is empty, the whole section hides itself, so I can't forget to remove a heading. A test checks every entry has a name, a short summary and tags, and that nothing is listed twice.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: it's fine to show work in progress, as long as it's obvious that it's in progress.",
+      },
+    ],
+  },
+  {
     slug: "testing-my-site-like-a-real-visitor",
     title: "Testing my site like a real visitor, on a laptop and a phone",
     description:

@@ -7,6 +7,7 @@ import { headingIds, lastChanged, noteNeighbours, notes } from "@/content/notes"
 import { showBackToTop } from "@/lib/back-to-top";
 import { historyButtons } from "@/lib/nav-arrows";
 import { caseStudy } from "@/content/case-study";
+import { currentlyBuilding } from "@/content/currently-building";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
@@ -128,6 +129,22 @@ describe("project pages can return a real 404", () => {
   it("keeps the loading screen for the Projects list", () => {
     expect(appFile("projects/(list)/page.tsx")).toBe(true);
     expect(appFile("projects/(list)/loading.tsx")).toBe(true);
+  });
+});
+
+describe("currently building", () => {
+  it("every project in progress has a name, a short summary and tags", () => {
+    for (const p of currentlyBuilding) {
+      expect(p.name.trim().length).toBeGreaterThan(0);
+      expect(p.summary.length).toBeGreaterThan(20);
+      expect(p.summary.length).toBeLessThanOrEqual(200);
+      expect(p.tags.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("doesn't list the same project twice", () => {
+    const names = currentlyBuilding.map((p) => p.name.toLowerCase());
+    expect(new Set(names).size).toBe(names.length);
   });
 });
 

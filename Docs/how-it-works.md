@@ -320,6 +320,10 @@ with **429** ("Too Many Requests").
   `app/projects/[slug]/page.tsx` finds the project with that slug. The capstone **redirects** to its
   case study page instead. A slug that matches no project calls `notFound()`, which sends a real 404
   (see "Loading screens and 404s" in section 3).
+- **Currently building** (`CurrentlyBuilding.tsx`, `content/currently-building.ts`): under the project
+  cards, a list of projects I'm working on, with an "In progress" label. The cards have a dashed border and
+  no links, so they don't look like finished work. When a project goes live I add its real card in `/admin`
+  and delete it from the list; when the list is empty, the section disappears.
 - **Copy link** (`CopyLink.tsx`): on project pages and the case study, copies the page's clean address
   (built from `siteUrl`, so no `?tag=` or `#heading` on the end) for sharing on LinkedIn or WhatsApp.
 
@@ -405,11 +409,11 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 101 checks:
+  example inputs and check the answers. There are 103 checks:
   - page addresses (`slug.test.ts`), the contact form rules and its draft (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
-    the contact card and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+    the contact card, the Currently building list and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
     grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
@@ -443,7 +447,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 101.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 103.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -522,4 +526,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, and 101 with the contact form draft.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, and 103 with the Currently building list.
