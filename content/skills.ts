@@ -23,6 +23,7 @@ export type SkillGroup = { title: string; skills: Skill[] };
 const gh = "https://github.com/ammara-tech";
 const portfolio = `${gh}/Ammara-Badat-portfolio-Next`;
 const clinic = `${gh}/nextjs-dashoard`;
+const papertrail = `${gh}/papertrail`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -166,6 +167,14 @@ export const skillGroups: SkillGroup[] = [
         ],
       },
       {
+        name: "Firebase (Auth & Firestore)",
+        note: "Email and Google sign-in, with each user's documents synced to their own private space.",
+        evidence: [
+          { label: "PaperTrail: firestore.rules", href: `${papertrail}/blob/main/firestore.rules` },
+          { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
+        ],
+      },
+      {
         name: "Server-side validation",
         note: "Checking form data with Zod before it reaches the database.",
         evidence: [
@@ -195,6 +204,7 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "This site (live)", href: "https://ammara-badat-portfolio-next.vercel.app" },
           { label: "Clinic platform (live)", href: "https://nextjs-dashoard-psi.vercel.app" },
+          { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
         ],
       },
       {

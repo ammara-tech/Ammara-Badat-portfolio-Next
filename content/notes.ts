@@ -31,6 +31,53 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "building-papertrail-with-firebase",
+    title: "Building PaperTrail with Firebase instead of Supabase",
+    description:
+      "PaperTrail, my quotes and invoices app for South African small businesses, uses Firebase. Here's why, and what carried over from Supabase.",
+    date: "2026-10-29",
+    tags: ["Firebase", "Next.js", "PaperTrail"],
+    body: [
+      {
+        type: "p",
+        text: "PaperTrail is my newest project: quotes and invoices for South African small businesses, with rand amounts, 15% VAT, part payments, WhatsApp reminders and PDFs, in English or Afrikaans. You sign in, and your documents follow you from your phone to your laptop. It's live, and it's on my Projects page.",
+      },
+      { type: "h2", text: "Why Firebase this time" },
+      {
+        type: "p",
+        text: "Supabase's free plan only lets me run two projects at a time, and this site and my clinic platform already use both. Instead of pausing one, I used Firebase Authentication and Cloud Firestore from Google. That also meant learning a second way to store data, which is useful in itself.",
+      },
+      { type: "h2", text: "Same idea, different tool" },
+      {
+        type: "p",
+        text: "In Supabase, Row Level Security policies written in SQL decide which rows someone can see. Firestore has security rules that do the same job. PaperTrail's rules say that a signed-in user can only read and write their own documents, and nobody else's.",
+      },
+      {
+        type: "p",
+        text: "The lesson I learned on this site carried straight over: anyone can change the code running in their browser, so the app hiding something isn't protection. The rules run on Google's servers, and they're what actually keep each business's invoices private.",
+      },
+      { type: "h2", text: "Money is counted in cents" },
+      {
+        type: "p",
+        text: "Computers store decimals in a way that can't hold some numbers exactly, so adding prices can come out a tiny bit wrong. PaperTrail keeps every amount as a whole number of cents, and only turns it back into rand on screen:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `0.1 + 0.2; // 0.30000000000000004 (rand as decimals: wrong)
+10 + 20;   // 30 (cents as whole numbers: right)`,
+      },
+      {
+        type: "p",
+        text: "I also format rand myself, like R 1 250,50, because different browsers wrote South African amounts differently. Tests check the money maths, the VAT and the formatting, so a change can't quietly break an invoice total.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: the tools change, but the security idea doesn't. Decide on the server who can see what, and never trust the browser to do it.",
+      },
+    ],
+  },
+  {
     slug: "showing-work-in-progress",
     title: "Showing work in progress honestly",
     description:
