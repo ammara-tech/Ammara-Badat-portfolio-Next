@@ -22,6 +22,16 @@ export async function loadProjects(): Promise<{ projects: Project[]; error: stri
   }
 }
 
+/** How many published projects there are (for the About page), or null if Supabase can't be reached */
+export async function countProjects(): Promise<number | null> {
+  try {
+    const { count, error } = await publicClient().from("projects").select("id", { count: "exact", head: true });
+    return error ? null : count;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Finds one project by its page address. Returns null if there's no such project.
  * If Supabase can't be reached it throws, so visitors see the friendly error page

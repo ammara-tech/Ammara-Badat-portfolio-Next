@@ -9,6 +9,8 @@ import { historyButtons } from "@/lib/nav-arrows";
 import { caseStudy } from "@/content/case-study";
 import { currentlyBuilding } from "@/content/currently-building";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
+import { projectStat } from "@/lib/stats";
+import { about } from "@/content/about";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
 const publicFile = (path: string) => existsSync(join(process.cwd(), "public", path));
@@ -170,5 +172,18 @@ describe("Save my contact card", () => {
     expect(text.startsWith("BEGIN:VCARD")).toBe(true);
     expect(text).toContain("FN:Ammara Badat");
     expect(text.trim().endsWith("END:VCARD")).toBe(true);
+  });
+});
+
+describe("the project count on the About page", () => {
+  it("shows the real number of published projects", () => {
+    expect(projectStat(8)).toEqual({ value: "8", label: "Projects built & shipped" });
+    expect(projectStat(9)?.value).toBe("9");
+  });
+
+  it("leaves the card out rather than showing a wrong number, and isn't typed in by hand", () => {
+    expect(projectStat(null)).toBe(null);
+    expect(projectStat(0)).toBe(null);
+    expect(about.stats.some((s) => /project/i.test(s.label))).toBe(false);
   });
 });

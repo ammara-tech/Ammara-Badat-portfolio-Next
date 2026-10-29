@@ -368,6 +368,7 @@ with **429** ("Too Many Requests").
 | Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". It shares `lib/clipboard.ts` with the Copy code and Copy link buttons. |
 | Back, Forward, Refresh | `NavArrows.tsx`, `lib/nav-arrows.ts` | Browser-style buttons next to my name (laptops and desktops) and at the top of the phone menu, for when the site is installed on a phone and has no browser bar. Back and Forward use `history.back()` and `history.forward()`; Refresh reloads the page. The **Navigation API** (a newer browser feature) says whether there is a page to go back or forward to, so the buttons grey out when there isn't. |
 | Back to top | `BackToTop.tsx`, `lib/back-to-top.ts` | Appears after scrolling more than one and a half screens. Jumps to the top (smoothly, unless motion is reduced) and moves keyboard focus to the page content. Sits above the phone navigation bar; hidden on the admin page. |
+| Live project count | `app/about/page.tsx`, `lib/stats.ts`, `countProjects()` in `lib/projects.ts` | The About page asks Supabase how many projects there are (`count: "exact", head: true`, so only the number comes back, not the projects). It reads as a visitor, so RLS leaves drafts out. `revalidate = 60` rebuilds the page at most once a minute, so a newly published project shows within a minute while the page stays fast. If Supabase can't be reached, `projectStat()` leaves the card out instead of showing a wrong number. |
 | Save my contact | `app/ammara-badat.vcf/route.ts` | Builds a **vCard** (the standard contact-card file phones understand) from `content/about.ts`. |
 | Web CV | `app/cv/page.tsx`, `content/cv.ts` | My CV as a page that prints cleanly, next to the PDF download. |
 
@@ -409,11 +410,11 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 103 checks:
+  example inputs and check the answers. There are 106 checks:
   - page addresses (`slug.test.ts`), the contact form rules and its draft (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
-    the contact card, the Currently building list and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+    the contact card, the Currently building list, the About page's project count and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
     grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
@@ -447,7 +448,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 103.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 106.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -526,4 +527,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, and 103 with the Currently building list.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, and 106 with the live project count.

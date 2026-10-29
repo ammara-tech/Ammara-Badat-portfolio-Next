@@ -9,6 +9,8 @@ import { Accent, Divider, Eyebrow, PageTitle, Para, SectionTitle, btnGhost, btnI
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import { siteUrl } from "@/lib/site";
+import { countProjects } from "@/lib/projects";
+import { projectStat } from "@/lib/stats";
 
 export const metadata: Metadata = pageMetadata({
   title: "About — Ammara Badat",
@@ -20,9 +22,15 @@ export const metadata: Metadata = pageMetadata({
 
 const certificateCount = certificationGroups.reduce((n, g) => n + g.certificates.length, 0);
 
-export default function About() {
-  // The stats from content/about.ts, plus a live count of my certificates
-  const stats = [...about.stats, { value: String(certificateCount), label: "Certifications earned" }];
+// The project count comes from Supabase: the page is rebuilt at most once a minute,
+// so a project published in /admin shows up in the number within a minute
+export const revalidate = 60;
+
+export default async function About() {
+  // Technologies first, then my live project count, the year, and a count of my certificates
+  const projects = projectStat(await countProjects());
+  const [technologies, year] = about.stats;
+  const stats = [technologies, ...(projects ? [projects] : []), year, { value: String(certificateCount), label: "Certifications earned" }];
 
   return (
     <div className="space-y-16">

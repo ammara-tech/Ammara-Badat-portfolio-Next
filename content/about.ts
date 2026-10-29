@@ -37,10 +37,10 @@ export const about = {
     "Available to start immediately",
   ],
 
-  // Numbers for the stats row on the About page.
+  // Numbers for the stats row on the About page. The project count and the
+  // certificate count are added on the page itself, counted live, so they never go out of date.
   stats: [
     { value: "10+", label: "Core technologies learned" },
-    { value: "7", label: "Projects built & shipped" },
     { value: "2026", label: "IT Programming student" },
   ],
 
