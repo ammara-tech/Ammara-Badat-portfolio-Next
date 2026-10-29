@@ -1,0 +1,64 @@
+# Browser tests (Playwright)
+#
+# After every push to main that changes the site, GitHub waits until Vercel is serving
+# that commit (it checks /api/version, like the Lighthouse check), then opens the live
+# site in a real browser, as a laptop and as a phone, and runs the tests in e2e/.
+# They never send a real message or sign in (see playwright.config.ts).
+# If a test fails, the run has a "playwright-report" download with screenshots
+# and a step-by-step trace of what happened.
+# You can also start it by hand: Actions tab -> Browser tests -> Run workflow.
+
+name: Browser tests
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+      - "Reflections/**"
+      - "tests/**"
+  workflow_dispatch:
+
+concurrency:
+  group: browser-tests
+  cancel-in-progress: true
+
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Install the test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait until Vercel is serving this commit
+        if: github.event_name == 'push'
+        run: |
+          for i in $(seq 1 40); do
+            live=$(curl -fsS https://ammara-badat-portfolio-next.vercel.app/api/version | grep -o '[0-9a-f]\{40\}' || true)
+            if [ "$live" = "$GITHUB_SHA" ]; then
+              echo "The live site is on this commit after about $(((i - 1) * 15)) seconds."
+              exit 0
+            fi
+            echo "Waiting for Vercel (live site is on ${live:-an older version})..."
+            sleep 15
+          done
+          echo "::warning::Vercel didn't show this commit within 10 minutes, so the tests use what is live now."
+
+      - name: Run the browser tests on the live site
+        run: npm run test:browser
+
+      - name: Save the report if something failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

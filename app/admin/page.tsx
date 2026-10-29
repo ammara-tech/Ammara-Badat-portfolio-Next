@@ -140,6 +140,8 @@ export default function AdminPage() {
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // "Show password" button: lets me check what I typed. Hidden again when I press Sign in.
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
@@ -160,6 +162,7 @@ function SignIn() {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setShowPassword(false);
 
     const { error } = await getBrowserClient().auth.signInWithPassword({ email, password });
     if (error) setError(error.message);
@@ -189,16 +192,32 @@ function SignIn() {
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm text-mist">Password</span>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`mt-1 ${inputClass}`}
-          />
-        </label>
+        <div>
+          <label htmlFor="admin-password" className="text-sm text-mist">
+            Password
+          </label>
+          <div className="relative mt-1">
+            <input
+              id="admin-password"
+              type={showPassword ? "text" : "password"}
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`${inputClass} pr-20`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-pressed={showPassword}
+              aria-controls="admin-password"
+              className="absolute inset-y-0 right-0 px-3 font-mono text-xs uppercase tracking-widest text-mist hover:text-teal focus-visible:text-teal"
+            >
+              {showPassword ? "Hide" : "Show"}
+              <span className="sr-only"> password</span>
+            </button>
+          </div>
+        </div>
 
         {error && <p className="text-sm text-racing-text">{error}</p>}
 

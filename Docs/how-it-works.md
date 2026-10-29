@@ -1,8 +1,8 @@
 # How my portfolio works
 
 A plain-English guide to the code, so I can explain any part of it.
-Words in **bold** are explained the first time they appear. Last updated on 28 October 2026,
-after adding security headers, messages and images in the activity log, and real 404s.
+Words in **bold** are explained the first time they appear. Last updated on 29 October 2026,
+after adding browser tests, security headers, messages and images in the activity log, and real 404s.
 
 ---
 
@@ -184,7 +184,9 @@ tell the browser to switch protections on. `next.config.ts` adds mine to every a
 ## 5. Signing in to `/admin` (three layers)
 
 ### Layer 1 and 2: password, then a code (`components/TwoStep.tsx`, `lib/two-step.ts`)
-1. `/admin` always starts on the sign-in form (email and password, `signInWithPassword`).
+1. `/admin` always starts on the sign-in form (email and password, `signInWithPassword`). A **Show** / **Hide**
+   button next to the password switches the box between `type="password"` and `type="text"`, and it's hidden
+   again as soon as I press Sign in, so it's never left showing.
 2. After the password, `getAuthenticatorAssuranceLevel()` tells the page what's next, and
    `nextStep()` decides:
    - **code**: an authenticator app is set up, so ask for its 6-digit code
@@ -417,6 +419,21 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
     every link inside the README points to a heading that exists
 - **Tests on every push** (`.github/workflows/tests.yml`): GitHub installs the project on Node.js 22 and runs
   `npm test`. A green tick in the Actions tab means everything passed.
+- **Browser tests** (`e2e/`, `playwright.config.ts`, `.github/workflows/browser-tests.yml`): **Playwright**
+  opens the live site in a real Chromium browser, twice: as a laptop and as a phone (a Pixel 7 screen).
+  It waits for the new deploy the same way Lighthouse does, then:
+  - `contact.spec.ts`: fills in the contact form like a visitor. When it presses Send, the test answers
+    instead of my server (`page.route`), so no real message is sent. It checks the spam trap is hidden, the
+    browser stops a too-short message, the right details are sent, errors appear, and the draft survives a
+    refresh. Then it calls the real `/api/contact` only with requests the API throws away before the
+    database (a filled-in spam trap, a form sent too fast, a wrong email), so nothing is ever saved.
+  - `admin.spec.ts`: `/admin` shows only the sign-in form (no dashboard text), has `noindex`, and the
+    **Show password** button switches the box between hidden and visible. It never types a real password.
+  - `site.spec.ts`: every main page loads with its title, a made-up project gets a real 404, the live
+    security headers, and the phone menu opening and closing with Escape.
+  - If anything fails, the run has a report with screenshots and a step-by-step **trace** to download.
+  - Unit tests (Vitest) check my functions; browser tests check the pages people actually use. Both matter:
+    a function can be right and the button that calls it still broken.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main that changes the site,
   GitHub checks `/api/version` every 15 seconds until Vercel is serving that commit, then runs Lighthouse
   once on six pages of the live site and fails the check if Accessibility or SEO drops below 90.
@@ -484,6 +501,12 @@ They're instructions sent with every page that switch browser protections on. Th
 sites putting my pages in a frame (clickjacking). Others stop type guessing, force https and switch off
 the camera and microphone. I didn't add a script rule because Next.js needs inline scripts; doing that
 properly needs nonces, which is in my known gaps.
+
+**What's the difference between your unit tests and your browser tests?**
+Unit tests (Vitest, `tests/`) run my functions with example inputs, in a second, without a browser. Browser
+tests (Playwright, `e2e/`) open the real live site as a laptop and a phone and click through it, so they catch
+things like a hidden button or a broken page. They answer the contact form themselves, so they never send a
+real message, and they never sign in.
 
 **How does a new project get its own page?**
 `[slug]` is a dynamic segment. `slugify()` turns the title into the address, and the page finds the

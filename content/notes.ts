@@ -31,6 +31,70 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "testing-my-site-like-a-real-visitor",
+    title: "Testing my site like a real visitor, on a laptop and a phone",
+    description:
+      "Browser tests now open my live site after every deploy, fill in forms and tap the phone menu, as a laptop and a phone, without sending one real message.",
+    date: "2026-10-29",
+    tags: ["Testing", "Playwright", "GitHub Actions"],
+    body: [
+      {
+        type: "p",
+        text: "My site has over a hundred unit tests. They check my functions with example inputs, and they're fast. But they never open a page. A function can be perfectly right while the button that uses it is hidden, or the page it's on doesn't load. In my reflection, I wrote that I'd add browser tests that click through the contact form and the admin page. Today I did.",
+      },
+      { type: "h2", text: "What Playwright does" },
+      {
+        type: "p",
+        text: "Playwright is a tool that controls a real browser. My tests open my live site twice, once as a laptop and once as a phone screen, and do what a visitor would: type in boxes, press buttons, refresh, open the menu. Then they check what's on the screen. A test reads almost like instructions to a person:",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `await page.getByRole("textbox", { name: "Message" }).fill("Hi");
+await page.getByRole("button", { name: /Send message/ }).click();
+// the browser should stop a message that's too short`,
+      },
+      {
+        type: "p",
+        text: "The tests find things the way a screen reader does, by their role and name, like \"the textbox called Message\". So if a label goes missing, the test fails too, which also protects accessibility.",
+      },
+      { type: "h2", text: "Testing a contact form without sending messages" },
+      {
+        type: "p",
+        text: "The tricky part was the contact form. A test that really sends a message after every deploy would fill my inbox and hit my own rate limit. So when a test presses Send, the test answers instead of my server, and checks what would have been sent: the right name, and an empty spam trap.",
+      },
+      {
+        type: "p",
+        text: "I still wanted to test my real server, so a few tests call it directly, but only with requests it throws away before the database: a bot filling in the hidden field, a form sent too fast, or a wrong email address. My server answers each one correctly, and nothing is saved.",
+      },
+      { type: "h2", text: "What else they check" },
+      {
+        type: "ul",
+        items: [
+          "My contact form's draft really comes back after a refresh.",
+          "The admin page shows only the sign-in form to a stranger, and asks search engines not to list it.",
+          "The new Show password button switches the password between hidden and visible. The tests never type a real password or press Sign in.",
+          "Every main page loads with its own title, and a made-up project page gives a real 404.",
+          "The live site really sends my security headers.",
+          "On a phone, the menu opens, shows the links, and closes with Escape.",
+        ],
+      },
+      {
+        type: "p",
+        text: "They run on GitHub after every deploy, waiting until Vercel is serving the new version first, the same trick my Lighthouse check uses. If one fails, GitHub keeps screenshots and a step-by-step recording of what happened.",
+      },
+      { type: "h2", text: "Also today: Show password" },
+      {
+        type: "p",
+        text: "My admin sign-in now has a Show / Hide button on the password box, so I can check what I typed. The password is hidden again the moment I press Sign in, so it's never left on screen.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: unit tests prove the parts work; browser tests prove the page works. And a good test never makes a mess in the real world, like sending real messages.",
+      },
+    ],
+  },
+  {
     slug: "keeping-a-visitors-message-safe",
     title: "Keeping a visitor's message safe, and a Copy link button",
     description:
