@@ -128,7 +128,7 @@ Extras beyond the milestones, in the order I built them.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 4 Certiport certifications |
 | Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first. Below them, a **Currently building** section for projects in progress (`content/currently-building.ts`) |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
@@ -203,7 +203,7 @@ Extras beyond the milestones, in the order I built them.
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
-Also: **9 certifications** from Certiport, Vercel and Harvard CS50, shown on the About page.
+Also: **4 Certiport IT Specialist certifications** (HTML and CSS, HTML5 Application Development, Software Development, JavaScript), each with a verification code, shown on the About page and as evidence on the Skills page.
 
 ## Details and proof
 The tables, tests and screenshots behind everything above.
