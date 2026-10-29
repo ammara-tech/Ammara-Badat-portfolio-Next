@@ -13,7 +13,7 @@ import { siteUrl } from "@/lib/site";
 export const metadata: Metadata = pageMetadata({
   title: "About — Ammara Badat",
   description:
-    "Who I am, how I work and the junior full stack role I'm looking for, plus my 9 certifications from Certiport, Vercel and Harvard CS50.",
+    "Who I am, how I work and the junior full stack role I'm looking for, plus my 4 Certiport IT Specialist certifications.",
   path: "/about",
   type: "profile",
 });

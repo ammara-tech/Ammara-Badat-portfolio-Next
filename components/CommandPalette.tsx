@@ -41,7 +41,7 @@ const pages: Item[] = [
   { id: "p-projects", group: "Pages", label: "Projects", icon: "cube", href: "/projects", keywords: "work portfolio built" },
   { id: "p-case", group: "Pages", label: `Case study: ${caseStudy.title}`, icon: "document", href: "/projects/nextjs-dashboard", keywords: "capstone clinic demo video" },
   { id: "p-skills", group: "Pages", label: "Skills", icon: "terminal", href: "/skills", keywords: "evidence proof tech" },
-  { id: "p-certs", group: "Pages", label: "Certifications", icon: "badge", href: "/about#certifications", keywords: "certificates certiport vercel cs50" },
+  { id: "p-certs", group: "Pages", label: "Certifications", icon: "badge", href: "/about#certifications", keywords: "certificates certiport it specialist" },
   { id: "p-contact", group: "Pages", label: "Contact", icon: "mail", href: "/contact", keywords: "message hire email form" },
   { id: "p-cv", group: "Pages", label: "CV (web page)", icon: "document", href: "/cv", keywords: "resume curriculum vitae print" },
   { id: "p-notes", group: "Pages", label: "Dev notes", icon: "document", href: "/notes", keywords: "blog posts articles writing rss" },

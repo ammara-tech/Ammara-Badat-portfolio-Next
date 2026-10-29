@@ -96,12 +96,6 @@ export const cv = {
       names: "HTML and CSS; HTML5 Application Development; Software Development; JavaScript",
       date: "2026 – 2031",
     },
-    {
-      issuer: "Vercel Next.js Learn",
-      names: "App Router Fundamentals; Pages Router Fundamentals; React Foundations for Next.js; SEO Fundamentals",
-      date: "2026",
-    },
-    { issuer: "Harvard University CS50", names: "Introduction to Programming with Scratch", date: "2026" },
   ],
 
   education: {

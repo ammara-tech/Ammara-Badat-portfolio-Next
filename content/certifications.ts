@@ -1,6 +1,8 @@
 /*
   MY CERTIFICATIONS — shown on the About page and used as evidence on the Skills page.
   The certificate images live in public/certificates/.
+  I only show my Certiport industry certifications: they're exams with a verification
+  code, so an employer can check them.
 
   Certiport certificates expire 5 years after the date they were awarded.
   The verification codes are printed on the certificates so employers can check them
@@ -49,44 +51,6 @@ export const certificationGroups: CertificateGroup[] = [
         date: "Current through September 4, 2031",
         image: "/certificates/certiport-javascript.jpg",
         code: "wBUmw-2Fv4",
-      },
-    ],
-  },
-  {
-    issuer: "Vercel · Next.js Learn",
-    note: "Course certificates from the team behind Next.js",
-    certificates: [
-      {
-        name: "Next.js App Router Fundamentals",
-        date: "Completed September 30, 2026",
-        image: "/certificates/nextjs-app-router.jpg",
-      },
-      {
-        name: "Next.js Pages Router Fundamentals",
-        date: "Completed October 1, 2026",
-        image: "/certificates/nextjs-pages-router.jpg",
-      },
-      {
-        name: "React Foundations for Next.js",
-        date: "Completed October 5, 2026",
-        image: "/certificates/react-foundations.jpg",
-      },
-      {
-        name: "Next.js SEO Fundamentals",
-        date: "Completed October 6, 2026",
-        image: "/certificates/nextjs-seo.jpg",
-      },
-    ],
-  },
-  {
-    issuer: "Harvard University · CS50",
-    note: "Online course from Harvard's computer science department",
-    certificates: [
-      {
-        name: "CS50's Introduction to Programming with Scratch",
-        date: "Completed 2026 · nine projects",
-        image: "/certificates/cs50-scratch.jpg",
-        verifyUrl: "https://cs50.harvard.edu/certificates/4b683ab3-c0fb-458b-87ee-1d664de97ca9",
       },
     ],
   },

@@ -102,7 +102,6 @@ export const skillGroups: SkillGroup[] = [
         note: "Components, state and effects, e.g. the admin page for this site.",
         evidence: [
           { label: "This site: app/admin/page.tsx", href: `${portfolio}/blob/main/app/admin/page.tsx` },
-          cert("react-foundations", "React Foundations for Next.js"),
         ],
       },
       {
@@ -111,8 +110,6 @@ export const skillGroups: SkillGroup[] = [
         evidence: [
           { label: "This site: app/ folder", href: `${portfolio}/tree/main/app` },
           { label: "Clinic platform: app/medi-clinic", href: `${clinic}/tree/main/app/medi-clinic` },
-          cert("nextjs-app-router", "Next.js App Router"),
-          cert("nextjs-pages-router", "Next.js Pages Router"),
         ],
       },
       {
@@ -120,7 +117,6 @@ export const skillGroups: SkillGroup[] = [
         note: "Page titles, descriptions and search-friendly pages in Next.js.",
         evidence: [
           { label: "This site: app/layout.tsx", href: `${portfolio}/blob/main/app/layout.tsx` },
-          cert("nextjs-seo", "Next.js SEO Fundamentals"),
         ],
       },
       {
@@ -186,7 +182,6 @@ export const skillGroups: SkillGroup[] = [
         note: "Core programming concepts, problem-solving and the software development life cycle.",
         evidence: [
           cert("certiport-software-development", "Certiport Software Development"),
-          cert("cs50-scratch", "Harvard CS50 (Scratch)"),
         ],
       },
       {

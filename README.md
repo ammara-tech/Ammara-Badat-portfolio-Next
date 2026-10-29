@@ -26,6 +26,7 @@ lib/         Supabase connection, SEO, theme, project loading and small tested h
 public/      Screenshots, certificates, CV PDF, demo video, icons
 Supabase/    The SQL files, run in order (schema.sql, then 003 to 009)
 tests/       Vitest tests (npm test)
+e2e/         Browser tests with Playwright (npm run test:browser)
 Docs/        Wireframes, proof screenshots and the code guide (how-it-works.md)
 ```
 
@@ -118,6 +119,8 @@ Extras beyond the milestones, in the order I built them.
 | 19 | Security headers and a tab badge | Final project | Browser protections on every page (no framing by other sites, no type guessing, https only, unused features switched off), and a number badge on the admin tab icon for unread messages |
 | 20 | Copy code and unsaved changes | Final project | A Copy button on every code example in the dev notes, and a warning before I lose typing in the admin project form |
 | 21 | Contact draft and copy link | Final project | The contact form keeps what a visitor typed if they refresh, and project pages and the case study have a Copy link button |
+| 22 | Browser tests and Show password | Final project | Playwright tests that click through the live site as a laptop and a phone after every deploy, and a Show / Hide button on the admin password box |
+| 23 | Currently building | Final project | A section under my projects for the F1 Prediction League and the Booking + Client Portal while I build them, which disappears when they're live |
 
 ### ✅ What the site has now
 
@@ -125,8 +128,8 @@ Extras beyond the milestones, in the order I built them.
 | Page | Route | What it shows |
 |------|-------|---------------|
 | Home | `/` | Intro, role, "open to work" status and a code card, with links to Projects and Contact |
-| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 9 certifications |
-| Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first |
+| About | `/about` | A 30-second intro: who I am, the role I want, my education (ITProg26, Unicollege) and my 4 Certiport certifications |
+| Projects | `/projects` | Project cards loaded live from Supabase, each with a screenshot, tags and live/GitHub links. The capstone is shown first. Below them, a **Currently building** section for projects in progress (`content/currently-building.ts`) |
 | Case study | `/projects/nextjs-dashboard` | Capstone case study: the problem, my role, the stack, a demo video, screenshots, live and repo links, and what I'd do next |
 | Skills | `/skills` | Every skill linked to evidence: a file in a repo, a commit or a live page |
 | Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs, a **Copy link** button for sharing, and "More projects" |
@@ -139,7 +142,7 @@ Extras beyond the milestones, in the order I built them.
 | Feature | What it does |
 |---|---|
 | Owner-only admin | Add, edit and delete projects, upload screenshots to Supabase Storage, and drag projects into order (mouse or finger, or ↑/↓). RLS makes sure only my account can change anything. |
-| Two-step sign-in | After the password, `/admin` asks for a 6-digit code from an authenticator app (TOTP, set up once with a QR code). Every owner RLS policy uses `public.is_owner()`, which needs my user ID **and** an `aal2` login token, so a guessed password alone can't read or change anything, even through the API (`components/TwoStep.tsx`, `Supabase/008-two-step-sign-in.sql`). |
+| Two-step sign-in | After the password, `/admin` asks for a 6-digit code from an authenticator app (TOTP, set up once with a QR code). Every owner RLS policy uses `public.is_owner()`, which needs my user ID **and** an `aal2` login token, so a guessed password alone can't read or change anything, even through the API (`components/TwoStep.tsx`, `Supabase/008-two-step-sign-in.sql`). The password box has a **Show** / **Hide** button, and the password is hidden again as soon as I press Sign in. |
 | One-tab sign-in | The sign-in is kept in `sessionStorage`, not `localStorage`, so it belongs to one tab: `/admin` always opens on the sign-in form, a new tab, window or person gets the sign-in form, and closing the window signs me out. A closed tab reopened later is signed out too (`lib/admin-session.ts`). |
 | Auto sign-out | After 30 minutes without activity, `/admin` signs me out, with a 60-second "Still there?" warning first (`components/IdleSignOut.tsx`). |
 | Live inbox | New contact messages appear straight away with a "New message from …" pop-up, using Supabase Realtime (`Supabase/006-realtime-inbox.sql`). Realtime follows RLS, so only my account receives them. The tab title shows the unread count and the tab icon gets a number badge (`components/TabIconBadge.tsx`), there's search and All / Unread / Read filters, Reply quotes the message, and Delete can be undone for 5 seconds (`components/Inbox.tsx`). |
@@ -178,8 +181,8 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **21 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, and keeping a visitor's message safe).
-- Short posts (twenty-one so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- **23 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, and showing work in progress honestly).
+- Short posts (twenty-three so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
 - A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, an "Updated" date on notes I changed later, and a **Copy** button on every code example (`components/ReadingProgress.tsx`, `components/CopyCode.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
@@ -195,11 +198,12 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 101 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 103 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the reading progress bar, the admin inbox search, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Browser tests | 15 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
-Also: **9 certifications** from Certiport, Vercel and Harvard CS50, shown on the About page.
+Also: **4 Certiport IT Specialist certifications** (HTML and CSS, HTML5 Application Development, Software Development, JavaScript), each with a verification code, shown on the About page and as evidence on the Skills page.
 
 ## Details and proof
 The tables, tests and screenshots behind everything above.
@@ -512,6 +516,9 @@ npm run dev
    - Lost the phone? In Supabase, Authentication → Users → your account → delete its MFA factor, then set
      up the new phone in `/admin`.
 4. Run the tests with `npm test` (they also run on GitHub after every push; see the **Actions** tab).
+5. Browser tests: `npx playwright install chromium` once, then `npm run test:browser`. They test the live
+   site by default; to test your own copy, run `npm run dev` and then
+   `BASE_URL=http://localhost:3000 npm run test:browser` (in PowerShell: `$env:BASE_URL="http://localhost:3000"; npm run test:browser`).
 
 ### 3. Deploy
 1. Import the GitHub repo into Vercel.
@@ -549,9 +556,11 @@ Things I know are missing or could be better:
 - **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
   there is no CAPTCHA.
 - **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
-  without two-step, and fully signed in) and on a local copy of the database; the 101 automatic tests
+  without two-step, and fully signed in) and on a local copy of the database; the 103 automatic tests
   cover the site's code and docs, not the live database.
-- **No end-to-end browser tests.** Clicking through the site and admin is checked by hand.
+- **The browser tests stop at the sign-in form.** They never sign in, so the dashboard itself (inbox,
+  projects, activity log) is still checked by hand. Signing in from GitHub would mean storing my password
+  and authenticator secret there.
 - **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
 - **Some things are hard-coded:** my user ID in the SQL files and my site address in `lib/site.ts`,
   so someone setting it up must change them (see [Setup](#setup-run-it-yourself)).
