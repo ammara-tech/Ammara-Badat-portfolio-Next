@@ -63,7 +63,8 @@ test.describe("contact form", () => {
     await page.getByRole("textbox", { name: "Email" }).fill("visitor@example.com");
     await page.getByRole("textbox", { name: "Message" }).fill("Hello Ammara, this is an automatic test.");
     await page.getByRole("button", { name: /Send message/ }).click();
-    await expect(page.getByRole("alert")).toContainText("Too many messages");
+    // Next.js has its own hidden "alert" for announcing page changes, so look for mine by its text
+    await expect(page.getByRole("alert").filter({ hasText: "Too many messages" })).toBeVisible();
   });
 
   test("keeps what the visitor typed after a refresh, until Start over", async ({ page }) => {
