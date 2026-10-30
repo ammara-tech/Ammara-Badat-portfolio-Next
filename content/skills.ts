@@ -24,6 +24,7 @@ const gh = "https://github.com/ammara-tech";
 const portfolio = `${gh}/Ammara-Badat-portfolio-Next`;
 const clinic = `${gh}/nextjs-dashoard`;
 const papertrail = `${gh}/papertrail`;
+const ticklist = `${gh}/ticklist`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -91,6 +92,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "Neon Arcade: sw.js", href: `${gh}/Neon-Arcade/blob/main/sw.js` },
           { label: "Neon Arcade: manifest", href: `${gh}/Neon-Arcade/blob/main/manifest.webmanifest` },
           { label: "MyFlix: sw.js", href: `${gh}/myflix/blob/main/sw.js` },
+          { label: "TickList: sw.js (opens with no signal)", href: `${ticklist}/blob/main/public/sw.js` },
         ],
       },
     ],
@@ -168,10 +170,12 @@ export const skillGroups: SkillGroup[] = [
       },
       {
         name: "Firebase (Auth & Firestore)",
-        note: "Email and Google sign-in, with each user's documents synced to their own private space.",
+        note: "Email and Google sign-in, private data per user, and lists shared live between a household's members.",
         evidence: [
           { label: "PaperTrail: firestore.rules", href: `${papertrail}/blob/main/firestore.rules` },
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
+          { label: "TickList: live lists for a whole household", href: `${ticklist}/blob/main/lib/store.ts` },
+          { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
         ],
       },
       {
@@ -205,6 +209,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "This site (live)", href: "https://ammara-badat-portfolio-next.vercel.app" },
           { label: "Clinic platform (live)", href: "https://nextjs-dashoard-psi.vercel.app" },
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
+          { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
         ],
       },
       {

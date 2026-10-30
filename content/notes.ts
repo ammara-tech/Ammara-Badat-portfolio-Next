@@ -31,6 +31,49 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "building-ticklist-live-lists",
+    title: "Building TickList: one list, live on everyone's phone",
+    description:
+      "My shared shopping and chores app: live updates between phones, invite links, owners, repeating chores, offline use, and a bug where my own app beat the server.",
+    date: "2026-10-30",
+    tags: ["Firebase", "Next.js", "Debugging"],
+    body: [
+      {
+        type: "p",
+        text: "TickList is a shopping and chores list for families and flatmates. When someone ticks off the milk, it disappears from everyone's phone a moment later, with a message like \"Lerato ticked Milk\". PaperTrail kept one person's data private; TickList had to share data between several people safely, which was new for me.",
+      },
+      { type: "h2", text: "Live updates" },
+      {
+        type: "p",
+        text: "Firestore can send the app a new copy of the data whenever it changes. TickList listens to the household and its items, and every screen re-draws when a new copy arrives. To write the \"ticked Milk\" messages, the app compares the list before and after, and stays quiet about your own changes.",
+      },
+      { type: "h2", text: "Who can join, and who can remove people" },
+      {
+        type: "ul",
+        items: [
+          "A household and its lists can only be read by its members. The rules on Google's servers check this, not the app.",
+          "An invite link carries a long random code. Knowing the code is the invitation, and codes can be looked up one at a time but never listed.",
+          "When you join, you can add only yourself, and only with a real code for that household.",
+          "The person who starts a household is its owner, who can remove people or hand over ownership. If the owner leaves, the person who's been there longest takes over, so a household is never left without one.",
+        ],
+      },
+      { type: "h2", text: "The bug: my app was faster than the server" },
+      {
+        type: "p",
+        text: "When I first pressed Create household, the screen flickered back to the start for a few seconds. The app switched to the new household as soon as I pressed the button, before the server had saved it. The server then refused to show a household that, as far as it knew, I wasn't in yet. I fixed it in two ways: the app now waits until the household is saved before switching to it, and if the server still says \"not yet\", the app quietly tries again a few times instead of sending you back.",
+      },
+      { type: "h2", text: "Chores that come back by themselves" },
+      {
+        type: "p",
+        text: "A weekly chore like taking the bins out comes back to the list without any server job. The app stores when it was last done, and works out on the phone that it's due again from the same day next week. Until then it shows \"back next Friday\". The tests check this in any time zone.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: when an app shows changes instantly, it can get ahead of the server. Wait for the save that everything else depends on, and retry the moments when the server hasn't caught up yet.",
+      },
+    ],
+  },
+  {
     slug: "four-small-additions",
     title: "Four small additions: Mark all read, topics, related notes and my local time",
     description:
