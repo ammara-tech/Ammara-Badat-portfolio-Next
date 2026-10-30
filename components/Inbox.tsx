@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getBrowserClient, type Message } from "@/lib/supabase";
 import Icon from "@/components/Icon";
 import TabIconBadge from "@/components/TabIconBadge";
-import { matchesSearch, replyLink } from "@/lib/inbox";
+import { matchesSearch, replyLink, unreadIds } from "@/lib/inbox";
 import { csvFileName, messagesCsv } from "@/lib/csv";
 
 /*
@@ -19,6 +19,7 @@ import { csvFileName, messagesCsv } from "@/lib/csv";
   - Search and All / Unread / Read filters.
   - Reply opens my email app with the sender, a subject and their message quoted.
   - Delete waits 5 seconds so I can press Undo.
+  - Mark all read marks every unread message as read in one request, with Undo for 5 seconds.
   - Download CSV saves the messages I'm looking at (after search and filters) as a spreadsheet file.
 */
 
@@ -43,9 +44,11 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
   const [live, setLive] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [pending, setPending] = useState<Message | null>(null); // deleted, but can still be undone
+  const [marked, setMarked] = useState<string[] | null>(null); // just marked read with "Mark all read", can be undone
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const deleteTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const markedTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const pendingRef = useRef<Message | null>(null);
   const onChangeRef = useRef(onChange);
   useEffect(() => {
@@ -117,6 +120,36 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
     }
   }
 
+  // Marks every unread message as read in one request, with Undo for a few seconds
+  async function setManyRead(ids: string[], isRead: boolean) {
+    if (ids.length === 0) return false;
+    const { data, error } = await supabase.from("messages").update({ is_read: isRead }).in("id", ids).select("id");
+    if (error || !data) {
+      setError(error?.message ?? "The messages weren't changed. You may not have permission.");
+      return false;
+    }
+    const changed = new Set(data.map((row: { id: string }) => row.id));
+    setMessages((list) => list.map((m) => (changed.has(m.id) ? { ...m, is_read: isRead } : m)));
+    onChange?.();
+    return true;
+  }
+
+  async function markAllRead() {
+    const ids = unreadIds(messages, pending?.id);
+    if (!(await setManyRead(ids, true))) return;
+    setMarked(ids);
+    clearTimeout(markedTimer.current);
+    markedTimer.current = setTimeout(() => setMarked(null), UNDO_MS);
+  }
+
+  async function undoMarkAll() {
+    if (!marked) return;
+    clearTimeout(markedTimer.current);
+    const ids = marked;
+    setMarked(null);
+    await setManyRead(ids, false);
+  }
+
   async function open(msg: Message) {
     const next = openId === msg.id ? null : msg.id;
     setOpenId(next);
@@ -159,6 +192,7 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
   useEffect(
     () => () => {
       clearTimeout(toastTimer.current);
+      clearTimeout(markedTimer.current);
       if (pendingRef.current) {
         clearTimeout(deleteTimer.current);
         supabase.from("messages").delete().eq("id", pendingRef.current.id).then(() => {});
@@ -208,7 +242,7 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
             <span className="rounded-full bg-racing px-2 py-0.5 font-mono text-xs text-white">{unread} new</span>
           )}
         </h2>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span
             className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest ${live ? "text-teal" : "text-mist"}`}
             title={live ? "New messages appear here straight away" : "Connecting to live updates…"}
@@ -216,6 +250,18 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
             <span aria-hidden="true" className={`h-2 w-2 rounded-full ${live ? "bg-teal fx-live" : "bg-line-strong"}`} />
             {live ? "Live" : "Connecting"}
           </span>
+          {unread > 0 && (
+            <button
+              type="button"
+              onClick={markAllRead}
+              title="Mark every unread message as read"
+              className="flex items-center gap-1.5 rounded border border-line-strong px-3 py-1 text-sm hover:border-teal hover:text-teal"
+            >
+              <Icon name="check" className="h-4 w-4" />
+              Mark all read
+              <span className="sr-only">: {unread} {unread === 1 ? "message" : "messages"}</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={downloadCsv}
@@ -342,6 +388,16 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
             <div className="pointer-events-auto flex w-full items-center justify-between gap-4 rounded-lg border border-line-strong bg-panel-alt px-4 py-3 text-sm text-snow shadow-2xl md:w-auto">
               <span>Message from {pending.name} deleted</span>
               <button onClick={undo} className="font-mono text-xs font-bold uppercase tracking-widest text-teal hover:underline">
+                Undo
+              </button>
+            </div>
+          )}
+          {marked && (
+            <div className="pointer-events-auto flex w-full items-center justify-between gap-4 rounded-lg border border-line-strong bg-panel-alt px-4 py-3 text-sm text-snow shadow-2xl md:w-auto">
+              <span>
+                Marked {marked.length} {marked.length === 1 ? "message" : "messages"} as read
+              </span>
+              <button onClick={undoMarkAll} className="font-mono text-xs font-bold uppercase tracking-widest text-teal hover:underline">
                 Undo
               </button>
             </div>

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { clockIn, localTimeLine } from "@/lib/local-time";
 import { MIN_FILL_MS, checkContact } from "@/lib/contact";
 import { hasText, readDraft } from "@/lib/contact-draft";
 
@@ -72,5 +73,20 @@ describe("contact form draft", () => {
     expect(draft?.name.length).toBe(100);
     expect(draft?.message).toBe("");
     expect(draft?.startedAt).toBe(now);
+  });
+});
+
+describe("my local time on the Contact page", () => {
+  // 11:16 UTC on 30 October 2026 is 13:16 in Johannesburg (UTC+2, no daylight saving)
+  const moment = new Date("2026-10-30T11:16:00Z");
+
+  it("shows Johannesburg time in 24-hour format", () => {
+    expect(clockIn(moment, "Africa/Johannesburg")).toBe("13:16");
+    expect(clockIn(new Date("2026-10-30T22:05:00Z"), "Africa/Johannesburg")).toBe("00:05");
+  });
+
+  it("adds the visitor's time only when it's different", () => {
+    expect(localTimeLine(moment, "Africa/Johannesburg")).toBe("It's 13:16 here in Johannesburg");
+    expect(localTimeLine(moment, "Europe/London")).toBe("It's 13:16 here in Johannesburg (11:16 where you are)");
   });
 });

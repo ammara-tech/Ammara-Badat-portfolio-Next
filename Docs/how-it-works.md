@@ -234,6 +234,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Search and filters | `lib/inbox.ts` → `matchesSearch()` | Finds messages by name, email or text in any capitals; All / Unread / Read buttons. |
 | Reply | `lib/inbox.ts` → `replyLink()` | A `mailto:` link with the sender's address, a subject, a greeting with their first name and their message quoted. |
 | Download CSV | `Inbox.tsx`, `lib/csv.ts` | Saves the messages I'm viewing (after search and filters) as a **CSV** file (a simple spreadsheet format). It is built in the browser, so nothing is sent anywhere. Cells with commas, quotes or line breaks are wrapped in quotes. Because messages come from a public form, a cell starting with `=`, `+`, `-` or `@` gets a `'` in front, so a spreadsheet shows it as text instead of running it as a formula (**CSV injection**). A hidden mark at the start (a **BOM**) makes Excel read accents and emoji correctly. |
+| Mark all read | `Inbox.tsx`, `unreadIds()` in `lib/inbox.ts` | Shown only when something is unread. `unreadIds()` lists the unread messages (leaving out one waiting for Undo delete), and one `update(...).in("id", ids)` changes them all in a single request. RLS still checks it's my account. Undo puts back only those same messages, for 5 seconds. |
 | Undo delete | `Inbox.tsx` | The message disappears straight away, but the delete is only sent to Supabase after 5 seconds. Undo cancels the timer. If the delete fails, the message comes back with an error. |
 | Add / edit form | `app/admin/page.tsx` | Saves to `projects`, then checks a row came back (RLS can block silently). |
 | Draft / Live switch | `ProjectOrderList.tsx` | Updates `published`. Visitors never receive drafts, because of the read policy, so the public pages needed no changes. |
@@ -364,11 +365,12 @@ with **429** ("Too Many Requests").
 | Spotlight cards | `Spotlight.tsx` + `.spotlight` in globals.css | One mouse listener sets `--mx` and `--my` (the mouse position) on the card, and CSS draws a glow there. |
 | Live GitHub repos | `GitHubActivity.tsx` | Asks the GitHub API for my latest repos on the server, **cached** (saved and reused) for an hour. Hidden if GitHub can't be reached. |
 | Page transitions | `app/template.tsx` | A red-to-teal stripe and a short slide-up on every page change. |
-| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed, a reading progress bar (`ReadingProgress.tsx`) and a **Copy** button on every code example (`CopyCode.tsx`, a small client component inside the server-rendered note; it shares `lib/clipboard.ts` with the Copy email button). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. |
+| Dev notes | `content/notes.ts`, `app/notes/` | Short posts, each with its own page, share image and structured data, an RSS feed, a reading progress bar (`ReadingProgress.tsx`) and a **Copy** button on every code example (`CopyCode.tsx`, a small client component inside the server-rendered note; it shares `lib/clipboard.ts` with the Copy email button). `headingIds()` gives every sub-heading its own address (a **#** link appears on hover or Tab), and `noteNeighbours()` finds the older and newer note for the links at the end. A note changed on a later day has an `updated` date, shown as "Updated" and used by the sitemap and structured data. The list page uses `NotesList.tsx` with a **Filter by topic** row (`lib/note-tags.ts`: `tagCounts()`, `filterButtons()` for topics used by two or more notes, and `withTag()`); the chosen topic goes in the address (`?tag=Security`), and only a short summary of each note is sent to the browser. Each note ends with up to three **related notes** (`relatedNotes()`): the most shared topics first, then the note's main (first) topic, then the newest, skipping the Older/Newer notes. The topics on a note link to the filtered list. |
 | Copy email | `CopyEmail.tsx` | Copies my address to the clipboard and shows "Copied!". It shares `lib/clipboard.ts` with the Copy code and Copy link buttons. |
 | Back, Forward, Refresh | `NavArrows.tsx`, `lib/nav-arrows.ts` | Browser-style buttons next to my name (laptops and desktops) and at the top of the phone menu, for when the site is installed on a phone and has no browser bar. Back and Forward use `history.back()` and `history.forward()`; Refresh reloads the page. The **Navigation API** (a newer browser feature) says whether there is a page to go back or forward to, so the buttons grey out when there isn't. |
 | Back to top | `BackToTop.tsx`, `lib/back-to-top.ts` | Appears after scrolling more than one and a half screens. Jumps to the top (smoothly, unless motion is reduced) and moves keyboard focus to the page content. Sits above the phone navigation bar; hidden on the admin page. |
 | Live project count | `app/about/page.tsx`, `lib/stats.ts`, `countProjects()` in `lib/projects.ts` | The About page asks Supabase how many projects there are (`count: "exact", head: true`, so only the number comes back, not the projects). It reads as a visitor, so RLS leaves drafts out. `revalidate = 60` rebuilds the page at most once a minute, so a newly published project shows within a minute while the page stays fast. If Supabase can't be reached, `projectStat()` leaves the card out instead of showing a wrong number. |
+| Local time | `LocalTime.tsx`, `lib/local-time.ts` | "It's 13:16 here in Johannesburg" on the Contact page, plus the visitor's time if it's different (`localTimeLine()`, using `Intl.DateTimeFormat` with the `Africa/Johannesburg` time zone). It's worked out in the browser after the page loads, because the server doesn't know the visitor's time zone, and it updates every 30 seconds. The line keeps its space while loading, so nothing jumps. |
 | Save my contact | `app/ammara-badat.vcf/route.ts` | Builds a **vCard** (the standard contact-card file phones understand) from `content/about.ts`. |
 | Web CV | `app/cv/page.tsx`, `content/cv.ts` | My CV as a page that prints cleanly, next to the PDF download. |
 
@@ -410,12 +412,12 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 106 checks:
-  - page addresses (`slug.test.ts`), the contact form rules and its draft (`contact.test.ts`)
+  example inputs and check the answers. There are 117 checks:
+  - page addresses (`slug.test.ts`), the contact form rules, its draft and the local time (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
-    the contact card, the Currently building list, the About page's project count and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
-  - the admin logic (`admin.test.ts`): inbox search, the Reply link and the CSV download (including the
+    the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+  - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
     grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
   - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
@@ -448,7 +450,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 106.
+- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 117.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -527,4 +529,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, and 106 with the live project count.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, and 117 with related notes and the local time.

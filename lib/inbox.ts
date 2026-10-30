@@ -19,3 +19,8 @@ export function matchesSearch(msg: Pick<Message, "name" | "email" | "message">, 
   if (!q) return true;
   return [msg.name, msg.email, msg.message].some((field) => field.toLowerCase().includes(q));
 }
+
+/** The unread messages "Mark all read" changes: every unread one, except a message waiting for Undo delete */
+export function unreadIds(messages: Pick<Message, "id" | "is_read">[], skipId?: string | null): string[] {
+  return messages.filter((m) => !m.is_read && m.id !== skipId).map((m) => m.id);
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { addBadge, badgeLabel } from "@/lib/tab-badge";
 import { changedFields, leavesPage } from "@/lib/unsaved";
-import { matchesSearch, replyLink } from "@/lib/inbox";
+import { matchesSearch, replyLink, unreadIds } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
@@ -230,5 +230,25 @@ describe("admin unsaved changes warning", () => {
     expect(leavesPage({ href: "/projects" }, here, true)).toBe(false);
     expect(leavesPage({ href: "#inbox-title" }, here)).toBe(false);
     expect(leavesPage({ href: "mailto:someone@example.com" }, here)).toBe(false);
+  });
+});
+
+describe("admin inbox: Mark all read", () => {
+  const list = [
+    { id: "a", is_read: false },
+    { id: "b", is_read: true },
+    { id: "c", is_read: false },
+  ];
+
+  it("changes only the unread messages", () => {
+    expect(unreadIds(list)).toEqual(["a", "c"]);
+  });
+
+  it("leaves out a message that is waiting for Undo delete", () => {
+    expect(unreadIds(list, "c")).toEqual(["a"]);
+  });
+
+  it("has nothing to do when everything is read", () => {
+    expect(unreadIds([{ id: "b", is_read: true }])).toEqual([]);
   });
 });

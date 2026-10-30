@@ -31,6 +31,57 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "four-small-additions",
+    title: "Four small additions: Mark all read, topics, related notes and my local time",
+    description:
+      "A one-click inbox clean-up with Undo, a topic filter and related notes for my dev notes, and my local time on the Contact page.",
+    date: "2026-10-30",
+    tags: ["UX", "Next.js", "Admin"],
+    body: [
+      {
+        type: "p",
+        text: "Today's changes are small, but they're the kind people notice every day. One is for me in my admin inbox, two are for readers of my dev notes, and one is for anyone thinking of getting in touch.",
+      },
+      { type: "h2", text: "Mark all read" },
+      {
+        type: "p",
+        text: "After a few days away, opening every message just to clear the unread dots was slow. Now a Mark all read button appears next to the inbox heading, only when something is unread. It changes every unread message in one request to the database, instead of one request per message, and the tab badge and title count go back to zero straight away.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Undo: for five seconds a pop-up lets me put them back to unread, in case I clicked by mistake.",
+          "It only changes the messages that were unread, so Undo never marks an older, already-read message as new.",
+          "A message waiting for Undo delete is left alone.",
+          "The database still checks it's my account doing it, the same as marking one message.",
+        ],
+      },
+      { type: "h2", text: "Filter by topic" },
+      {
+        type: "p",
+        text: "With twenty-five notes, finding the ones about one subject meant scrolling. The Dev notes page now has a Filter by topic row, like the tech filter on my Projects page, with a count on each topic. Choosing one puts it in the address (for example /notes?tag=Security), so I can send someone a link to just my security notes. The topics on each note link there too.",
+      },
+      {
+        type: "p",
+        text: "Only topics used by two or more notes get a button, so the row stays short. A one-note topic still works from a shared link. The page also sends the browser only what the list shows (title, date, description and topics), not the full text of every note, so it stays light.",
+      },
+      { type: "h2", text: "Related notes" },
+      {
+        type: "p",
+        text: "At the end of each note there are now up to three related notes. They're the notes that share the most topics with the one you just read. When several share the same number, the note's first topic wins, because I list the main topic first, and then the newest. Notes already linked as Older or Newer are skipped, so nothing is offered twice. My first version ranked by date alone, so a note about security headers suggested notes that only shared Next.js. Ranking by the main topic fixed that.",
+      },
+      { type: "h2", text: "My local time" },
+      {
+        type: "p",
+        text: "The Contact page now says what time it is for me, for example \"It's 13:16 here in Johannesburg\", and adds the visitor's own time when it's different. It's worked out in the visitor's browser, because my server doesn't know their time zone and a saved page would show an old time. It updates every 30 seconds.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: small features that save a few clicks or answer a question before it's asked are worth as much as big ones, and an Undo makes a one-click action feel safe.",
+      },
+    ],
+  },
+  {
     slug: "building-papertrail-with-firebase",
     title: "Building PaperTrail with Firebase instead of Supabase",
     description:

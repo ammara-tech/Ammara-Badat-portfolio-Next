@@ -10,6 +10,7 @@ import { caseStudy } from "@/content/case-study";
 import { currentlyBuilding } from "@/content/currently-building";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { projectStat } from "@/lib/stats";
+import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags";
 import { about } from "@/content/about";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
@@ -185,5 +186,57 @@ describe("the project count on the About page", () => {
     expect(projectStat(null)).toBe(null);
     expect(projectStat(0)).toBe(null);
     expect(about.stats.some((s) => /project/i.test(s.label))).toBe(false);
+  });
+});
+
+describe("the topic filter on the Dev notes page", () => {
+  const sample = [{ tags: ["Supabase", "Security"] }, { tags: ["Supabase"] }, { tags: ["Firebase", "Security"] }];
+
+  it("counts each topic, most used first", () => {
+    expect(tagCounts(sample)).toEqual([
+      ["Security", 2],
+      ["Supabase", 2],
+      ["Firebase", 1],
+    ]);
+  });
+
+  it("shows topics used by two or more notes, plus the one that's chosen", () => {
+    const counts = tagCounts(sample);
+    expect(filterButtons(counts, null).map(([t]) => t)).toEqual(["Security", "Supabase"]);
+    expect(filterButtons(counts, "Firebase").map(([t]) => t)).toEqual(["Security", "Supabase", "Firebase"]);
+  });
+
+  it("filters the notes, and every real note's topic count adds up", () => {
+    expect(withTag(sample, "Security")).toHaveLength(2);
+    expect(withTag(sample, null)).toHaveLength(3);
+    for (const [tag, n] of tagCounts(notes)) expect(withTag(notes, tag)).toHaveLength(n);
+  });
+});
+
+describe("related notes at the end of a note", () => {
+  const all = [
+    { slug: "a", date: "2026-10-01", tags: ["Supabase", "Security", "RLS"] },
+    { slug: "b", date: "2026-10-02", tags: ["Supabase", "Security"] },
+    { slug: "c", date: "2026-10-03", tags: ["Supabase"] },
+    { slug: "d", date: "2026-10-04", tags: ["Security"] },
+    { slug: "e", date: "2026-10-05", tags: ["CSS"] },
+  ];
+
+  it("puts the notes sharing the most topics first, then the note's main (first) topic, then the newest", () => {
+    expect(relatedNotes(all, "a").map((n) => n.slug)).toEqual(["b", "c", "d"]);
+    expect(relatedNotes(all, "a")[0].shared).toEqual(["Supabase", "Security"]);
+  });
+
+  it("never offers the note itself, a note with no shared topic, or one already linked as Older/Newer", () => {
+    expect(relatedNotes(all, "e")).toEqual([]);
+    expect(relatedNotes(all, "a", ["b"]).map((n) => n.slug)).toEqual(["c", "d"]);
+  });
+
+  it("works for every real note", () => {
+    for (const n of notes) {
+      const related = relatedNotes(notes, n.slug);
+      expect(related.length).toBeLessThanOrEqual(3);
+      expect(related.some((r) => r.slug === n.slug)).toBe(false);
+    }
   });
 });

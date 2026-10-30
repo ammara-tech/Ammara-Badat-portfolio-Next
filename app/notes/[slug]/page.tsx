@@ -9,6 +9,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import Icon from "@/components/Icon";
 import { card } from "@/components/ui";
 import CopyCode from "@/components/CopyCode";
+import { relatedNotes } from "@/lib/note-tags";
 
 /* One dev note, e.g. /notes/lighthouse-74-to-96. The text lives in content/notes.ts. */
 
@@ -93,6 +94,7 @@ export default async function NotePage({ params }: Props) {
   if (!note) notFound();
 
   const { older, newer } = noteNeighbours(note.slug);
+  const related = relatedNotes(notes, note.slug, [older?.slug, newer?.slug].filter((s): s is string => Boolean(s)));
   const ids = headingIds(note.body);
 
   return (
@@ -165,8 +167,14 @@ export default async function NotePage({ params }: Props) {
         </p>
         <ul className="mt-5 flex flex-wrap gap-2">
           {note.tags.map((tag) => (
-            <li key={tag} className="rounded-full border border-line-strong px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-mist">
-              {tag}
+            <li key={tag}>
+              <Link
+                href={`/notes?tag=${encodeURIComponent(tag)}`}
+                title={`All notes about ${tag}`}
+                className="inline-block rounded-full border border-line-strong px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-mist transition hover:border-teal hover:text-teal"
+              >
+                {tag}
+              </Link>
             </li>
           ))}
         </ul>
@@ -186,6 +194,33 @@ export default async function NotePage({ params }: Props) {
           <Icon name="arrow-right" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
         </Link>
       </footer>
+
+      {/* Related notes: the ones sharing the most topics with this one (lib/note-tags.ts) */}
+      {related.length > 0 && (
+        <section aria-labelledby="related-title" className="mt-14">
+          <h2 id="related-title" className="font-mono text-xs uppercase tracking-[0.18em] text-mist">
+            Related notes
+          </h2>
+          <ul className="mt-4 grid gap-4 sm:grid-cols-3">
+            {related.map((r) => (
+              <li key={r.slug}>
+                <Link
+                  href={`/notes/${r.slug}`}
+                  className={`${card} spotlight group flex h-full flex-col p-5 transition hover:-translate-y-0.5 hover:border-teal/50`}
+                >
+                  <span className="font-display text-base font-black uppercase leading-tight tracking-tight group-hover:text-teal">
+                    {r.title}
+                  </span>
+                  <span className="mt-auto pt-3 font-mono text-[11px] uppercase tracking-wider text-mist">
+                    <span className="sr-only">Shares the topics: </span>
+                    {r.shared.join(" · ")}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Older and newer notes, so readers can move through them like a blog */}
       {(older || newer) && (

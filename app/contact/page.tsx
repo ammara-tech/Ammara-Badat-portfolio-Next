@@ -3,6 +3,7 @@ import Link from "next/link";
 import { about } from "@/content/about";
 import ContactForm from "@/components/ContactForm";
 import CopyEmail from "@/components/CopyEmail";
+import LocalTime from "@/components/LocalTime";
 import Icon, { type IconName } from "@/components/Icon";
 import { Accent, Eyebrow, PageTitle, btnGhost } from "@/components/ui";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
@@ -62,6 +63,7 @@ export default function Contact() {
               {about.location} · {availability}
             </span>
           </p>
+          <LocalTime />
 
           <ul className="space-y-3">
             {links.map((link) => (
