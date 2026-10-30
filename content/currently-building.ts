@@ -14,15 +14,15 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "F1 Prediction League",
+    name: "TickList",
     summary:
-      "Private leagues with invite links: friends predict the podium before each race, and points are added up automatically once the results are in.",
-    tags: ["Next.js", "TypeScript", "Firebase", "Vercel Cron"],
+      "A shared shopping and chores list for families and flatmates: tick off the milk and it disappears on everyone's phone straight away. Invite people with a link, and it works offline in the shop.",
+    tags: ["Next.js", "TypeScript", "Firebase", "Realtime", "PWA"],
   },
   {
-    name: "Booking + Client Portal",
+    name: "Recall",
     summary:
-      "Booking pages for South African small businesses: clients book a time and pay a deposit (in test mode), with dashboards for the business and its clients.",
-    tags: ["Next.js", "TypeScript", "Firebase", "Online payments"],
+      "Flashcards that work out when you should see each card again (spaced repetition), with study streaks and progress charts. Installable, and it works offline.",
+    tags: ["Next.js", "TypeScript", "Firebase", "PWA"],
   },
 ];

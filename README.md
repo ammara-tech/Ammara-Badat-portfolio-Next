@@ -120,7 +120,7 @@ Extras beyond the milestones, in the order I built them.
 | 20 | Copy code and unsaved changes | Final project | A Copy button on every code example in the dev notes, and a warning before I lose typing in the admin project form |
 | 21 | Contact draft and copy link | Final project | The contact form keeps what a visitor typed if they refresh, and project pages and the case study have a Copy link button |
 | 22 | Browser tests and Show password | Final project | Playwright tests that click through the live site as a laptop and a phone after every deploy, and a Show / Hide button on the admin password box |
-| 23 | Currently building | Final project | A section under my projects for the F1 Prediction League and the Booking + Client Portal while I build them, which disappears when they're live |
+| 23 | Currently building | Final project | A section under my projects for apps I'm building (now TickList and Recall), which disappears when they're live |
 | 24 | Live project count | Final project | The "Projects built & shipped" number on the About page is counted from Supabase, so it goes up by itself when I publish a project in `/admin` |
 | 25 | Four small additions | Final project | A Mark all read button in the admin inbox (one request, with Undo), a Filter by topic row on the Dev notes page with counts and shareable links (`/notes?tag=Security`), related notes at the end of every note, and my local time on the Contact page |
 

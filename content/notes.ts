@@ -134,11 +134,16 @@ export const notes: Note[] = [
     description:
       "My Projects page now has a Currently building section for two apps I'm working on, designed so nobody mistakes them for finished work.",
     date: "2026-10-29",
+    updated: "2026-10-30",
     tags: ["Portfolio", "Design", "Next.js"],
     body: [
       {
         type: "p",
-        text: "I'm building two new apps: an F1 Prediction League, where friends predict the podium before each race, and a Booking + Client Portal for South African small businesses. They're not live yet, but I wanted visitors to see what I'm working on next.",
+        text: "I'm building two new apps. They're not live yet, but I wanted visitors to see what I'm working on next.",
+      },
+      {
+        type: "tip",
+        text: "Update (30 October): I first listed an F1 Prediction League and a Booking + Client Portal. After finishing PaperTrail, I swapped them for TickList, a shared household list that updates live on everyone's phone, and Recall, a flashcard app with spaced repetition. The booking portal repeated what my clinic platform and PaperTrail already show, and the new two each prove something my other projects don't: people working together live, offline use and a real algorithm.",
       },
       { type: "h2", text: "Not pretending they're finished" },
       {
