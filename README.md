@@ -123,6 +123,7 @@ Extras beyond the milestones, in the order I built them.
 | 23 | Currently building | Final project | A section under my projects for apps I'm building (now Recall), which disappears when they're live |
 | 24 | Live project count | Final project | The "Projects built & shipped" number on the About page is counted from Supabase, so it goes up by itself when I publish a project in `/admin` |
 | 25 | Four small additions | Final project | A Mark all read button in the admin inbox (one request, with Undo), a Filter by topic row on the Dev notes page with counts and shareable links (`/notes?tag=Security`), related notes at the end of every note, and my local time on the Contact page |
+| 26 | Email alerts | Final project | An email to me (through Resend) whenever a new contact message is saved, with Reply going straight to the visitor. It's sent after the visitor already has their reply, so they never wait and a failed email never loses a message |
 
 ### ✅ What the site has now
 
@@ -159,7 +160,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Contact
 | Feature | What it does |
 |---|---|
-| Contact form | Saves to Supabase, protected from spam by a hidden honeypot field, a speed check and a rate limit inside the database ([details](#contact-form)). |
+| Contact form | Saves to Supabase, protected from spam by a hidden honeypot field, a speed check and a rate limit inside the database ([details](#contact-form)). Each saved message also emails me an alert through Resend (`lib/alert.ts`). |
 | Draft kept on refresh | If a visitor refreshes or goes Back by accident, what they typed in the contact form is still there, with a "Start over" button. It's kept only in that browser tab (`sessionStorage`), is never sent anywhere until they press Send, and is deleted once sent or when the tab closes. The hidden spam field is never saved (`lib/contact-draft.ts`). |
 | Copy email | A **Copy** button on my email. One tap copies the address and shows "Copied!", which helps people who use webmail (`components/CopyEmail.tsx`). |
 | Save my contact + QR code | A vCard file (`/ammara-badat.vcf`) that adds me to a phone's contacts in one tap, and a QR code that opens the site. |
@@ -183,8 +184,8 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **26 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, and building TickList, with lists live on everyone's phone).
-- Short posts (twenty-six so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- **27 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, building TickList, with lists live on everyone's phone, and getting an email when someone messages me).
+- Short posts (twenty-seven so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
 - A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, an "Updated" date on notes I changed later, and a **Copy** button on every code example (`components/ReadingProgress.tsx`, `components/CopyCode.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
@@ -200,7 +201,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 117 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 122 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Browser tests | 15 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
@@ -343,6 +344,13 @@ Messages from `/contact` are saved to a `messages` table, defined in
 | `is_read` | boolean | Whether I've read it in `/admin` |
 | `created_at` | timestamptz | When it was sent |
 
+**Email alert:** after a message is saved, `app/api/contact/route.ts` emails me through
+[Resend](https://resend.com) (`lib/alert.ts`). It runs with Next.js's `after()`, once the visitor already has
+their "sent" reply, so they never wait for it, and a failed email never loses the message. The email's Reply
+goes to the visitor, everything they typed is escaped so it can't add links or images to my email, and line
+breaks are removed from the subject. Bots and rate-limited senders never get this far, so they can't flood my
+inbox. Without the two settings below, no email is sent and the form works as before.
+
 #### Who can do what (RLS)
 | Policy | Who | Rule |
 |--------|-----|------|
@@ -466,6 +474,8 @@ Set in Vercel (Settings → Environment Variables) and, for local development, i
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon / publishable key (safe in the browser because RLS protects the data) |
 | `GOOGLE_SITE_VERIFICATION` (optional) | The code from Google Search Console's "HTML tag" method, e.g. `abc123…` (only the code, not the whole tag). |
 | `GITHUB_TOKEN` (optional) | A read-only GitHub token. Only raises the GitHub API limit for the "Live from GitHub" section. |
+| `RESEND_API_KEY` (optional) | A Resend API key with "sending access", for the email alert. Server only: it has no `NEXT_PUBLIC_` in front, so it never reaches the browser. |
+| `CONTACT_ALERT_EMAIL` (optional) | Where the alert goes. With Resend's free sender (`onboarding@resend.dev`) this must be the email my Resend account uses. |
 
 The Supabase service role / secret key is not used anywhere in this project.
 
@@ -504,7 +514,8 @@ free [Vercel](https://vercel.com) account.
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
-   Use only the base URL, with nothing after `.supabase.co`.
+   Use only the base URL, with nothing after `.supabase.co`. For the email alert, also add
+   `RESEND_API_KEY` and `CONTACT_ALERT_EMAIL` (see [Environment variables](#environment-variables)).
 2. Install and start:
 ```bash
 npm install
@@ -544,6 +555,7 @@ Before submitting, I checked that no keys, tokens or `.env` files are in the rep
 - **Screenshots:** the proof images in `Docs/` show no keys. The only ID visible is my user ID in the
   RLS policies, which is not a secret: it is already in the SQL files, and on its own it cannot sign
   in or change anything.
+- **The Resend key:** only in Vercel's settings and my own `.env.local`, and only used on the server.
 - **The anon key:** it is only in Vercel's settings and my own `.env.local`. It is safe in the browser
   because RLS decides what it can do, and the service role key is not used anywhere.
 - **Dev notes:** the public dev notes use placeholders for user IDs and leave out exact limits and
@@ -552,13 +564,12 @@ Before submitting, I checked that no keys, tokens or `.env` files are in the rep
 ## Known gaps
 Things I know are missing or could be better:
 
-- **No email alert for new messages.** I see them in the admin inbox (live), but only when I open it.
 - **No backup codes for two-step sign-in.** If I lose my phone, I have to remove the old authenticator
   in the Supabase dashboard (see [Setup](#2-run-locally)).
 - **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
   there is no CAPTCHA.
 - **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
-  without two-step, and fully signed in) and on a local copy of the database; the 117 automatic tests
+  without two-step, and fully signed in) and on a local copy of the database; the 122 automatic tests
   cover the site's code and docs, not the live database.
 - **The browser tests stop at the sign-in form.** They never sign in, so the dashboard itself (inbox,
   projects, activity log) is still checked by hand. Signing in from GitHub would mean storing my password

@@ -31,6 +31,56 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "email-alerts-for-new-messages",
+    title: "Getting an email when someone messages me",
+    description:
+      "New contact messages now email me through Resend, sent after the visitor already has their reply, and written so a message can't sneak anything into my email.",
+    date: "2026-10-31",
+    tags: ["Next.js", "Security", "Admin"],
+    body: [
+      {
+        type: "p",
+        text: "My contact form saves messages to my database, and my admin inbox shows them live. But I only saw them when I opened the admin page. If a recruiter wrote to me, I might not notice for days. Now every new message also sends me an email, and I can reply to the person straight from my email app.",
+      },
+      { type: "h2", text: "The message comes first" },
+      {
+        type: "p",
+        text: "Saving the message is what matters, and the email is a bonus. So the server saves the message, sends the visitor their \"sent\" reply, and only then sends my email. Next.js has a function for exactly this, called after(): code inside it runs once the response has gone back. The visitor never waits for the email, and if the email service is slow or down, their message is still saved and they still see \"sent\".",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: `// saved, so let me know by email
+after(() => sendAlert({ name, email, message }, siteUrl, process.env));
+return NextResponse.json({ ok: true });`,
+      },
+      { type: "h2", text: "A visitor writes part of my email" },
+      {
+        type: "p",
+        text: "The email shows the visitor's name and message, so it's text from a stranger going into my inbox. I made sure it can't do anything there:",
+      },
+      {
+        type: "ul",
+        items: [
+          "Everything they typed is escaped, so HTML like an image or a link shows as plain text instead of working.",
+          "Line breaks are taken out of the subject, because a line break in an email's header can be used to add extra headers, like a hidden copy to someone else.",
+          "Reply goes to the visitor's address, so I answer them, not the email service.",
+          "Bots that fall for my spam trap, and senders who hit the limit, never reach this point, so nobody can flood my inbox through the form.",
+          "The key for the email service is a server-only setting, so it never reaches anyone's browser.",
+        ],
+      },
+      { type: "h2", text: "Testing without sending emails" },
+      {
+        type: "p",
+        text: "My tests never send a real email. The function that sends the alert takes the sending function as an option, so the tests pass in a pretend one that records what it was given. They check the email goes to the right place with my key, that a failed send doesn't crash anything, and that a message with HTML in it comes out harmless.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: anything a stranger types is untrusted, even when it ends up somewhere private like my own inbox.",
+      },
+    ],
+  },
+  {
     slug: "building-ticklist-live-lists",
     title: "Building TickList: one list, live on everyone's phone",
     description:

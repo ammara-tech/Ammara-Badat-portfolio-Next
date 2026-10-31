@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createHash } from "node:crypto";
 import { publicClient } from "@/lib/supabase";
 import { checkContact } from "@/lib/contact";
+import { sendAlert } from "@/lib/alert";
+import { siteUrl } from "@/lib/site";
 
 /*
   POST /api/contact — saves a contact form message to Supabase.
@@ -12,6 +14,10 @@ import { checkContact } from "@/lib/contact";
   3. Rate limit: enforced in the database (Supabase/004-messages-contact-form.sql),
      max 3 messages per email or per visitor every 10 minutes.
   Bots caught by 1 or 2 get a fake "sent" reply, so they don't learn what gave them away.
+
+  Email alert: once a message is saved, I get an email about it (lib/alert.ts).
+  It's sent with after(), which runs once the visitor already has their "sent" reply,
+  so they never wait for it, and a failed email never loses the message.
 */
 
 function fail(status: number, error: string) {
@@ -50,6 +56,9 @@ export async function POST(request: Request) {
   } catch {
     return fail(500, "Your message couldn't be sent. Please email me instead.");
   }
+
+  // Saved, so let me know by email (only real messages get this far: bots and rate-limited senders don't)
+  after(() => sendAlert({ name, email, message }, siteUrl, process.env));
 
   return NextResponse.json({ ok: true });
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ALERT_FROM, alertEmail, alertSettings, escapeHtml, sendAlert } from "@/lib/alert";
 import { clockIn, localTimeLine } from "@/lib/local-time";
 import { MIN_FILL_MS, checkContact } from "@/lib/contact";
 import { hasText, readDraft } from "@/lib/contact-draft";
@@ -88,5 +89,59 @@ describe("my local time on the Contact page", () => {
   it("adds the visitor's time only when it's different", () => {
     expect(localTimeLine(moment, "Africa/Johannesburg")).toBe("It's 13:16 here in Johannesburg");
     expect(localTimeLine(moment, "Europe/London")).toBe("It's 13:16 here in Johannesburg (11:16 where you are)");
+  });
+});
+
+describe("the email alert for a new message", () => {
+  const msg = { name: "Thabo", email: "thabo@example.com", message: "Hi Ammara,\nare you free for an interview?" };
+  const site = "https://example.com";
+
+  it("only sends when both settings are there", () => {
+    expect(alertSettings({})).toBe(null);
+    expect(alertSettings({ RESEND_API_KEY: "key" })).toBe(null);
+    expect(alertSettings({ RESEND_API_KEY: " key ", CONTACT_ALERT_EMAIL: " me@example.com " })).toEqual({ key: "key", to: "me@example.com" });
+  });
+
+  it("goes to me, from the free sender, and Reply answers the visitor", () => {
+    const email = alertEmail(msg, site, "me@example.com");
+    expect(email.from).toBe(ALERT_FROM);
+    expect(email.to).toEqual(["me@example.com"]);
+    expect(email.reply_to).toBe("thabo@example.com");
+    expect(email.subject).toBe("New message from Thabo");
+    expect(email.text).toContain("are you free for an interview?");
+    expect(email.html).toContain('href="https://example.com/admin"');
+  });
+
+  it("can't be used to put HTML or extra headers into my email", () => {
+    const sneaky = alertEmail({ name: "Bob\r\nBcc: x@evil.test", email: "b@example.com", message: '<img src=x onerror="alert(1)">' }, site, "me@example.com");
+    expect(sneaky.subject).not.toContain("\n");
+    expect(sneaky.html).not.toContain("<img");
+    expect(sneaky.html).toContain("&lt;img src=x onerror=&quot;alert(1)&quot;&gt;");
+    expect(escapeHtml(`<a href='x'>&</a>`)).toBe("&lt;a href=&#39;x&#39;&gt;&amp;&lt;/a&gt;");
+  });
+
+  it("shortens a very long message, with the rest in the admin inbox", () => {
+    const long = alertEmail({ ...msg, message: "a".repeat(3000) }, site, "me@example.com");
+    expect(long.text).toContain("a".repeat(1000) + "…");
+    expect(long.text).not.toContain("a".repeat(1001));
+  });
+
+  it("sends to Resend with my key, and never throws if it fails", async () => {
+    const calls: [string, RequestInit][] = [];
+    const ok = (async (url: string, init: RequestInit) => {
+      calls.push([url, init]);
+      return new Response("{}", { status: 200 });
+    }) as unknown as typeof fetch;
+    const env = { RESEND_API_KEY: "test-key", CONTACT_ALERT_EMAIL: "me@example.com" };
+    expect(await sendAlert(msg, site, env, ok)).toBe(true);
+    expect(calls[0][0]).toBe("https://api.resend.com/emails");
+    expect((calls[0][1].headers as Record<string, string>).Authorization).toBe("Bearer test-key");
+
+    const down = (async () => {
+      throw new Error("offline");
+    }) as unknown as typeof fetch;
+    expect(await sendAlert(msg, site, env, down)).toBe(false);
+    expect(await sendAlert(msg, site, {}, ok)).toBe(false);
+    expect(calls).toHaveLength(1); // no settings → nothing sent
   });
 });
