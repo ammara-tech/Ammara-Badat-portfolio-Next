@@ -145,6 +145,10 @@ describe("currently building", () => {
     }
   });
 
+  it("says whether each one is in progress or up next", () => {
+    for (const p of currentlyBuilding) expect(["building", "next"]).toContain(p.stage);
+  });
+
   it("doesn't list the same project twice", () => {
     const names = currentlyBuilding.map((p) => p.name.toLowerCase());
     expect(new Set(names).size).toBe(names.length);
