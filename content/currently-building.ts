@@ -16,13 +16,6 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "Recall",
-    summary:
-      "Flashcards that work out when you should see each card again (spaced repetition), with study streaks and progress charts. Installable, and it works offline.",
-    tags: ["Next.js", "TypeScript", "Firebase", "PWA"],
-    stage: "building",
-  },
-  {
     name: "ShiftBoard",
     summary:
       "Staff rotas for small businesses: a drag-and-drop weekly rota, shift swaps that a manager approves, and hours totals for payroll. Free for small teams.",

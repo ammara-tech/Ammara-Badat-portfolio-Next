@@ -31,6 +31,43 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "building-rememba-spaced-repetition",
+    title: "Building Rememba: flashcards that know when you'll forget",
+    description:
+      "My flashcard app shows each card just before you'd forget it. How the maths works, a quiz that forgives typos, and why I renamed it.",
+    date: "2026-10-31",
+    tags: ["Next.js", "Firebase", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "Rememba is a flashcard app for studying. You put cards into decks, group the decks into colour-coded subjects like Biology or Languages, and study a few minutes a day. The clever part is deciding when you see each card again.",
+      },
+      { type: "h2", text: "Spaced repetition" },
+      {
+        type: "p",
+        text: "After each card you say how well you remembered it: Again, Hard, Good or Easy. Each card has an \"ease\" number. A Good answer multiplies the gap before you see the card again by its ease, so a card you keep getting right comes back after about 1, 3, 8, 20 and 50 days. Forget it, and it comes back in 10 minutes, a little harder than before. It's a simpler version of SM-2, the algorithm behind apps like Anki.",
+      },
+      {
+        type: "p",
+        text: "Dates were trickier than the maths. \"Due today\" has to mean today where you are, so reviews fall due at your local midnight. Adding days by changing the date, instead of adding 24 hours, stops a daylight saving change from moving a card to the wrong day. My tests run the same checks in South African, UK and US time zones, and pass in all three.",
+      },
+      { type: "h2", text: "A quiz that forgives typos, but not wrong answers" },
+      {
+        type: "p",
+        text: "In \"type the answer\" quizzes, being marked wrong for a missing accent or one wrong letter feels unfair. So capitals, punctuation and accents don't count, and a small typo is still right, with the exact spelling shown. To decide what a small typo is, I used edit distance: how many single-letter changes turn one word into another. One change is allowed for answers up to 10 letters and two for longer ones, but none for very short answers, so \"Ja\" can never pass for \"Nee\".",
+      },
+      { type: "h2", text: "Why I renamed it" },
+      {
+        type: "p",
+        text: "I first called it Recall. Then I found an existing app with that name, so I renamed mine before launching. Sharing a name with a real product would confuse people, and it could cause trouble later. Rememba is a South African twist on \"remember\".",
+      },
+      {
+        type: "tip",
+        text: "Lesson: check that a name is free before you build on it, and write tests for dates in more than one time zone.",
+      },
+    ],
+  },
+  {
     slug: "email-alerts-for-new-messages",
     title: "Getting an email when someone messages me",
     description:
@@ -227,7 +264,7 @@ return NextResponse.json({ ok: true });`,
     description:
       "My Projects page now has a Currently building section for two apps I'm working on, designed so nobody mistakes them for finished work.",
     date: "2026-10-29",
-    updated: "2026-10-30",
+    updated: "2026-10-31",
     tags: ["Portfolio", "Design", "Next.js"],
     body: [
       {
@@ -236,7 +273,7 @@ return NextResponse.json({ ok: true });`,
       },
       {
         type: "tip",
-        text: "Update (30 October): I first listed an F1 Prediction League and a Booking + Client Portal. After finishing PaperTrail, I swapped them for TickList, a shared household list that updates live on everyone's phone, and Recall, a flashcard app with spaced repetition. The booking portal repeated what my clinic platform and PaperTrail already show, and the new two each prove something my other projects don't: people working together live, offline use and a real algorithm.",
+        text: "Update (30 October): I first listed an F1 Prediction League and a Booking + Client Portal. After finishing PaperTrail, I swapped them for TickList, a shared household list that updates live on everyone's phone, and Recall, a flashcard app with spaced repetition (since renamed Rememba). The booking portal repeated what my clinic platform and PaperTrail already show, and the new two each prove something my other projects don't: people working together live, offline use and a real algorithm.",
       },
       { type: "h2", text: "Not pretending they're finished" },
       {

@@ -25,6 +25,7 @@ const portfolio = `${gh}/Ammara-Badat-portfolio-Next`;
 const clinic = `${gh}/nextjs-dashoard`;
 const papertrail = `${gh}/papertrail`;
 const ticklist = `${gh}/ticklist`;
+const rememba = `${gh}/rememba`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -93,6 +94,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "Neon Arcade: manifest", href: `${gh}/Neon-Arcade/blob/main/manifest.webmanifest` },
           { label: "MyFlix: sw.js", href: `${gh}/myflix/blob/main/sw.js` },
           { label: "TickList: sw.js (opens with no signal)", href: `${ticklist}/blob/main/public/sw.js` },
+          { label: "Rememba (live, installable)", href: "https://rememba-one.vercel.app" },
         ],
       },
     ],
@@ -176,6 +178,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
           { label: "TickList: live lists for a whole household", href: `${ticklist}/blob/main/lib/store.ts` },
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
+          { label: "Rememba: firestore.rules", href: `${rememba}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -210,6 +213,16 @@ export const skillGroups: SkillGroup[] = [
           { label: "Clinic platform (live)", href: "https://nextjs-dashoard-psi.vercel.app" },
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
+          { label: "Rememba (live)", href: "https://rememba-one.vercel.app" },
+        ],
+      },
+      {
+        name: "Automated testing",
+        note: "Unit tests with Vitest and browser tests with Playwright, run by GitHub Actions on every push.",
+        evidence: [
+          { label: "This site: tests/", href: `${portfolio}/tree/main/tests` },
+          { label: "This site: browser tests (e2e/)", href: `${portfolio}/tree/main/e2e` },
+          { label: "Rememba: spaced repetition tests", href: `${rememba}/blob/main/tests/srs.test.ts` },
         ],
       },
       {
