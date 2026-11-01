@@ -5,7 +5,7 @@ import { matchesSearch, replyLink, unreadIds } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { leftTooLongAgo } from "@/lib/admin-session";
-import { cleanCode, nextStep } from "@/lib/two-step";
+import { backupCodesFile, cleanBackupCode, cleanCode, codesLeftMessage, isCompleteBackupCode, nextStep } from "@/lib/two-step";
 import { csvCell, csvFileName, messagesCsv } from "@/lib/csv";
 import type { ActivityEntry } from "@/lib/supabase";
 
@@ -98,8 +98,8 @@ describe("admin activity log", () => {
       { ...entry(10, "uploaded", 1), kind: "image" },
       entry(9, "edited", 0), // no kind: counts as a project
     ];
-    expect(countByKind(list)).toEqual({ all: 4, project: 1, message: 2, image: 1 });
-    expect(countByKind([])).toEqual({ all: 0, project: 0, message: 0, image: 0 });
+    expect(countByKind(list)).toEqual({ all: 4, project: 1, message: 2, image: 1, security: 0 });
+    expect(countByKind([])).toEqual({ all: 0, project: 0, message: 0, image: 0, security: 0 });
   });
 
   it("says how long ago something happened", () => {
@@ -161,6 +161,44 @@ describe("admin two-step sign-in", () => {
   it("accepts a pasted code with spaces, and never more than 6 digits", () => {
     expect(cleanCode("123 456")).toBe("123456");
     expect(cleanCode("12a34567")).toBe("123456");
+  });
+});
+
+describe("admin backup codes", () => {
+  it("tidies a typed or pasted code into the XXXX-XXXX shape", () => {
+    expect(cleanBackupCode("7kqm 3xpa")).toBe("7KQM-3XPA");
+    expect(cleanBackupCode("7KQM-3XPA-EXTRA")).toBe("7KQM-3XPA");
+    expect(cleanBackupCode("7kq")).toBe("7KQ");
+  });
+
+  it("only accepts complete codes made from the backup alphabet", () => {
+    expect(isCompleteBackupCode("7KQM-3XPA")).toBe(true);
+    expect(isCompleteBackupCode("7KQM-3XP")).toBe(false); // too short
+    expect(isCompleteBackupCode("7KQM-3XP0")).toBe(false); // 0 is never used (looks like O)
+    expect(isCompleteBackupCode("IKQM-3XPA")).toBe(false); // I is never used (looks like 1)
+  });
+
+  it("builds a text file with every code and what to do with them", () => {
+    const file = backupCodesFile(["7KQM-3XPA", "B2CD-EFGH"], "example.com", new Date("2026-11-01T09:00:00Z"));
+    expect(file).toContain("Backup codes for example.com/admin");
+    expect(file).toContain("Made on 2026-11-01");
+    expect(file).toContain(" 1. 7KQM-3XPA");
+    expect(file).toContain(" 2. B2CD-EFGH");
+    expect(file).toContain("Use a backup code");
+  });
+
+  it("warns when there are no codes, or only a few left", () => {
+    expect(codesLeftMessage(10)).toEqual({ tone: "ok", text: "10 of 10 backup codes left." });
+    expect(codesLeftMessage(3).tone).toBe("warn");
+    expect(codesLeftMessage(1).text).toBe("Only 1 backup code left. Make new ones soon.");
+    expect(codesLeftMessage(0).text).toContain("locked out");
+    expect(codesLeftMessage(null).tone).toBe("warn");
+  });
+
+  it("describes making and using backup codes in the activity log", () => {
+    const base = { id: 1, project_id: null, project_title: "Backup codes", details: null, created_at: "", count: 1 };
+    expect(describeActivity({ ...base, kind: "security", action: "codes-made" })).toBe("Made new backup codes");
+    expect(describeActivity({ ...base, kind: "security", action: "code-used" })).toContain("Used a backup code");
   });
 });
 

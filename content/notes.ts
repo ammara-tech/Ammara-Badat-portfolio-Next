@@ -31,6 +31,57 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "backup-codes-for-two-step-sign-in",
+    title: "Backup codes: a way back in if I lose my phone",
+    description:
+      "Two-step sign-in protects my admin page, but a lost phone could lock me out. How I added one-time backup codes, stored like passwords.",
+    date: "2026-11-01",
+    tags: ["Security", "Supabase", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "My admin page needs a password and a 6-digit code from an authenticator app on my phone. That stops someone who guesses my password, but it had a weak spot I listed under Known gaps: if I lost my phone, the only way back in was through the Supabase dashboard. Big sites solve this with backup codes, so I built them.",
+      },
+      { type: "h2", text: "What I built" },
+      {
+        type: "ul",
+        items: [
+          "A Backup codes panel on my dashboard makes 10 codes, each 8 characters, like 7KQM-3XPA. They're shown once, with Download and Copy buttons, and I keep them somewhere that isn't my phone.",
+          "If the phone is lost, I sign in with my password and choose \"Lost your phone? Use a backup code\". A correct code removes the old authenticator, and the page shows a new QR code for my new phone.",
+          "Each code works once. Making a new set stops the old ones working, and the dashboard warns me when only a few are left.",
+        ],
+      },
+      { type: "h2", text: "Treat them like passwords" },
+      {
+        type: "p",
+        text: "A backup code is as powerful as my phone, so it must never be stored where someone could read it. The database keeps only a bcrypt hash of each code, the same way passwords are stored. When I enter a code, the database hashes it again and compares the hashes. Even someone who could see the table would only see hashes, which can't be turned back into codes.",
+      },
+      {
+        type: "p",
+        text: "The codes are made inside the database, not in the browser, so the real codes only exist for a moment on their way to my screen. The letters and digits leave out ones that are easy to mix up, like 0 and O, or 1, I and L, because I might be typing them from a piece of paper in a hurry.",
+      },
+      { type: "h2", text: "Locked tables, three doors" },
+      {
+        type: "code",
+        lang: "sql",
+        code: "-- Row level security on, and no policies at all:\n-- the API can't read or change these tables\nalter table public.<codes table> enable row level security;\n\n-- The only way in is through functions that check who is asking\ncreate function public.<make codes>() ... security definer ...\n  -- needs my account AND a full two-step sign-in\ncreate function public.<use a code>(code text) ... security definer ...\n  -- needs my account and password only, because the phone is gone",
+      },
+      {
+        type: "p",
+        text: "Making codes needs a full two-step sign-in, so someone with only my password can't make their own set. Using a code needs only the password step, because that's the whole point: the phone is gone. To stop anyone trying codes one after another, wrong codes are limited, and after a few in a short time every try is refused for a while. Making codes and using one both appear in my activity log, so I'd notice if it ever happened without me.",
+      },
+      { type: "h2", text: "Testing it before it touched my real database" },
+      {
+        type: "p",
+        text: "Database rules are the part of my site my automatic tests can't reach, so I ran the SQL on a local copy of Postgres first, with pretend sign-ins. Visitors and other accounts were refused, the tables couldn't be read directly, a wrong code was rejected, too many wrong codes locked every try, a used code never worked twice, and only my authenticator was removed. The browser side has its own tests for the code shape, the download file and the \"codes left\" warning.",
+      },
+      {
+        type: "tip",
+        text: "If you add two-step sign-in to anything, add a way back in at the same time, and store it like a password. Security that locks out the owner isn't finished.",
+      },
+    ],
+  },
+  {
     slug: "building-rememba-spaced-repetition",
     title: "Building Rememba: flashcards that know when you'll forget",
     description:

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { getBrowserClient } from "@/lib/supabase";
-import { cleanCode } from "@/lib/two-step";
+import { cleanBackupCode, cleanCode, isCompleteBackupCode } from "@/lib/two-step";
 
 /*
   The second step of signing in to /admin, after the password.
@@ -11,6 +11,9 @@ import { cleanCode } from "@/lib/two-step";
                 (Google Authenticator, Microsoft Authenticator, Authy...).
   TwoStepSetup: shown once, when no app is set up yet. It shows a QR code to
                 scan, then asks for the first code to prove it worked.
+  BackupCodeForm: "Lost your phone?" on the code step. One of my backup codes
+                (components/BackupCodes.tsx) removes the lost app, and the page
+                moves on to TwoStepSetup for the new phone.
 
   Codes come from the app on my phone, not by email, and change every 30 seconds.
   Until this step is done the sign-in is only "aal1", and the database refuses
@@ -55,6 +58,7 @@ function CancelLink() {
 
 /** Step 2 on every sign-in: the code from the app */
 export function TwoStepCode() {
+  const [lostPhone, setLostPhone] = useState(false);
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -80,6 +84,8 @@ export function TwoStepCode() {
     setBusy(false);
   }
 
+  if (lostPhone) return <BackupCodeForm onBack={() => setLostPhone(false)} />;
+
   return (
     <section className={card}>
       <h1 className="font-display text-3xl font-black uppercase">Two-step sign in</h1>
@@ -99,6 +105,84 @@ export function TwoStepCode() {
           {busy ? "Checking…" : "Verify"}
         </button>
       </form>
+      <button
+        type="button"
+        onClick={() => setLostPhone(true)}
+        className="mt-6 block text-sm text-mist underline-offset-4 hover:text-teal hover:underline"
+      >
+        Lost your phone? Use a backup code
+      </button>
+      <CancelLink />
+    </section>
+  );
+}
+
+/** When the phone is lost: one backup code removes the old app, then the new phone is set up */
+function BackupCodeForm({ onBack }: { onBack: () => void }) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function use(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const supabase = getBrowserClient();
+    const { data, error } = await supabase.rpc("use_backup_code", { code });
+    if (error) {
+      setError(error.message.includes("Too many") ? error.message : "Something went wrong. Try again in a moment.");
+    } else if (data !== true) {
+      setError("That backup code didn't work. Check it, or try another one. Each code only works once.");
+      setCode("");
+    } else {
+      // The old app is gone: a fresh token makes the admin page show the QR code set-up next
+      await supabase.auth.refreshSession();
+    }
+    setBusy(false);
+  }
+
+  return (
+    <section className={card}>
+      <h1 className="font-display text-3xl font-black uppercase">Use a backup code</h1>
+      <p className="mt-2 text-mist">
+        Enter one of the backup codes you saved. Your old authenticator app will stop working, and you&apos;ll set up
+        your new phone straight after.
+      </p>
+      <form onSubmit={use} className="mt-8 space-y-4">
+        <label className="block">
+          <span className="text-sm text-mist">Backup code</span>
+          <input
+            value={code}
+            onChange={(e) => setCode(cleanBackupCode(e.target.value))}
+            autoComplete="off"
+            autoCapitalize="characters"
+            spellCheck={false}
+            placeholder="XXXX-XXXX"
+            required
+            autoFocus
+            className={inputClass}
+          />
+        </label>
+        {error && (
+          <p role="alert" className="text-sm text-racing-text">
+            {error}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={busy || !isCompleteBackupCode(code)}
+          className="w-full rounded bg-racing px-4 py-2 font-medium text-white disabled:opacity-50"
+        >
+          {busy ? "Checking…" : "Use this code"}
+        </button>
+      </form>
+      <button
+        type="button"
+        onClick={onBack}
+        className="mt-6 block text-sm text-mist underline-offset-4 hover:text-teal hover:underline"
+      >
+        Back to the 6-digit code
+      </button>
       <CancelLink />
     </section>
   );
@@ -156,6 +240,7 @@ export function TwoStepSetup() {
       <p className="mt-2 text-mist">
         For safety, the admin page needs a code from an authenticator app as well as your password. You only do this once.
       </p>
+      <p className="mt-2 text-sm text-mist">Afterwards, make new backup codes on the dashboard, in case you lose this phone.</p>
 
       <ol className="mt-6 space-y-3 text-sm text-mist">
         <li>

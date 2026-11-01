@@ -24,7 +24,7 @@ export function filterActivity<T extends Pick<ActivityEntry, "kind">>(entries: T
 
 /** How many entries there are of each kind, for the numbers on the filter buttons */
 export function countByKind(entries: Pick<ActivityEntry, "kind">[]): Record<ActivityKind | "all", number> {
-  const counts = { all: entries.length, project: 0, message: 0, image: 0 };
+  const counts = { all: entries.length, project: 0, message: 0, image: 0, security: 0 };
   for (const e of entries) counts[kindOf(e)] += 1;
   return counts;
 }
@@ -38,6 +38,11 @@ export function describe(item: Pick<TimelineItem, "kind" | "action" | "project_t
   }
   if (kind === "image") {
     return item.action === "uploaded" ? `Uploaded the image ${t}` : `Deleted the image ${t}`;
+  }
+  if (kind === "security") {
+    return item.action === "codes-made"
+      ? "Made new backup codes"
+      : "Used a backup code (the authenticator app was removed)";
   }
   switch (item.action) {
     case "added":

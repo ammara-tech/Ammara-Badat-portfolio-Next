@@ -196,8 +196,26 @@ tell the browser to switch protections on. `next.config.ts` adds mine to every a
 
 The app makes a new code every 30 seconds from a secret that is only on my phone. This is **TOTP**
 (a time-based one-time password). It works offline and doesn't need an email inbox.
-If I lose my phone, I can delete the MFA factor in the Supabase dashboard (Authentication → Users)
-and set up the new phone.
+If I lose my phone, I use a **backup code** (below). Without one, I can still delete the MFA factor in
+the Supabase dashboard (Authentication → Users) and set up the new phone.
+
+### Backup codes (`components/BackupCodes.tsx`, `Supabase/010-backup-codes.sql`)
+Ten one-time codes like `7KQM-3XPA`, for when the phone with my authenticator app is lost.
+- **Making them:** the **Backup codes** panel on the dashboard calls `make_backup_codes()`, a database
+  function that only works after a full two-step sign-in (`is_owner()`). It makes 10 random codes from
+  letters and digits that are hard to mix up (no 0/O or 1/I/L), saves only a **bcrypt hash** of each one
+  (like a password), and returns the codes once. The page shows them with **Download .txt** and **Copy all**;
+  after **I've saved them**, they're gone from the screen for good. Making new codes stops the old ones working.
+- **Using one:** on the code step, **Lost your phone? Use a backup code** shows a box that tidies what I
+  type into `XXXX-XXXX` (`cleanBackupCode()`). `use_backup_code()` needs my account but only the password
+  step (`is_owner_account()`), because the phone is gone. If the code matches an unused hash, it's marked
+  used and the old authenticator is deleted, so the page moves on to the QR code set-up for the new phone.
+- **Safety:** the two tables have RLS on and **no** policies, so the API can't read or change them; only
+  the three functions can. Several wrong codes in a short time lock out every try for a while, so codes
+  can't be guessed one after another. Making codes and using one both go into the activity log
+  (kind `security`), and the dashboard warns when few codes are left (`codesLeftMessage()`).
+- I tested the SQL on a local Postgres copy: visitors and other accounts are refused, the tables can't
+  be read directly, a used code never works twice, and only my authenticator is removed.
 
 ### Layer 3: the sign-in lives in one tab (`lib/admin-session.ts`)
 Browsers have two small storage spaces for each website:
@@ -240,7 +258,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Draft / Live switch | `ProjectOrderList.tsx` | Updates `published`. Visitors never receive drafts, because of the read policy, so the public pages needed no changes. |
 | Live preview | `app/admin/page.tsx` + `ProjectCard` from `ProjectGrid.tsx` | The real project card, built from the form as I type. It has the **inert** attribute, so its links can't be clicked or reached with Tab. |
 | Unsaved changes | `UnsavedChangesGuard.tsx`, `lib/unsaved.ts` | The form remembers what it started with (empty, or the project being edited). `changedFields()` compares, ignoring spaces at the ends. While something changed: "Unsaved changes" shows, the **beforeunload** event makes the browser ask "Leave site?" on close or refresh, and a click listener asks "Leave without saving?" before a link moves to another page. That second one is needed because Next.js changes pages without reloading, so the browser's own box never appears. `leavesPage()` skips new tabs, Ctrl-clicks, `#` links and `mailto:`. Auto sign-out still signs me out, because security comes first. |
-| Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database triggers (section 7), live through Realtime. All / Projects / Messages / Images buttons show one kind at a time (`filterActivity()`), each with a count (`countByKind()`). Reorders from one drag are grouped into one line. |
+| Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database triggers (section 7), live through Realtime. All / Projects / Messages / Images / Security buttons show one kind at a time (`filterActivity()`), each with a count (`countByKind()`). Reorders from one drag are grouped into one line. |
 | Image upload | `ImageUpload.tsx` | Checks the type and size (5 MB), uploads to the `project-images` bucket with a timestamp in the name (so nothing is overwritten), then fills in the image URL. |
 | Drag-and-drop order | `ProjectOrderList.tsx` | Drag with a mouse or finger, or use ↑/↓. Saves each project's `sort_order` straight away. |
 
@@ -273,6 +291,9 @@ browser could be faked or skipped; this one can't.
 - The trigger functions have `execute` taken away from the API roles, so they can't be called directly;
   they only run when a row changes.
 - Entries from before `009` have no kind; `kindOf()` treats them as projects.
+
+`010-backup-codes.sql` adds a fourth kind, `security`: "Made new backup codes" and "Used a backup code".
+The backup code functions write these entries themselves, inside the database, the same way the triggers do.
 
 ---
 
@@ -421,14 +442,14 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 124 checks:
+  example inputs and check the answers. There are 129 checks:
   - page addresses (`slug.test.ts`), the contact form rules, its draft, the local time and the email alert (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
-    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule and the two-step sign-in steps
+    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps and the backup codes
   - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -459,7 +480,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule) run inside Supabase, so they aren't in the 124.
+- **Database rules** (RLS, triggers, the aal2 rule, the backup code functions) run inside Supabase, so they aren't in the 129.
   I tested them on a local copy of the database as a visitor, as another account and as me.
 
 ---
@@ -538,4 +559,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, and 124 with the Automated testing skill.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, and 129 with the backup codes.

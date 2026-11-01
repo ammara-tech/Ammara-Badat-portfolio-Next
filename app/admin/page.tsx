@@ -6,6 +6,7 @@ import { getBrowserClient, type Project } from "@/lib/supabase";
 import { ADMIN_AUTH_KEY, LEFT_AT_KEY, leftTooLongAgo, tabStorage } from "@/lib/admin-session";
 import { nextStep } from "@/lib/two-step";
 import { TwoStepCode, TwoStepSetup } from "@/components/TwoStep";
+import BackupCodes from "@/components/BackupCodes";
 import Inbox from "@/components/Inbox";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
@@ -578,6 +579,9 @@ function Dashboard({ email }: { email: string }) {
 
       {/* Every change to a project, written by a database trigger (components/ActivityLog.tsx) */}
       <ActivityLog refreshKey={activityKey} />
+
+      {/* One-time codes for when my phone is lost (owner only) */}
+      <BackupCodes />
     </section>
   );
 }

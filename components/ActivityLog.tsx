@@ -10,6 +10,7 @@ import Icon, { type IconName } from "@/components/Icon";
   - projects: added, edited, published, moved to drafts, reordered or deleted
   - messages: a new message arrived, or I deleted one
   - images: a project image was uploaded or deleted
+  - security: new backup codes were made, or one was used (Supabase/010-backup-codes.sql)
   Buttons above the list show one kind at a time, each with how many recent entries it has.
 
   The entries are written by triggers inside Supabase, not by this page
@@ -27,12 +28,15 @@ const projectIcons: Record<ActivityEntry["action"], IconName> = {
   deleted: "trash",
   received: "mail",
   uploaded: "photo",
+  "codes-made": "badge",
+  "code-used": "badge",
 };
 
 function iconFor(entry: ActivityEntry): IconName {
   if (entry.action === "deleted") return "trash";
   if (kindOf(entry) === "message") return "mail";
   if (kindOf(entry) === "image") return "photo";
+  if (kindOf(entry) === "security") return "badge";
   return projectIcons[entry.action];
 }
 
@@ -41,6 +45,7 @@ const filters: { value: ActivityKind | "all"; label: string }[] = [
   { value: "project", label: "Projects" },
   { value: "message", label: "Messages" },
   { value: "image", label: "Images" },
+  { value: "security", label: "Security" },
 ];
 
 const emptyText: Record<ActivityKind | "all", string> = {
@@ -48,6 +53,7 @@ const emptyText: Record<ActivityKind | "all", string> = {
   project: "No project changes yet.",
   message: "No messages yet. New ones show up here as they arrive.",
   image: "No images uploaded or deleted yet.",
+  security: "No backup codes made or used yet.",
 };
 
 const LOAD = 60; // entries kept in memory; 12 are shown
@@ -116,13 +122,13 @@ export default function ActivityLog({ refreshKey = 0 }: { refreshKey?: number })
         Recent activity
       </h2>
       <p className="mt-1 text-sm text-mist">
-        Written by the database itself every time a project, message or image changes.
+        Written by the database itself every time a project, message, image or backup code changes.
       </p>
 
       <div
         role="group"
         aria-label="Show activity"
-        className="mt-4 grid grid-cols-2 gap-0.5 rounded border border-line-strong p-0.5 sm:flex sm:max-w-md"
+        className="mt-4 grid grid-cols-2 gap-0.5 rounded border border-line-strong p-0.5 sm:flex sm:max-w-xl"
       >
         {filters.map((f) => (
           <button

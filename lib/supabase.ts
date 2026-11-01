@@ -71,8 +71,18 @@ export type Message = {
 export type ActivityEntry = {
   id: number;
   /** What the entry is about. Rows from before 009-activity-log-messages-images.sql have no kind: they are projects. */
-  kind?: "project" | "message" | "image";
-  action: "added" | "edited" | "published" | "unpublished" | "reordered" | "deleted" | "received" | "uploaded";
+  kind?: "project" | "message" | "image" | "security";
+  action:
+    | "added"
+    | "edited"
+    | "published"
+    | "unpublished"
+    | "reordered"
+    | "deleted"
+    | "received"
+    | "uploaded"
+    | "codes-made" // backup codes (Supabase/010-backup-codes.sql)
+    | "code-used";
   project_id: string | null;
   project_title: string;
   details: string | null;
