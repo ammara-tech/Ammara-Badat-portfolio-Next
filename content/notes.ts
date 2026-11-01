@@ -31,6 +31,57 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "three-apps-to-100-on-lighthouse",
+    title: "Getting three Firebase apps to 100 on Lighthouse",
+    description:
+      "PaperTrail, TickList and Rememba scored in the 70s and 80s on phones. What was slowing them down, the fix that made it worse first, and how they reached 100.",
+    date: "2026-11-01",
+    tags: ["Lighthouse", "Performance", "Firebase"],
+    body: [
+      {
+        type: "p",
+        text: "My portfolio already scores 99 to 100 on Lighthouse, so I ran it on my three Firebase apps too. On a laptop they were fine. On a phone, performance was 83 for Rememba, 78 for TickList and 84 for PaperTrail, and two of them lost points for accessibility. Lighthouse tests phones as a mid-range phone on slow 4G, so small delays get much bigger.",
+      },
+      { type: "h2", text: "Problem 1: the sign-in screen waited for Firebase" },
+      {
+        type: "p",
+        text: "All three apps showed a loading screen until Firebase had checked whether you were signed in, and only then drew the sign-in screen. For a new visitor that meant about 4 seconds of a spinning logo on a slow phone. Now the server sends the sign-in screen straight away. A small note saved on the device says whether someone has signed in there before. If so, the page shows the loading screen instead while Firebase checks, so a returning user never sees the sign-in screen flash. It's only a hint for what to show first: Firebase still decides who is signed in.",
+      },
+      { type: "h2", text: "The fix that made it worse" },
+      {
+        type: "p",
+        text: "After that change, Rememba's phone score went down, from 84 to 74. The page looked faster, but Lighthouse said nothing appeared for 4.4 seconds. Instead of guessing, I opened the report's network dependency tree, which shows which downloads the first paint waits for. At the end of the chain was a 93 KB file from Firebase's own servers: the helper for Google's sign-in window, downloaded the moment the page opened.",
+      },
+      { type: "h2", text: "Problem 2: Google's sign-in helper loaded on every visit" },
+      {
+        type: "p",
+        text: "Firebase's usual getAuth() sets up that helper straight away on phones, even if the person never presses Continue with Google. So I set up sign-in without it, and only hand it over when the button is pressed. Email sign-in and staying signed in work exactly as before.",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: "// Before: getAuth(app) also loads Google's sign-in helper on phones\nconst auth = initializeAuth(app, {\n  persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence],\n});\n\n// Only when someone presses \"Continue with Google\":\nsignInWithPopup(auth, provider, browserPopupRedirectResolver);",
+      },
+      { type: "h2", text: "The accessibility points" },
+      {
+        type: "ul",
+        items: [
+          "The sign-in screens had no main landmark, so a screen reader couldn't jump to the form. The form's area is now a <main>.",
+          "Some text on the example cards was too faint: an orange \"12-day streak\" was 2.9 to 1 against its card, under the 3 to 1 needed for large text, and a light blue time stamp was under 2 to 1. Both are darker now.",
+        ],
+      },
+      { type: "h2", text: "The results" },
+      {
+        type: "p",
+        text: "On a phone, TickList and PaperTrail now score 100 for performance, accessibility, best practices and SEO, and Rememba scores 96 to 99 for performance and 100 for the rest. On a laptop all three score 100 or close to it. The first screen on a phone now appears in under a second instead of about four.",
+      },
+      {
+        type: "tip",
+        text: "When a fix makes a score worse, don't undo it straight away. Read what the report says the page is waiting for. Mine was waiting for a file nobody had asked for yet.",
+      },
+    ],
+  },
+  {
     slug: "backup-codes-for-two-step-sign-in",
     title: "Backup codes: a way back in if I lose my phone",
     description:
@@ -74,6 +125,11 @@ export const notes: Note[] = [
       {
         type: "p",
         text: "Database rules are the part of my site my automatic tests can't reach, so I ran the SQL on a local copy of Postgres first, with pretend sign-ins. Visitors and other accounts were refused, the tables couldn't be read directly, a wrong code was rejected, too many wrong codes locked every try, a used code never worked twice, and only my authenticator was removed. The browser side has its own tests for the code shape, the download file and the \"codes left\" warning.",
+      },
+      { type: "h2", text: "The one thing my local test missed" },
+      {
+        type: "p",
+        text: "The first time I pressed Make backup codes on the live site, it said \"DELETE requires a WHERE clause\". Making a new set first clears out the old codes, and I'd written that as a delete with no WHERE. Supabase refuses that when the request comes from the website, as a safety net against wiping a whole table by mistake. My local Postgres doesn't have that rule, so every test there had passed. The fix was to say which rows on purpose (every row whose id isn't empty), and nothing was lost, because the error stopped the request before it changed anything. A local copy is a great test, but it isn't the real thing.",
       },
       {
         type: "tip",
