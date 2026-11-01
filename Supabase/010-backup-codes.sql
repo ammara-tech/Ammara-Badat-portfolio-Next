@@ -97,8 +97,10 @@ begin
     raise exception 'Only the owner, fully signed in, can make backup codes' using errcode = '42501';
   end if;
 
-  delete from public.backup_codes;
-  delete from public.backup_code_attempts;
+  -- "where id is not null" means every row. Supabase refuses a DELETE with no WHERE when it
+  -- comes through the API (a safety net against deleting a whole table by mistake).
+  delete from public.backup_codes where id is not null;
+  delete from public.backup_code_attempts where id is not null;
 
   for i in 1..10 loop
     code := '';
@@ -170,7 +172,7 @@ begin
   end if;
 
   update public.backup_codes set used_at = now() where id = match_id;
-  delete from public.backup_code_attempts;
+  delete from public.backup_code_attempts where id is not null;
 
   -- Remove the lost authenticator app, so a new one can be set up.
   -- (The same as deleting the MFA factor in the dashboard: Authentication -> Users.)
