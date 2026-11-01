@@ -32,7 +32,9 @@ concurrency:
 
 jobs:
   lighthouse:
-    runs-on: ubuntu-latest
+    # A fixed Ubuntu version, not ubuntu-latest: when GitHub moved "latest" to Ubuntu 26.04,
+    # Playwright couldn't install its browser there yet and every run failed
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
 

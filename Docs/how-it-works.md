@@ -469,6 +469,8 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - `site.spec.ts`: every main page loads with its title, a made-up project gets a real 404, the live
     security headers, and the phone menu opening and closing with Escape.
   - If anything fails, the run has a report with screenshots and a step-by-step **trace** to download.
+  - The browser tests and Lighthouse run on **Ubuntu 24.04**, not "latest". When GitHub moved "latest" to a
+    newer Ubuntu, Playwright couldn't install Chromium on it yet, so every run failed before testing anything.
   - Unit tests (Vitest) check my functions; browser tests check the pages people actually use. Both matter:
     a function can be right and the button that calls it still broken.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main that changes the site,
