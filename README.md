@@ -645,7 +645,23 @@ study, the contact form, the footer with my Lighthouse scores and links, and the
 preview). Private details are blurred and no keys or settings pages are shown.
 
 ## Reflection: another two weeks
-With another two weeks, I would first add email alerts for new contact messages, so I don't have to open the admin page to find out someone wrote to me. I would also add backup codes for two-step sign-in, because right now losing my phone means fixing it in the Supabase dashboard. Next, I would turn my manual RLS checks into automatic tests that run on a test database, and add a few browser tests that click through the contact form and the admin page, so a change can't quietly break them. Finally, I would track messages and image uploads in the activity log as well as projects, and make the CV PDF build itself from my CV page instead of remaking it by hand.
+**What I planned, and what happened.** When I first wrote this section, my list for another two weeks
+was: email alerts for new contact messages, backup codes for two-step sign-in, automatic tests for my
+database rules, browser tests, messages and images in the activity log, and a CV PDF that builds itself.
+I built the first five during the final project (Upgrades 17, 22, 26, 27 and 28 above). Each one
+taught me something I hadn't planned for: the email had to be sent after the visitor's reply so a slow
+email could never lose a message, and my backup codes passed every local test but failed on Supabase
+until I found its rule against a DELETE with no WHERE.
+
+**With another two weeks now, I would:**
+1. Make the CV PDF build itself from my CV page, the last item from my old list, so the two can never
+   disagree.
+2. Let the browser tests sign in, with a separate test account on a separate Supabase project, so the
+   dashboard itself (inbox, projects, activity log) is tested, not just the sign-in form.
+3. Run my database tests on Supabase's own local version (the Supabase CLI) instead of my stand-in,
+   so rules that only exist on Supabase are tested too.
+4. Add a CAPTCHA that doesn't get in people's way, like Cloudflare Turnstile, to the contact form.
+5. Add a strict script rule to my Content Security Policy, using nonces.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
