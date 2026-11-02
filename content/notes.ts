@@ -31,6 +31,55 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "two-warnings-from-github",
+    title: "Two warnings from GitHub: a moved test machine and a fake secret",
+    description:
+      "In two days, my browser tests broke without me changing anything, and a secret scanner flagged a password in my code. What each one taught me.",
+    date: "2026-11-02",
+    tags: ["GitHub Actions", "Security", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "Two things went red this week that had nothing to do with my site's code. Neither was serious, but both were the kind of thing that's easy to ignore and shouldn't be.",
+      },
+      { type: "h2", text: "1. My browser tests broke, but I hadn't changed them" },
+      {
+        type: "p",
+        text: "My browser tests run on a GitHub machine after every push. On Sunday they failed before testing anything, at the step that installs the test browser: \"Playwright does not support chromium on ubuntu26.04\". My workflow asked for ubuntu-latest, and GitHub had just moved \"latest\" to a newer version of Ubuntu that my version of Playwright didn't know yet.",
+      },
+      {
+        type: "code",
+        lang: "yaml",
+        code: "jobs:\n  browser-tests:\n    # Before: runs-on: ubuntu-latest (it changes when GitHub decides)\n    runs-on: ubuntu-24.04 # a fixed version, so it only changes when I change it",
+      },
+      {
+        type: "p",
+        text: "\"Latest\" sounds safe, but it means something different on different days. A test that fails because the machine changed tells you nothing about your code, so now my workflows ask for a fixed version. The catch is that I have to move it forward myself one day, on purpose, when Playwright supports the newer one.",
+      },
+      { type: "h2", text: "2. A secret scanner found a \"password\"" },
+      {
+        type: "p",
+        text: "A few minutes after I pushed my new database tests, GitGuardian emailed me: \"Generic Password\" detected in my repo. My heart dropped for a second. Then I checked the commit. The \"password\" was the word postgres, for the empty test database GitHub creates for about a minute and then deletes. It didn't protect anything real: my Supabase keys and email key are only in Vercel and my own computer, never in the code.",
+      },
+      {
+        type: "p",
+        text: "It was a false alarm, but I still removed it, because a repo where scanners shout about harmless things trains you to ignore them. That throwaway database can only be reached from inside the test run, so it doesn't need a password at all, and now it doesn't have one. Then I marked the alert as a false positive.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Check before you panic: open the exact commit and line the scanner points to.",
+          "Ask what the value actually unlocks. A real key or password must be changed straight away, because deleting it from the code doesn't remove it from the history.",
+          "If it unlocks nothing, still make the warning go away properly, so the next real one stands out.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Treat a red warning you didn't expect as information, not noise. Both of mine took minutes to understand and fix, and both would have been easy to ignore until they mattered.",
+      },
+    ],
+  },
+  {
     slug: "testing-my-database-rules-automatically",
     title: "Testing my database rules automatically",
     description:
