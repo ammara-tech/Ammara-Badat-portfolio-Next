@@ -1,0 +1,46 @@
+# Database rule tests
+# Starts an empty Postgres database on GitHub, loads a stand-in for Supabase and every
+# file in Supabase/, then checks the rules as a visitor, another account, my account with
+# only the password, and my account with two-step sign-in (tests/database/rules.sql).
+# It never touches the real Supabase project, and needs no keys or passwords.
+
+name: Database tests
+
+on:
+  push:
+    paths:
+      - "Supabase/**"
+      - "tests/database/**"
+      - ".github/workflows/database-tests.yml"
+  pull_request:
+    paths:
+      - "Supabase/**"
+      - "tests/database/**"
+  workflow_dispatch: # a "Run workflow" button in the Actions tab
+
+jobs:
+  database-rules:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          # A throwaway password for a database that only exists during this run
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v5
+      - name: Make sure psql is installed
+        run: which psql || (sudo apt-get update && sudo apt-get install -y postgresql-client)
+      - name: Test the database rules
+        run: bash tests/database/run.sh

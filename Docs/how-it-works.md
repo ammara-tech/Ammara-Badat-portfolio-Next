@@ -482,8 +482,18 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
     as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
     change between runs (Performance is only a warning).
-- **Database rules** (RLS, triggers, the aal2 rule, the backup code functions) run inside Supabase, so they aren't in the 129.
-  I tested them on a local copy of the database as a visitor, as another account and as me.
+- **Database tests** (`tests/database/`, `.github/workflows/database-tests.yml`): the database rules (RLS,
+  triggers, the aal2 rule, the spam limit, the backup code functions) run inside the database, so Vitest
+  can't reach them. Instead GitHub starts an empty Postgres, loads `supabase-stand-in.sql` (Supabase's API
+  roles, `auth.uid()` reading a pretend login token, Storage tables, and Supabase's habit of giving the API
+  roles every table so only RLS stops them), runs every file in `Supabase/` twice, then `rules.sql`.
+  - `test.become()` switches to a visitor, another account, my account with only the password, or me with
+    two-step, by setting the database role and the login token the same way Supabase's API does.
+  - `test.check()` runs one statement inside a transaction that is always undone, and records whether it
+    was refused, read or changed rows, so every check starts from the same data.
+  - The run fails if any of the 65 checks fail. I broke a rule on purpose twice to prove it does.
+  - It's a stand-in, not Supabase itself, so differences in Supabase's own setup can still slip through
+    (like its rule against a DELETE with no WHERE).
 
 ---
 

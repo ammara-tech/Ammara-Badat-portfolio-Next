@@ -24,8 +24,8 @@ components/  Reusable building blocks (Navbar, ContactForm, Inbox, TwoStep, ...)
 content/     My words: about, case study, skills, certifications, dev notes, CV
 lib/         Supabase connection, SEO, theme, project loading and small tested helper functions
 public/      Screenshots, certificates, CV PDF, demo video, icons
-Supabase/    The SQL files, run in order (schema.sql, then 003 to 009)
-tests/       Vitest tests (npm test)
+Supabase/    The SQL files, run in order (schema.sql, then 003 to 010)
+tests/       Vitest tests (npm test), and tests/database/ for the database rules
 e2e/         Browser tests with Playwright (npm run test:browser)
 Docs/        Wireframes, proof screenshots and the code guide (how-it-works.md)
 ```
@@ -125,6 +125,7 @@ Extras beyond the milestones, in the order I built them.
 | 25 | Four small additions | Final project | A Mark all read button in the admin inbox (one request, with Undo), a Filter by topic row on the Dev notes page with counts and shareable links (`/notes?tag=Security`), related notes at the end of every note, and my local time on the Contact page |
 | 26 | Email alerts | Final project | An email to me (through Resend) whenever a new contact message is saved, with Reply going straight to the visitor. It's sent after the visitor already has their reply, so they never wait and a failed email never loses a message |
 | 27 | Backup codes | Final project | 10 one-time codes for two-step sign-in, made on `/admin` and stored only as hashes. If I lose my phone, a code removes the old authenticator so I can set up a new one, with wrong tries limited and every use in the activity log |
+| 28 | Database tests | Final project | My hand-made RLS checks became 65 automatic checks that run on GitHub whenever a SQL file changes, on a throwaway database that never touches the real one |
 
 ### ✅ What the site has now
 
@@ -204,6 +205,7 @@ Extras beyond the milestones, in the order I built them.
 | Feature | What it does |
 |---|---|
 | Automated tests | 129 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, the backup codes (their shape, the download file and the "codes left" warning), and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Database tests | 65 checks of the database rules in `tests/database/rules.sql`, run on GitHub on an empty Postgres with every SQL file in `Supabase/` loaded on top of a small stand-in for Supabase. They act as a visitor, another account, my account with only the password, and my account with two-step sign-in, and check who can read and change projects, drafts, messages, the activity log, images and backup codes, plus the spam limit and the backup code rules. I checked they catch mistakes by breaking a rule on purpose: the run failed both times (`.github/workflows/database-tests.yml`). |
 | Browser tests | 15 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
@@ -311,6 +313,28 @@ like Supabase, and tested as a visitor, as another signed-in account and as me:
 
 I also tested the sign-in screens in a browser: a fresh visit, the QR set-up, a wrong code, a pasted
 code with a space, the code step on the next sign-in, refreshing, a second tab and reopening a closed tab.
+
+#### Automatic database tests (`tests/database/`)
+The checks above are now automatic. `.github/workflows/database-tests.yml` starts an empty Postgres on
+GitHub whenever a file in `Supabase/` or `tests/database/` changes, then `tests/database/run.sh`:
+1. loads `supabase-stand-in.sql`: the API roles, `auth.uid()`, Storage tables and Supabase's default
+   rights (the API roles may use every table, so only my policies can stop them)
+2. runs every file in `Supabase/` in the setup order, then runs them all **again** (each says it's safe
+   to run twice, and now that's tested)
+3. runs `rules.sql`: 65 checks as four people (a visitor, another account with two-step, my account with
+   only the password, and me fully signed in), each in a transaction that's undone straight after
+
+| Who | What the checks prove |
+|-----|-----------------------|
+| Visitor | Reads published projects and can send a message; can't read drafts, messages, the log or backup codes, and can't add, change or delete anything |
+| Another account (`aal2`) | Exactly the same as a visitor: being signed in isn't enough |
+| My account, password only (`aal1`) | Can't read or change anything private, and can't make backup codes |
+| Me with two-step (`aal2`) | Can do everything, except fake, change or delete activity log entries, upload outside `project-images`, or read the stored codes |
+| Spam limit | A 4th message from the same email within 10 minutes is refused; others can still write |
+| Backup codes | A real code works once with just the password, typed any way; it removes only my authenticator; only hashes are stored; wrong codes lock out further tries |
+
+To check the tests catch mistakes, I broke a rule on purpose twice (removed the two-step check, and made
+messages readable by visitors). Both times the right checks failed and the run went red.
 
 ### Security headers
 Headers are instructions sent with every response that tell the browser to be stricter. They're set in
@@ -570,9 +594,10 @@ Things I know are missing or could be better:
 
 - **Spam protection is basic.** A hidden honeypot field and a per-sender limit stop simple bots, but
   there is no CAPTCHA.
-- **The database rules are not in the automatic tests.** I tested RLS by hand (as a visitor, signed in
-  without two-step, and fully signed in) and on a local copy of the database; the 129 automatic tests
-  cover the site's code and docs, not the live database.
+- **The database tests use a stand-in for Supabase.** They run my real SQL files on a plain Postgres
+  with a small copy of Supabase's roles, sign-in functions and Storage tables, not on Supabase itself or
+  the live database. So they can't catch a difference in Supabase's own setup: Supabase refusing a
+  DELETE with no WHERE, which broke my backup codes on the first try, isn't in the stand-in.
 - **The browser tests stop at the sign-in form.** They never sign in, so the dashboard itself (inbox,
   projects, activity log) is still checked by hand. Signing in from GitHub would mean storing my password
   and authenticator secret there.
