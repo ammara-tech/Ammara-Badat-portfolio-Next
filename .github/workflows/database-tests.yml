@@ -25,8 +25,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          # A throwaway password for a database that only exists during this run
-          POSTGRES_PASSWORD: postgres
+          # No password at all: this database only exists during the run and can only be
+          # reached from it. (A password here, even a throwaway one, gets flagged by secret scanners.)
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
           - 5432:5432
         options: >-
@@ -37,7 +38,6 @@ jobs:
     env:
       PGHOST: localhost
       PGUSER: postgres
-      PGPASSWORD: postgres
     steps:
       - uses: actions/checkout@v5
       - name: Make sure psql is installed

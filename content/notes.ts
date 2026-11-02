@@ -31,6 +31,66 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "testing-my-database-rules-automatically",
+    title: "Testing my database rules automatically",
+    description:
+      "My tests checked the website's code but not the rules that protect my data. How I turned hand-made security checks into 65 automatic ones on GitHub.",
+    date: "2026-11-02",
+    tags: ["Security", "Testing", "GitHub Actions"],
+    body: [
+      {
+        type: "p",
+        text: "The most important security on my site isn't in the website at all. It's in the database: row level security decides who can read my messages, see my drafts or change my projects, even if someone skips my website and talks to the database directly. Until now I checked those rules by hand. My 129 automatic tests covered the site's code, and the rules that matter most were the one thing they couldn't reach.",
+      },
+      { type: "h2", text: "A throwaway database on GitHub" },
+      {
+        type: "p",
+        text: "Testing on my real database was never an option, because a test that checks \"can a visitor delete a project?\" could actually delete one if the rule was wrong. So every time a database file changes, GitHub starts a brand new, empty Postgres database that only exists for that run. It loads all my setup files in order, then loads them a second time, because each one says it's safe to run twice and now that's tested too. Then it runs the checks, and the database is thrown away.",
+      },
+      {
+        type: "p",
+        text: "My rules use a few things that only exist on Supabase, like the function that says who is signed in. So the run first loads a small stand-in for those parts. The most important part of it copies something Supabase does: the website's database roles are allowed to use every table by default, and only my rules stop them. If the stand-in was stricter than Supabase, my tests could pass for the wrong reason.",
+      },
+      { type: "h2", text: "Four people, 65 checks" },
+      {
+        type: "ul",
+        items: [
+          "A visitor, who isn't signed in: can see published projects and send a message, and nothing else.",
+          "Someone else's account, fully signed in: gets exactly what a visitor gets. Being signed in isn't enough.",
+          "My account with only the password, like someone who guessed it: can't read or change anything private.",
+          "Me with my authenticator code too: can do everything, except fake or delete history entries and read the stored backup codes. Not even I can do those.",
+        ],
+      },
+      {
+        type: "p",
+        text: "There are also checks for the spam limit and my backup codes: a code works once, typed any way, removes only my authenticator, and too many wrong guesses lock out further tries.",
+      },
+      {
+        type: "code",
+        lang: "sql",
+        code: "-- Pretend to be someone, the same way the website's database connection does\nselect test.become('visitor');\n\n-- Try something, undo it straight after, and record what happened\nselect test.check('can''t read messages', 'select * from <messages>', 'blocked');\nselect test.check('can send a message', 'insert into <messages> ...', '1');",
+      },
+      {
+        type: "p",
+        text: "Every check runs inside a small transaction that is always undone, even when it works. So the owner deleting a project in one check doesn't leave one fewer project for the next check, and every check starts from the same data.",
+      },
+      { type: "h2", text: "Testing the tests" },
+      {
+        type: "p",
+        text: "A security test that always passes is worse than none, because it makes you feel safe. So I broke my own rules on purpose. When I removed the two-step check, 11 checks failed, all for \"my account with only the password\". When I let visitors read messages, exactly one check failed: \"a visitor can't read messages\". Both times the run went red, and green again when I put the rules back.",
+      },
+      { type: "h2", text: "What it still can't catch" },
+      {
+        type: "p",
+        text: "It's a stand-in, not Supabase itself. Yesterday Supabase refused a delete in my backup codes that had passed on my local copy, because Supabase has a safety rule my stand-in doesn't. Tests on a copy can only find the problems the copy is able to have, so I've listed that under Known gaps instead of pretending the tests cover everything.",
+      },
+      {
+        type: "tip",
+        text: "Before you trust a security test, make it fail. Break the rule it protects and check the right test goes red.",
+      },
+    ],
+  },
+  {
     slug: "three-apps-to-100-on-lighthouse",
     title: "Getting three Firebase apps to 100 on Lighthouse",
     description:
