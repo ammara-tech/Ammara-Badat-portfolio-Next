@@ -9,6 +9,7 @@ import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import { siteUrl } from "@/lib/site";
 import CopyLink from "@/components/CopyLink";
+import ShareButton from "@/components/ShareButton";
 
 export const metadata: Metadata = pageMetadata({
   title: `${caseStudy.title} — Case study — Ammara Badat`,
@@ -88,6 +89,7 @@ export default function CaseStudy() {
               Watch the demo
             </SmartLink>
           )}
+          <ShareButton url={`${siteUrl}/projects/nextjs-dashboard`} title={cs.title} label="this case study" />
           <CopyLink url={`${siteUrl}/projects/nextjs-dashboard`} label="this case study" />
         </div>
 

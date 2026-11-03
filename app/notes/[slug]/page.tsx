@@ -9,6 +9,8 @@ import ReadingProgress from "@/components/ReadingProgress";
 import Icon from "@/components/Icon";
 import { card } from "@/components/ui";
 import CopyCode from "@/components/CopyCode";
+import CopyLink from "@/components/CopyLink";
+import ShareButton from "@/components/ShareButton";
 import { relatedNotes } from "@/lib/note-tags";
 
 /* One dev note, e.g. /notes/lighthouse-74-to-96. The text lives in content/notes.ts. */
@@ -187,12 +189,19 @@ export default async function NotePage({ params }: Props) {
         ))}
       </div>
 
-      <footer className={`${card} mt-14 flex flex-wrap items-center justify-between gap-4 p-6`}>
-        <p className="text-snow">Thanks for reading! Questions or feedback?</p>
-        <Link href="/contact" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-teal">
-          Get in touch
-          <Icon name="arrow-right" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-        </Link>
+      <footer className={`${card} mt-14 p-6`}>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <p className="text-snow">Thanks for reading! Questions or feedback?</p>
+          <Link href="/contact" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-teal">
+            Get in touch
+            <Icon name="arrow-right" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+        {/* Share this note: the phone's share sheet, or LinkedIn, WhatsApp and email on a laptop */}
+        <div className="mt-5 flex flex-wrap gap-3 border-t border-line pt-5">
+          <ShareButton url={`${siteUrl}/notes/${note.slug}`} title={note.title} label="this note" />
+          <CopyLink url={`${siteUrl}/notes/${note.slug}`} label="this note" />
+        </div>
       </footer>
 
       {/* Related notes: the ones sharing the most topics with this one (lib/note-tags.ts) */}

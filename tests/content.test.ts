@@ -12,6 +12,7 @@ import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { projectStat } from "@/lib/stats";
 import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags";
 import { about } from "@/content/about";
+import { shareLinks, prefersNativeShare } from "@/lib/share";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
 const publicFile = (path: string) => existsSync(join(process.cwd(), "public", path));
@@ -242,5 +243,33 @@ describe("related notes at the end of a note", () => {
       expect(related.length).toBeLessThanOrEqual(3);
       expect(related.some((r) => r.slug === n.slug)).toBe(false);
     }
+  });
+});
+
+describe("the Share button", () => {
+  const url = "https://example.com/notes/my-note?x=1&y=2";
+  const links = shareLinks(url, "My note: RLS & tests");
+
+  it("offers LinkedIn, WhatsApp and email, with the page filled in", () => {
+    expect(links.map((l) => l.name)).toEqual(["LinkedIn", "WhatsApp", "Email"]);
+    expect(links[0].href).toBe(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`);
+    expect(decodeURIComponent(links[1].href.split("text=")[1])).toBe(`My note: RLS & tests ${url}`);
+    expect(links[2].href.startsWith("mailto:?subject=My%20note%3A%20RLS%20%26%20tests&body=")).toBe(true);
+  });
+
+  it("encodes the address, so & and ? in it can't break the share link", () => {
+    for (const l of links) expect(l.href).not.toContain("&y=2");
+  });
+
+  it("opens LinkedIn and WhatsApp in a new tab, but not the email", () => {
+    expect(links.map((l) => l.newTab)).toEqual([true, true, false]);
+  });
+
+  it("uses the phone's share sheet only on touch screens that support it", () => {
+    const share = () => Promise.resolve();
+    expect(prefersNativeShare({ share }, true)).toBe(true);
+    expect(prefersNativeShare({ share }, false)).toBe(false); // a laptop: show the links instead
+    expect(prefersNativeShare({}, true)).toBe(false); // an older phone browser
+    expect(prefersNativeShare(undefined, true)).toBe(false); // while the page is built on the server
   });
 });

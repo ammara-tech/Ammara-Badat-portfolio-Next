@@ -10,6 +10,7 @@ import Icon from "@/components/Icon";
 import { LightboxTrigger } from "@/components/Lightbox";
 import { Accent, Eyebrow, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
 import CopyLink from "@/components/CopyLink";
+import ShareButton from "@/components/ShareButton";
 
 /*
   A page for every project, e.g. /projects/myflix.
@@ -162,6 +163,7 @@ export default async function ProjectPage({ params }: Props) {
                 Watch the video
               </SmartLink>
             )}
+            <ShareButton url={`${siteUrl}/projects/${slug}`} title={project.title} label={project.title} />
             <CopyLink url={`${siteUrl}/projects/${slug}`} label={project.title} />
           </div>
         </div>

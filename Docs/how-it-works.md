@@ -355,8 +355,18 @@ with **429** ("Too Many Requests").
   cards, a list of projects I'm working on, with an "In progress" label. The cards have a dashed border and
   no links, so they don't look like finished work. When a project goes live I add its real card in `/admin`
   and delete it from the list; when the list is empty, the section disappears.
-- **Copy link** (`CopyLink.tsx`): on project pages and the case study, copies the page's clean address
-  (built from `siteUrl`, so no `?tag=` or `#heading` on the end) for sharing on LinkedIn or WhatsApp.
+- **Copy link** (`CopyLink.tsx`): on project pages, the case study and dev notes, copies the page's clean
+  address (built from `siteUrl`, so no `?tag=` or `#heading` on the end) for sharing on LinkedIn or WhatsApp.
+- **Share** (`ShareButton.tsx`, `lib/share.ts`): next to Copy link. On a touch screen that supports it, it
+  opens the phone's own share sheet (`navigator.share`), so people can pick any app they have. On a laptop
+  it opens a small menu of LinkedIn, WhatsApp and Email links built by `shareLinks()`, with the address
+  encoded so a `&` or `?` in it can't break the link. The menu takes keyboard focus, and closes with Escape
+  (focus goes back to the button), a click outside it, or after choosing. Closing the phone's share sheet
+  without sharing isn't treated as an error.
+- **"2 days ago"** (`lib/time-ago.ts`): the admin inbox and the activity log show times in words
+  ("just now", "5 min ago", "yesterday", "2 days ago"), then the date after a week (with the year if it's
+  a different year). The full date and time is in a `<time>` element's hover text, and the inbox's clock
+  moves on every 30 seconds so the words stay right.
 
 ---
 
@@ -442,14 +452,14 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 129 checks:
+  example inputs and check the answers. There are 135 checks:
   - page addresses (`slug.test.ts`), the contact form rules, its draft, the local time and the email alert (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
-    the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+    the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, the Share links, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
-    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps and the backup codes
+    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps, the backup codes and the "2 days ago" wording
   - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -571,4 +581,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, and 129 with the backup codes.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, and 135 with the Share links and "2 days ago".

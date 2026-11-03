@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fullDate, timeAgo } from "@/lib/time-ago";
 import { getBrowserClient, type Message } from "@/lib/supabase";
 import Icon from "@/components/Icon";
 import TabIconBadge from "@/components/TabIconBadge";
@@ -28,9 +29,6 @@ const UNDO_MS = 5000;
 
 type Filter = "all" | "unread" | "read";
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" });
-}
 
 /** onChange lets the admin overview cards refresh when a message arrives, is read or is deleted */
 export default function Inbox({ onChange }: { onChange?: () => void }) {
@@ -42,6 +40,12 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [live, setLive] = useState(false);
+  // The clock for "5 min ago": moves on every 30 seconds so the times stay right
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(timer);
+  }, []);
   const [toast, setToast] = useState<string | null>(null);
   const [pending, setPending] = useState<Message | null>(null); // deleted, but can still be undone
   const [marked, setMarked] = useState<string[] | null>(null); // just marked read with "Mark all read", can be undone
@@ -344,7 +348,10 @@ export default function Inbox({ onChange }: { onChange?: () => void }) {
                     <span className={msg.is_read ? "text-mist" : "font-semibold text-snow"}>{msg.name}</span>
                     <span className="truncate text-sm text-mist">{msg.email}</span>
                   </span>
-                  <span className="mt-0.5 block font-mono text-xs text-mist">{formatDate(msg.created_at)}</span>
+                  {/* "2 days ago", with the full date and time on hover */}
+                  <time dateTime={msg.created_at} title={fullDate(msg.created_at)} className="mt-0.5 block font-mono text-xs text-mist">
+                    {timeAgo(msg.created_at, now)}
+                  </time>
                   {openId !== msg.id && <span className="mt-1 block truncate text-sm text-mist">{msg.message}</span>}
                 </button>
 

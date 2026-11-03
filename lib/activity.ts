@@ -86,13 +86,5 @@ export function groupActivity(entries: ActivityEntry[], withinMs = 10_000): Time
 }
 
 /** "just now", "5 min ago", "3 h ago", "yesterday", or a date like "21 Oct" */
-export function timeAgo(iso: string, now = Date.now()) {
-  const seconds = Math.max(0, Math.round((now - Date.parse(iso)) / 1000));
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} h ago`;
-  if (hours < 48) return "yesterday";
-  return new Date(iso).toLocaleDateString("en-ZA", { day: "numeric", month: "short" });
-}
+// timeAgo lives in lib/time-ago.ts, because the inbox uses it too
+export { timeAgo } from "@/lib/time-ago";

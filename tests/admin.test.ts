@@ -4,6 +4,7 @@ import { changedFields, leavesPage } from "@/lib/unsaved";
 import { matchesSearch, replyLink, unreadIds } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
+import { fullDate } from "@/lib/time-ago";
 import { leftTooLongAgo } from "@/lib/admin-session";
 import { backupCodesFile, cleanBackupCode, cleanCode, codesLeftMessage, isCompleteBackupCode, nextStep } from "@/lib/two-step";
 import { csvCell, csvFileName, messagesCsv } from "@/lib/csv";
@@ -108,6 +109,19 @@ describe("admin activity log", () => {
     expect(timeAgo(new Date(now - 5 * 60_000).toISOString(), now)).toBe("5 min ago");
     expect(timeAgo(new Date(now - 3 * 3_600_000).toISOString(), now)).toBe("3 h ago");
     expect(timeAgo(new Date(now - 30 * 3_600_000).toISOString(), now)).toBe("yesterday");
+  });
+
+  it("says how many days ago for the last week, then shows the date", () => {
+    const now = Date.UTC(2026, 10, 3, 12, 0, 0); // 3 Nov 2026
+    const daysAgo = (d: number) => new Date(now - d * 24 * 3_600_000).toISOString();
+    expect(timeAgo(daysAgo(2), now)).toBe("2 days ago");
+    expect(timeAgo(daysAgo(6), now)).toBe("6 days ago");
+    expect(timeAgo(daysAgo(10), now)).toMatch(/^24 Oct$/);
+    expect(timeAgo("2025-12-20T10:00:00Z", now)).toMatch(/2025/); // another year: the year is shown too
+  });
+
+  it("keeps the full date and time for the hover text", () => {
+    expect(fullDate("2026-11-02T12:05:00Z")).toMatch(/2026/);
   });
 });
 
