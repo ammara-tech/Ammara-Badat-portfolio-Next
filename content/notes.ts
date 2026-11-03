@@ -31,6 +31,47 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "why-my-phone-lighthouse-score-moves",
+    title: "100 on a laptop, 91 to 99 on a phone: why my Lighthouse score moves",
+    description:
+      "My portfolio scores 100 for everything on a laptop. On a phone, Performance lands anywhere from 91 to 99. Why that happens, and how I show it honestly.",
+    date: "2026-11-03",
+    tags: ["Lighthouse", "Performance", "Mobile"],
+    body: [
+      {
+        type: "p",
+        text: "My footer has a Lighthouse badge. It used to show one row of scores, from a phone test. Now it shows two: a phone and a laptop. On a laptop, my Home page scores 100 for Performance, Accessibility, Best Practices and SEO. On a phone, the last three are always 100, but Performance comes out anywhere from 91 to 99, even when I run it twice in a row without changing anything.",
+      },
+      { type: "h2", text: "A phone test is a slow phone on purpose" },
+      {
+        type: "p",
+        text: "Lighthouse doesn't use your real phone. It pretends to be a mid-range phone on a slow 4G connection, with the processor slowed down about four times. The laptop test uses a fast connection and no slowdown. That's deliberate: plenty of people visit websites on cheap phones and patchy data, and a site that's fast there is fast everywhere.",
+      },
+      {
+        type: "p",
+        text: "Because the phone test multiplies every delay, tiny differences count. If my site's server answers a little slower on one run, or the computer running the test is busy, that becomes a much bigger difference after the slowdown. On a laptop, the same small delay is too small to change the score.",
+      },
+      { type: "h2", text: "Why only Performance moves" },
+      {
+        type: "ul",
+        items: [
+          "Performance is made from timings: how soon something appears, how soon the biggest thing appears, how long the page is too busy to respond, and whether things jump around. Timings change a little on every run, so the score does too.",
+          "Accessibility, Best Practices and SEO are checklists: does every image have alt text, can the text be read against its background, does the page have a title. A check passes or fails the same way every time, so those scores don't move.",
+        ],
+      },
+      { type: "h2", text: "Showing it honestly" },
+      {
+        type: "p",
+        text: "It would be easy to run the phone test until it says 99 and show only that. Instead the badge shows a real recent result, and its hover text says the phone Performance score is usually between 91 and 99. My README has the same range, with a real screenshot from each device, cropped to the same size, with the site's address at the top so it's clear which site was tested.",
+      },
+      {
+        type: "tip",
+        text: "Run Lighthouse three times and look at the middle score, not the best one. And only compare a phone score with a phone score: a laptop 100 and a phone 95 don't mean the phone version is broken.",
+      },
+    ],
+  },
+  {
+
     slug: "share-time-ago-and-duplicate",
     title: "Share, \"2 days ago\" and Duplicate: three small features",
     description:
