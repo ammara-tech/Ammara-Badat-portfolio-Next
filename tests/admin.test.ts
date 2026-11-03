@@ -5,6 +5,7 @@ import { matchesSearch, replyLink, unreadIds } from "@/lib/inbox";
 import { countByKind, describe as describeActivity, filterActivity, groupActivity, timeAgo } from "@/lib/activity";
 import { idleState } from "@/lib/idle";
 import { fullDate } from "@/lib/time-ago";
+import { copyTitle, duplicateFields } from "@/lib/duplicate";
 import { leftTooLongAgo } from "@/lib/admin-session";
 import { backupCodesFile, cleanBackupCode, cleanCode, codesLeftMessage, isCompleteBackupCode, nextStep } from "@/lib/two-step";
 import { csvCell, csvFileName, messagesCsv } from "@/lib/csv";
@@ -302,5 +303,31 @@ describe("admin inbox: Mark all read", () => {
 
   it("has nothing to do when everything is read", () => {
     expect(unreadIds([{ id: "b", is_read: true }])).toEqual([]);
+  });
+});
+
+describe("admin Duplicate project", () => {
+  const project = (title: string, sort_order: number, extra = {}) => ({
+    id: title, title, summary: "A summary", live_url: "https://x.example", repo_url: null, image_url: "/projects/x.png",
+    video_url: null, case_study_url: null, tags: ["Next.js", "Supabase"], sort_order, published: true, created_at: "", ...extra,
+  });
+
+  it("names the copy, and never reuses a name that's taken", () => {
+    expect(copyTitle("MyFlix", ["MyFlix"])).toBe("Copy of MyFlix");
+    expect(copyTitle("MyFlix", ["MyFlix", "Copy of MyFlix"])).toBe("Copy of MyFlix (2)");
+    expect(copyTitle("MyFlix", ["MyFlix", "copy of myflix", "Copy of MyFlix (2)"])).toBe("Copy of MyFlix (3)");
+  });
+
+  it("copies the details, starts as a draft and goes last in the order", () => {
+    const all = [project("MyFlix", 2), project("F1 Race Hub", 7)];
+    const copy = duplicateFields(all[0], all);
+    expect(copy.title).toBe("Copy of MyFlix");
+    expect(copy.summary).toBe("A summary");
+    expect(copy.live_url).toBe("https://x.example");
+    expect(copy.repo_url).toBe("");
+    expect(copy.tags).toBe("Next.js, Supabase");
+    expect(copy.image_url).toBe("/projects/x.png");
+    expect(copy.published).toBe(false); // visitors can't see it until I publish it
+    expect(copy.sort_order).toBe("8");
   });
 });

@@ -17,11 +17,13 @@ import Icon from "@/components/Icon";
 type Props = {
   projects: Project[];
   onEdit: (project: Project) => void;
+  /** Copies the project into the "Add a project" form as a draft */
+  onDuplicate: (project: Project) => void;
   onDelete: (project: Project) => void;
   onSaved: () => void;
 };
 
-export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }: Props) {
+export default function ProjectOrderList({ projects, onEdit, onDuplicate, onDelete, onSaved }: Props) {
   const [items, setItems] = useState(projects);
   const [dragId, setDragId] = useState<string | null>(null);
   const [status, setStatus] = useState<{ type: "busy" | "ok" | "error"; text: string } | null>(null);
@@ -192,7 +194,7 @@ export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <button
                 type="button"
                 role="switch"
@@ -229,14 +231,25 @@ export default function ProjectOrderList({ projects, onEdit, onDelete, onSaved }
               <button
                 type="button"
                 onClick={() => onEdit(project)}
-                className="rounded border border-line-strong px-3 py-1 text-sm"
+                className="rounded border border-line-strong px-2 py-1 text-sm sm:px-3"
               >
                 Edit
               </button>
               <button
                 type="button"
+                onClick={() => onDuplicate(project)}
+                title="Copy this project into the form as a draft"
+                className="rounded border border-line-strong px-2 py-1 text-sm sm:px-3"
+              >
+                {/* "Copy" on phones so the row fits on one line; the project's name is read out too */}
+                <span className="sm:hidden">Copy</span>
+                <span className="hidden sm:inline">Duplicate</span>
+                <span className="sr-only"> {project.title}</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => onDelete(project)}
-                className="rounded border border-racing/50 px-3 py-1 text-sm text-racing-text"
+                className="rounded border border-racing/50 px-2 py-1 text-sm text-racing-text sm:px-3"
               >
                 Delete
               </button>

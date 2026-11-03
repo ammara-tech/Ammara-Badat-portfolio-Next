@@ -261,6 +261,7 @@ Everything here only loads for my account (RLS), and only after both sign-in ste
 | Activity log | `ActivityLog.tsx`, `lib/activity.ts` | Shows the history written by the database triggers (section 7), live through Realtime. All / Projects / Messages / Images / Security buttons show one kind at a time (`filterActivity()`), each with a count (`countByKind()`). Reorders from one drag are grouped into one line. |
 | Image upload | `ImageUpload.tsx` | Checks the type and size (5 MB), uploads to the `project-images` bucket with a timestamp in the name (so nothing is overwritten), then fills in the image URL. |
 | Drag-and-drop order | `ProjectOrderList.tsx` | Drag with a mouse or finger, or use ↑/↓. Saves each project's `sort_order` straight away. |
+| Duplicate | `ProjectOrderList.tsx`, `lib/duplicate.ts` | Copies a project into the Add form: `copyTitle()` makes "Copy of MyFlix" (or "(2)", "(3)" if taken), `duplicateFields()` copies the details and image, makes it a draft and puts it last. Nothing is saved until Add project. The button says "Copy" on phones so the row fits, and screen readers hear the project's name too. |
 
 ---
 
@@ -452,14 +453,14 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 135 checks:
+  example inputs and check the answers. There are 137 checks:
   - page addresses (`slug.test.ts`), the contact form rules, its draft, the local time and the email alert (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, the Share links, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
-    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps, the backup codes and the "2 days ago" wording
+    grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps, the backup codes, the "2 days ago" wording and Duplicate project
   - the security headers (`security.test.ts`): sent on every page, framing blocked, scripts not limited
   - the docs themselves (`docs.test.ts`): the README's dev note count matches the real notes, every SQL
     file is listed in the README's setup steps, every file the README or this guide mentions exists, and
@@ -581,4 +582,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, and 135 with the Share links and "2 days ago".
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, 135 with the Share links and "2 days ago", and 137 with Duplicate project.

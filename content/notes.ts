@@ -31,6 +31,56 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "share-time-ago-and-duplicate",
+    title: "Share, \"2 days ago\" and Duplicate: three small features",
+    description:
+      "Three small additions to my portfolio and admin page, and the details that made each one work properly on phones, for screen readers and with tricky links.",
+    date: "2026-11-03",
+    tags: ["UX", "Accessibility", "Admin"],
+    body: [
+      {
+        type: "p",
+        text: "Today was three small features. None of them took long to make work, but each had one detail that decided whether it worked well, and those details are what this note is about.",
+      },
+      { type: "h2", text: "1. A Share button that acts like the device" },
+      {
+        type: "p",
+        text: "Project pages and dev notes already had Copy link. Now they have Share too. On a phone it opens the phone's own share sheet, through the Web Share API, so people can pick WhatsApp, LinkedIn or anything else they have installed. On a laptop the built-in share window is less useful, so the button opens a small menu with LinkedIn, WhatsApp and Email links instead.",
+      },
+      {
+        type: "code",
+        lang: "ts",
+        code: "// The phone's share sheet only on touch screens that support it\nif (navigator.share && matchMedia(\"(pointer: coarse)\").matches) {\n  await navigator.share({ title, url });\n} else {\n  setOpen(true); // LinkedIn, WhatsApp and Email links\n}",
+      },
+      {
+        type: "ul",
+        items: [
+          "Closing the share sheet without sharing throws an error in the browser. That isn't a real error, so the button ignores it.",
+          "Every address is encoded before it goes into a share link. Without that, a & in the address would cut the link short. A test checks this.",
+          "The menu works with a keyboard: it moves focus to the first link, and Escape closes it and puts focus back on the button.",
+        ],
+      },
+      { type: "h2", text: "2. \"2 days ago\" instead of a timestamp" },
+      {
+        type: "p",
+        text: "My admin inbox showed the full date and time on every message. \"2 days ago\" is quicker to read, so messages now say \"just now\", \"5 min ago\", \"yesterday\" or \"2 days ago\", and show the date after a week, with the year only if it's a different year. The exact time is still there when you hover, in a <time> element a computer can read too. The words update every 30 seconds, so \"just now\" doesn't stay \"just now\" all afternoon. My activity log already had a simpler version of this, so I moved it into one shared helper and both use it now.",
+      },
+      { type: "h2", text: "3. Duplicate project" },
+      {
+        type: "p",
+        text: "Adding a project that's similar to another one meant typing everything again. Now Duplicate copies a project into the Add form as \"Copy of …\", or \"Copy of … (2)\" if that name is taken. Nothing is saved until I press Add project, and the copy starts as a draft, so a half-finished copy can never appear on my site by accident. The database rule that hides drafts already existed, so this is safe without any new security work.",
+      },
+      {
+        type: "p",
+        text: "The detail here was a phone screen. The extra button pushed Delete onto a second line, which looked messy. On phones the button now says \"Copy\" instead of \"Duplicate\". For screen readers I didn't use an aria-label, because the name a screen reader hears should include the words you can see. So each size reads its own visible word plus the project's name: \"Copy Rememba\" on a phone, \"Duplicate Rememba\" on a laptop.",
+      },
+      {
+        type: "tip",
+        text: "For a small feature, the working version is quick. Spend the extra time on the edges: a phone, a keyboard, a screen reader, and the strange input, like an address with a & in it.",
+      },
+    ],
+  },
+  {
     slug: "two-warnings-from-github",
     title: "Two warnings from GitHub: a moved test machine and a fake secret",
     description:

@@ -16,6 +16,7 @@ import IdleSignOut, { IDLE_FLAG } from "@/components/IdleSignOut";
 import { ProjectCard } from "@/components/ProjectGrid";
 import UnsavedChangesGuard, { DISCARD_MESSAGE } from "@/components/UnsavedChangesGuard";
 import { changedFields } from "@/lib/unsaved";
+import { duplicateFields } from "@/lib/duplicate";
 
 type FormState = {
   title: string;
@@ -244,6 +245,8 @@ function Dashboard({ email }: { email: string }) {
   // What the form started with (empty, or the project being edited), to spot unsaved changes
   const [formStart, setFormStart] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  // The title of the project being duplicated, while its copy is in the form (not saved yet)
+  const [copyOf, setCopyOf] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   // Bumped when messages change, so the overview cards reload
@@ -287,14 +290,31 @@ function Dashboard({ email }: { email: string }) {
       published: project.published !== false,
     };
     setEditingId(project.id);
+    setCopyOf(null);
     setForm(loaded);
     setFormStart(loaded);
     setMessage(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // Copies a project into the "Add a project" form as a draft (lib/duplicate.ts).
+  // formStart stays empty, so the unsaved changes warning protects the copy until it's saved.
+  function startDuplicate(project: Project) {
+    if (unsaved && !window.confirm(DISCARD_MESSAGE)) return;
+    setEditingId(null);
+    setCopyOf(project.title);
+    setForm(duplicateFields(project, projects));
+    setFormStart(emptyForm);
+    setMessage({
+      type: "ok",
+      text: `Copied "${project.title}" into the form as a draft. Change what you need, then press Add project.`,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function cancelEdit() {
     setEditingId(null);
+    setCopyOf(null);
     setForm(emptyForm);
     setFormStart(emptyForm);
     setMessage(null);
@@ -339,6 +359,7 @@ function Dashboard({ email }: { email: string }) {
         text: `${editingId ? "Project updated" : "Project added"}${form.published ? "." : " as a draft. Only you can see it."}`,
       });
       setEditingId(null);
+      setCopyOf(null);
       setForm(emptyForm);
       setFormStart(emptyForm);
       await loadProjects();
@@ -421,7 +442,9 @@ function Dashboard({ email }: { email: string }) {
       {/* Add / edit form */}
       <UnsavedChangesGuard dirty={unsaved} />
       <form onSubmit={handleSave} className="mt-8 space-y-4 rounded-xl border border-line bg-panel p-5">
-        <h2 className="text-xl font-semibold">{editingId ? "Edit project" : "Add a project"}</h2>
+        <h2 className="text-xl font-semibold">
+          {editingId ? "Edit project" : copyOf ? `Add a project (a copy of ${copyOf})` : "Add a project"}
+        </h2>
 
         <label className="block">
           <span className="text-sm text-mist">Title *</span>
@@ -547,7 +570,7 @@ function Dashboard({ email }: { email: string }) {
           >
             {busy ? "Saving…" : editingId ? "Save changes" : "Add project"}
           </button>
-          {editingId && (
+          {(editingId || copyOf) && (
             <button type="button" onClick={cancelEdit} className="rounded border border-line-strong px-4 py-2">
               Cancel
             </button>
@@ -575,7 +598,7 @@ function Dashboard({ email }: { email: string }) {
 
       {/* Project list: drag to reorder (components/ProjectOrderList.tsx) */}
       <h2 className="mt-10 text-xl font-semibold">Projects ({projects.length})</h2>
-      <ProjectOrderList projects={projects} onEdit={startEdit} onDelete={handleDelete} onSaved={loadProjects} />
+      <ProjectOrderList projects={projects} onEdit={startEdit} onDuplicate={startDuplicate} onDelete={handleDelete} onSaved={loadProjects} />
 
       {/* Every change to a project, written by a database trigger (components/ActivityLog.tsx) */}
       <ActivityLog refreshKey={activityKey} />
