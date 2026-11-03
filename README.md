@@ -80,7 +80,7 @@ and my reflection for each milestone is in the [`Reflections/`](Reflections) fol
 
 #### 🏁 Milestone 5: SEO, Lighthouse and profile links
 - Lighthouse on mobile: **Performance 96, Accessibility 100, Best Practices 100, SEO 100**
-  (Performance started at 74, [here's how I fixed it](#lighthouse-scores-mobile)).
+  (Performance started at 74, [here's how I fixed it](#lighthouse-scores-phone-and-laptop)).
 - Every page has its own title, description, canonical URL and share image, plus a sitemap and robots.txt.
 - GitHub and LinkedIn linked from the site, and my site linked from LinkedIn ([details](#profile-links)).
 
@@ -128,6 +128,7 @@ Extras beyond the milestones, in the order I built them.
 | 28 | Database tests | Final project | My hand-made RLS checks became 65 automatic checks that run on GitHub whenever a SQL file changes, on a throwaway database that never touches the real one |
 | 29 | Share and "2 days ago" | Final project | A **Share** button on project pages, the case study and dev notes: the phone's own share sheet on a phone, and LinkedIn, WhatsApp and Email links on a laptop. Admin inbox times now say "5 min ago" or "2 days ago", with the full date on hover |
 | 30 | Duplicate project | Final project | A Duplicate button in `/admin` that copies a project into the form as a draft, so a similar project can start from it |
+| 31 | Lighthouse for phone and laptop | Final project | The footer badge shows two rows of scores, phone and laptop, and the README shows both screenshots |
 
 ### ✅ What the site has now
 
@@ -197,7 +198,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ SEO and performance
 | Feature | What it does |
 |---|---|
-| Lighthouse | **Performance 96, Accessibility 100, Best Practices 100, SEO 100** on mobile, with my latest scores as a badge in the footer ([details](#lighthouse-scores-mobile)). |
+| Lighthouse | On a laptop, **100 for Performance, Accessibility, Best Practices and SEO**. On a phone, **Performance 91 to 99** (it moves a little between runs) and **100 for the other three**. Both are shown as a badge in the footer ([details](#lighthouse-scores-phone-and-laptop)). |
 | Findable | Titles, descriptions, canonical URLs, share images, a sitemap, robots.txt and structured data on every page ([details](#findable-what-every-page-has)). |
 | Google Search Console | The site is verified with Google and the sitemap is submitted. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
 | Faster images | Screenshots use Next.js `<Image>`: smaller WebP files in the size the screen needs, lazy loading, and no layout jumps. |
@@ -210,7 +211,7 @@ Extras beyond the milestones, in the order I built them.
 | Automated tests | 137 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, the backup codes (their shape, the download file and the "codes left" warning), the Share links and "2 days ago" times, Duplicate project (the copy's name and fields), and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Database tests | 65 checks of the database rules in `tests/database/rules.sql`, run on GitHub on an empty Postgres with every SQL file in `Supabase/` loaded on top of a small stand-in for Supabase. They act as a visitor, another account, my account with only the password, and my account with two-step sign-in, and check who can read and change projects, drafts, messages, the activity log, images and backup codes, plus the spam limit and the backup code rules. I checked they catch mistakes by breaking a rule on purpose: the run failed both times (`.github/workflows/database-tests.yml`). |
 | Browser tests | 15 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
-| Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-mobile)). |
+| Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-phone-and-laptop)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
 Also: **4 Certiport IT Specialist certifications** (HTML and CSS, HTML5 Application Development, Software Development, JavaScript), each with a verification code, shown on the About page and as evidence on the Skills page.
@@ -454,12 +455,18 @@ Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and
 - **Re-checked:** after Upgrade pack 2 added light mode, every check was run again in **both** themes, and everything still passes.
 
 ### Lighthouse and SEO
-#### Lighthouse scores (mobile)
-| Page | Performance | Accessibility | Best Practices | SEO |
-|---|---|---|---|---|
-| Home | 96 | 100 | 100 | 100 |
+#### Lighthouse scores (phone and laptop)
+| Page | Device | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|
+| Home | Laptop | 100 | 100 | 100 | 100 |
+| Home | Phone | 96 (91 to 99 between runs) | 100 | 100 | 100 |
 
-![Lighthouse scores](Docs/lighthouse-home.png)
+Phone Performance moves a few points from run to run, because Lighthouse pretends to be a mid-range
+phone on slow 4G, and small differences in timing count for more there. The other scores don't move.
+
+| Phone | Laptop |
+|---|---|
+| ![Lighthouse scores on a phone](Docs/lighthouse-home.png) | ![Lighthouse scores on a laptop](Docs/lighthouse-home-desktop.png) |
 
 **What Lighthouse flagged and how I fixed it:** My first mobile run scored 74 for Performance. The
 load-in animations kept my heading and intro invisible for about 2 seconds (Largest Contentful Paint

@@ -65,13 +65,14 @@ export const about = {
     vcard: "/ammara-badat.vcf",
   },
 
-  // My latest Lighthouse scores (mobile, Home page), shown in the footer.
-  // Update these when I run Lighthouse again. The proof is in Docs/lighthouse-home.png.
+  // My latest Lighthouse scores for the Home page, on a phone and on a laptop, shown in the footer.
+  // Update these when I run Lighthouse again. The proof is in Docs/lighthouse-home.png (phone)
+  // and Docs/lighthouse-home-desktop.png (laptop), both shown in the README.
   lighthouse: {
-    performance: 96,
-    accessibility: 100,
-    bestPractices: 100,
-    seo: 100,
-    proof: "https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/blob/main/Docs/lighthouse-home.png",
+    phone: { performance: 96, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    // Phone Performance moves a little between runs, because Lighthouse pretends to be a slower phone
+    phonePerformanceRange: "91–99",
+    proof: "https://github.com/ammara-tech/Ammara-Badat-portfolio-Next#lighthouse-scores-phone-and-laptop",
   },
 };

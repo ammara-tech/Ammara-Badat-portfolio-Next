@@ -13,6 +13,7 @@ import { projectStat } from "@/lib/stats";
 import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags";
 import { about } from "@/content/about";
 import { shareLinks, prefersNativeShare } from "@/lib/share";
+import { scoreWords } from "@/components/LighthouseBadge";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
 const publicFile = (path: string) => existsSync(join(process.cwd(), "public", path));
@@ -271,5 +272,23 @@ describe("the Share button", () => {
     expect(prefersNativeShare({ share }, false)).toBe(false); // a laptop: show the links instead
     expect(prefersNativeShare({}, true)).toBe(false); // an older phone browser
     expect(prefersNativeShare(undefined, true)).toBe(false); // while the page is built on the server
+  });
+});
+
+describe("the Lighthouse badge in the footer", () => {
+  const { phone, laptop } = about.lighthouse;
+
+  it("has all four scores for a phone and a laptop, each between 0 and 100", () => {
+    for (const s of [phone, laptop]) {
+      for (const n of [s.performance, s.accessibility, s.bestPractices, s.seo]) {
+        expect(Number.isInteger(n) && n >= 0 && n <= 100).toBe(true);
+      }
+    }
+  });
+
+  it("reads the scores out in words for screen readers", () => {
+    expect(scoreWords({ performance: 96, accessibility: 100, bestPractices: 100, seo: 100 })).toBe(
+      "Performance 96, Accessibility 100, Best practices 100, SEO 100",
+    );
   });
 });

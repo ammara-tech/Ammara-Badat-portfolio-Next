@@ -9,6 +9,7 @@ import LazyExtras from "@/components/LazyExtras";
 import ScrollReveal from "@/components/ScrollReveal";
 import MobileNav from "@/components/MobileNav";
 import BackToTop from "@/components/BackToTop";
+import LighthouseBadge from "@/components/LighthouseBadge";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -113,7 +114,6 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const { email, github, linkedin } = about.contact;
-  const lh = about.lighthouse;
 
   return (
     // suppressHydrationWarning: the theme script below may add data-theme="light" before React loads
@@ -155,28 +155,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </p>
             </div>
 
-            {/* My latest Lighthouse scores, linked to the screenshot that proves them */}
-            <a
-              href={about.lighthouse.proof}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Google Lighthouse scores: Performance ${lh.performance}, Accessibility ${lh.accessibility}, Best practices ${lh.bestPractices}, SEO ${lh.seo}. Opens the proof on GitHub.`}
-              className="group order-last flex items-center gap-3 rounded-full border border-line-strong px-3 py-2 transition hover:border-teal sm:order-none sm:w-auto"
-            >
-              <Icon name="sparkles" className="h-4 w-4 shrink-0 text-teal" />
-              <span className="font-mono text-[11px] uppercase tracking-widest text-mist group-hover:text-snow">Lighthouse</span>
-              <span className="flex gap-1.5" aria-hidden="true">
-                {[lh.performance, lh.accessibility, lh.bestPractices, lh.seo].map((score, i) => (
-                  <span
-                    key={i}
-                    title={["Performance", "Accessibility", "Best practices", "SEO"][i]}
-                    className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-teal font-mono text-[10px] font-bold text-teal"
-                  >
-                    {score}
-                  </span>
-                ))}
-              </span>
-            </a>
+            {/* My latest Lighthouse scores on a phone and on a laptop (components/LighthouseBadge.tsx) */}
+            <LighthouseBadge />
             <div className="flex items-center gap-2">
               <a
                 href={`mailto:${email}`}
