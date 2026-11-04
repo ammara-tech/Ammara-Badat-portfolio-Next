@@ -59,7 +59,8 @@ export const about = {
     github: "https://github.com/ammara-tech",
     // Leave empty ("") until you have a LinkedIn profile.
     linkedin: "https://www.linkedin.com/in/ammara-badat",
-    // My CV, downloadable from the navbar, Home, About and Contact pages (file in public/cv/).
+    // My CV PDF, downloadable from the navbar, Home, About and Contact pages. It's built from
+    // content/cv.ts when the site is deployed (lib/cv-pdf.ts, app/cv/Ammara-Badat-CV.pdf/route.ts).
     cv: "/cv/Ammara-Badat-CV.pdf",
     // "Save my contact" card download (app/ammara-badat.vcf/route.ts)
     vcard: "/ammara-badat.vcf",

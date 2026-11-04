@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { about } from "@/content/about";
 import { cv } from "@/content/cv";
+import { loadProjects } from "@/lib/projects";
+import { moreProjects } from "@/lib/cv-projects";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
@@ -11,8 +13,12 @@ import { Accent, SmartLink, btnPrimary } from "@/components/ui";
 /*
   My CV as a web page: easy to read on a phone, readable by Google, and it prints
   cleanly on white paper (see the @media print rules in globals.css).
-  The text lives in content/cv.ts.
+  The text lives in content/cv.ts. "More projects" is every other project I've published in
+  /admin (lib/cv-projects.ts), so a new project appears here, and in the PDF, by itself.
 */
+
+// Look for newly published projects at most every 10 minutes
+export const revalidate = 600;
 
 export const metadata: Metadata = pageMetadata({
   title: "CV — Ammara Badat",
@@ -30,8 +36,9 @@ function Heading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function CvPage() {
+export default async function CvPage() {
   const { email, phone, github, linkedin, cv: pdf } = about.contact;
+  const extra = moreProjects(cv.projects, (await loadProjects()).projects);
 
   return (
     <article className="mx-auto max-w-3xl">
@@ -130,6 +137,30 @@ export default function CvPage() {
           </section>
         ))}
       </div>
+
+      {extra.length > 0 && (
+        <>
+          <Heading>More projects</Heading>
+          <ul className="mt-4 space-y-2">
+            {extra.map((p) => (
+              <li key={p.title} className="cv-block flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <span className="text-mist">
+                  <strong className="font-semibold text-snow">{p.title}</strong>
+                  {p.summary && <> – {p.summary}</>}
+                </span>
+                <span className="flex flex-wrap gap-3 font-mono text-xs">
+                  {p.links.map((l) => (
+                    <SmartLink key={l.label} href={l.href} className="text-teal underline-offset-2 hover:underline">
+                      {l.label}
+                      <span className="sr-only"> of {p.title}</span>
+                    </SmartLink>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <Heading>Certifications</Heading>
       <ul className="mt-4 space-y-3">

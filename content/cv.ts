@@ -1,6 +1,8 @@
 /*
   ✍️ MY CV — shown as a web page at /cv.
-  It matches my PDF CV (public/cv/Ammara-Badat-CV.pdf). If I change one, I update the other.
+  The PDF download (/cv/Ammara-Badat-CV.pdf) is built from this file too (lib/cv-pdf.ts),
+  so changing a word here changes the page and the PDF together. Any other project I publish
+  in /admin is added under "More projects" by itself (lib/cv-projects.ts).
 */
 
 const gh = "https://github.com/ammara-tech";

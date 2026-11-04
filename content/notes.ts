@@ -31,6 +31,52 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "a-cv-that-updates-itself",
+    title: "A CV that updates itself",
+    description:
+      "My CV page and my CV PDF used to be written twice. Now the PDF is built from the same words, and new projects from my admin page appear on both by themselves.",
+    date: "2026-11-04",
+    tags: ["Next.js", "Supabase", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "My portfolio has a CV page and a PDF to download. They said the same things, but I wrote them separately: the page from a file of my words, the PDF by hand. Every change meant changing both, and the PDF had already fallen behind. It said nothing about my newest projects.",
+      },
+      { type: "h2", text: "One set of words, two outputs" },
+      {
+        type: "p",
+        text: "Now the PDF is built by code, from the same file as the page, using a library called pdf-lib. It draws the page the way a person would: my name, my contact details, then each section, measuring every line so the text wraps before the edge of the paper. The text is real text, not a picture, so job sites that read CVs automatically can read mine, and every link (email, GitHub, each project's live site and code) can be clicked.",
+      },
+      {
+        type: "p",
+        text: "The PDF lives at the same address as the old one, so every Download button on my site still works. Next.js builds it when the site deploys and keeps it ready, so downloading it is as fast as downloading a normal file.",
+      },
+      { type: "h2", text: "New projects appear by themselves" },
+      {
+        type: "p",
+        text: "My main projects have bullet points I wrote carefully. Everything else I've published in my admin page is now added under \"More projects\": one line each, with the first sentence of its summary and its links. When I publish a new project, it appears on my CV page and in the PDF within ten minutes, without me touching any code.",
+      },
+      {
+        type: "p",
+        text: "The tricky part was not listing a project twice. My capstone is called \"Next.js Dashboard\" in my admin page but \"Family Clinic Platform\" on my CV, so matching titles wouldn't work. Instead, a project counts as already on my CV if its live site or code address matches one of the links there, after ignoring differences like https, www and a slash at the end.",
+      },
+      { type: "h2", text: "Keeping it on one page" },
+      {
+        type: "ul",
+        items: [
+          "With five extra projects it first spilled onto a second page, so I tightened the spacing until it fit, with room for a couple more.",
+          "A long summary is cut at a whole word with \"…\", so each extra project stays on one line.",
+          "Helvetica, the font built into every PDF reader, can't draw some characters, like curly quotes. Those are swapped for plain ones, so a stray character can't break the whole PDF.",
+          "Tests check that it's one A4 page even with five extra projects, has my name as its title, and links to every project and contact on my CV.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "If the same information lives in two places, one of them will go out of date. Keep it in one place and build everything else from it.",
+      },
+    ],
+  },
+  {
     slug: "why-my-phone-lighthouse-score-moves",
     title: "100 on a laptop, 91 to 99 on a phone: why my Lighthouse score moves",
     description:

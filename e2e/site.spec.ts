@@ -18,6 +18,14 @@ test("every main page loads with its own title", async ({ page }) => {
   }
 });
 
+test("the CV PDF downloads, built from my CV page", async ({ request }) => {
+  const res = await request.get("/cv/Ammara-Badat-CV.pdf");
+  expect(res.status()).toBe(200);
+  expect(res.headers()["content-type"]).toBe("application/pdf");
+  const body = await res.body();
+  expect(body.subarray(0, 5).toString()).toBe("%PDF-");
+});
+
 test("a project that doesn't exist gets a real 404", async ({ page }) => {
   const res = await page.goto("/projects/this-project-does-not-exist");
   expect(res?.status()).toBe(404);

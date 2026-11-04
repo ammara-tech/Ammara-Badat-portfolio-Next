@@ -36,8 +36,11 @@ describe("files the site links to really exist", () => {
     for (const shot of caseStudy.screenshots) expect(publicFile(shot.src)).toBe(true);
   });
 
-  it("the CV PDF is in public/", () => {
-    expect(publicFile("/cv/Ammara-Badat-CV.pdf")).toBe(true);
+  it("the CV PDF is built by a route at the address the Download buttons use, not a file in public/", () => {
+    expect(about.contact.cv).toBe("/cv/Ammara-Badat-CV.pdf");
+    expect(existsSync(join(process.cwd(), "app/cv/Ammara-Badat-CV.pdf/route.ts"))).toBe(true);
+    // A file in public/ at the same address would clash with the route
+    expect(publicFile(about.contact.cv)).toBe(false);
   });
 });
 

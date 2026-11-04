@@ -23,7 +23,7 @@ app/         Pages and API routes (each folder is a web address)
 components/  Reusable building blocks (Navbar, ContactForm, Inbox, TwoStep, ...)
 content/     My words: about, case study, skills, certifications, dev notes, CV
 lib/         Supabase connection, SEO, theme, project loading and small tested helper functions
-public/      Screenshots, certificates, CV PDF, demo video, icons
+public/      Screenshots, certificates, demo video, icons
 Supabase/    The SQL files, run in order (schema.sql, then 003 to 010)
 tests/       Vitest tests (npm test), and tests/database/ for the database rules
 e2e/         Browser tests with Playwright (npm run test:browser)
@@ -129,6 +129,7 @@ Extras beyond the milestones, in the order I built them.
 | 29 | Share and "2 days ago" | Final project | A **Share** button on project pages, the case study and dev notes: the phone's own share sheet on a phone, and LinkedIn, WhatsApp and Email links on a laptop. Admin inbox times now say "5 min ago" or "2 days ago", with the full date on hover |
 | 30 | Duplicate project | Final project | A Duplicate button in `/admin` that copies a project into the form as a draft, so a similar project can start from it |
 | 31 | Lighthouse for phone and laptop | Final project | The footer badge shows two rows of scores, phone and laptop, and the README shows both screenshots |
+| 32 | CV PDF built automatically | Final project | The PDF download is now built from `content/cv.ts`, with selectable text and clickable links, so it can never fall behind my CV page. A **More projects** section on the page and in the PDF adds every project I publish in `/admin` by itself |
 
 ### ✅ What the site has now
 
@@ -143,7 +144,7 @@ Extras beyond the milestones, in the order I built them.
 | Project pages | `/projects/neon-arcade` etc. | One page per project, built from Supabase, with breadcrumbs, **Share** and **Copy link** buttons, and "More projects" |
 | Dev notes | `/notes` | Short posts about what I built and learned, with a **Filter by topic** row, **Share** and **Copy link** buttons and **related notes** at the end of each note, and an [RSS feed](https://ammara-badat-portfolio-next.vercel.app/notes/rss.xml) |
 | Contact | `/contact` | Contact form (saved to Supabase, spam-protected), my local time in Johannesburg (and the visitor's, if different), email, phone, GitHub, LinkedIn, CV download, "Save my contact" card and QR code |
-| CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](public/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download, linked from the navbar, Home, About and Contact |
+| CV | `/cv` and [`/cv/Ammara-Badat-CV.pdf`](https://ammara-badat-portfolio-next.vercel.app/cv/Ammara-Badat-CV.pdf) | My CV as a web page that prints cleanly, plus a one-page PDF download built from the same words (`content/cv.ts`, `lib/cv-pdf.ts`). Both have a **More projects** section that lists every other project I've published in `/admin` (`lib/cv-projects.ts`), and both check for new projects every 10 minutes, linked from the navbar, Home, About and Contact |
 | Admin | `/admin` | Owner-only: sign in, a live inbox for contact form messages (search, filters, reply, undo delete, download as CSV), drafts, a live preview, an activity log, two-step sign-in with an authenticator app, a sign-in that ends when the tab closes, auto sign-out, add, edit and delete projects, upload screenshots and drag projects into order (not linked in the navbar) |
 
 #### ✅ Admin and security
@@ -191,8 +192,8 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **34 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, building TickList, with lists live on everyone's phone, getting an email when someone messages me, building Rememba, flashcards that know when you'll forget, backup codes for when I lose my phone, getting three Firebase apps to 100 on Lighthouse, testing my database rules automatically, two warnings from GitHub: a moved test machine and a fake secret, three small features: Share, "2 days ago" and Duplicate, and why my phone Lighthouse score moves).
-- Short posts (thirty-four so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- **35 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, building TickList, with lists live on everyone's phone, getting an email when someone messages me, building Rememba, flashcards that know when you'll forget, backup codes for when I lose my phone, getting three Firebase apps to 100 on Lighthouse, testing my database rules automatically, two warnings from GitHub: a moved test machine and a fake secret, three small features: Share, "2 days ago" and Duplicate, why my phone Lighthouse score moves, and a CV that updates itself).
+- Short posts (thirty-five so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
 - A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, an "Updated" date on notes I changed later, and a **Copy** button on every code example (`components/ReadingProgress.tsx`, `components/CopyCode.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
@@ -208,9 +209,9 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ Quality checks
 | Feature | What it does |
 |---|---|
-| Automated tests | 137 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, the backup codes (their shape, the download file and the "codes left" warning), the Share links and "2 days ago" times, Duplicate project (the copy's name and fields), and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
+| Automated tests | 150 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, the backup codes (their shape, the download file and the "codes left" warning), the Share links and "2 days ago" times, Duplicate project (the copy's name and fields), the Lighthouse badge, the CV PDF (one A4 page even with extra projects, my name as its title, a working link to every project and contact, and More projects picking up new projects from `/admin` without repeating the ones already on my CV), and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Database tests | 65 checks of the database rules in `tests/database/rules.sql`, run on GitHub on an empty Postgres with every SQL file in `Supabase/` loaded on top of a small stand-in for Supabase. They act as a visitor, another account, my account with only the password, and my account with two-step sign-in, and check who can read and change projects, drafts, messages, the activity log, images and backup codes, plus the spam limit and the backup code rules. I checked they catch mistakes by breaking a rule on purpose: the run failed both times (`.github/workflows/database-tests.yml`). |
-| Browser tests | 15 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
+| Browser tests | 16 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, the CV PDF downloading, a real 404, the security headers and the phone menu. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
 | Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-phone-and-laptop)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
@@ -614,7 +615,6 @@ Things I know are missing or could be better:
 - **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
 - **Some things are hard-coded:** my user ID in the SQL files and my site address in `lib/site.ts`,
   so someone setting it up must change them (see [Setup](#setup-run-it-yourself)).
-- **The CV PDF is made by hand**, so I have to remake it when my CV page changes.
 - **No script rule in my Content Security Policy.** My security headers block framing, plugins and
   outside forms, but not inline scripts, because Next.js and my theme script need them. A strict
   script rule would need nonces (a new random code on every page load).
@@ -638,7 +638,7 @@ Search Console, LinkedIn); every test, screenshot and proof image; recording the
 video walkthrough; editing my reflections, About text and dev notes; and every commit and deploy.
 
 **What Claude did:** wrote the code from my requirements (pages, components, SQL and RLS policies,
-spam protection, SEO and performance work), made the wireframe images, CV PDF, share images and
+spam protection, SEO and performance work, and the code that builds the CV PDF), made the wireframe images, share images and
 LinkedIn banner, cut my walkthrough recordings to 3 minutes and added the captions and blurring,
 and drafted parts of the README, reflections, case study, dev notes and LinkedIn
 text, which I then edited.
@@ -658,20 +658,18 @@ preview). Private details are blurred and no keys or settings pages are shown.
 **What I planned, and what happened.** When I first wrote this section, my list for another two weeks
 was: email alerts for new contact messages, backup codes for two-step sign-in, automatic tests for my
 database rules, browser tests, messages and images in the activity log, and a CV PDF that builds itself.
-I built the first five during the final project (Upgrades 17, 22, 26, 27 and 28 above). Each one
+I built all six during the final project (Upgrades 17, 22, 26, 27, 28 and 32 above). Each one
 taught me something I hadn't planned for: the email had to be sent after the visitor's reply so a slow
 email could never lose a message, and my backup codes passed every local test but failed on Supabase
 until I found its rule against a DELETE with no WHERE.
 
 **With another two weeks now, I would:**
-1. Make the CV PDF build itself from my CV page, the last item from my old list, so the two can never
-   disagree.
-2. Let the browser tests sign in, with a separate test account on a separate Supabase project, so the
+1. Let the browser tests sign in, with a separate test account on a separate Supabase project, so the
    dashboard itself (inbox, projects, activity log) is tested, not just the sign-in form.
-3. Run my database tests on Supabase's own local version (the Supabase CLI) instead of my stand-in,
+2. Run my database tests on Supabase's own local version (the Supabase CLI) instead of my stand-in,
    so rules that only exist on Supabase are tested too.
-4. Add a CAPTCHA that doesn't get in people's way, like Cloudflare Turnstile, to the contact form.
-5. Add a strict script rule to my Content Security Policy, using nonces.
+3. Add a CAPTCHA that doesn't get in people's way, like Cloudflare Turnstile, to the contact form.
+4. Add a strict script rule to my Content Security Policy, using nonces.
 
 ## History
 This is a rebuild of my first portfolio, made with plain HTML, CSS and JavaScript:
