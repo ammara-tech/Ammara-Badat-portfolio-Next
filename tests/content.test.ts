@@ -14,6 +14,7 @@ import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags
 import { about } from "@/content/about";
 import { shareLinks, prefersNativeShare } from "@/lib/share";
 import { scoreWords } from "@/components/LighthouseBadge";
+import { lastChangeUrl, lastUpdatedLabel } from "@/lib/last-updated";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
 const publicFile = (path: string) => existsSync(join(process.cwd(), "public", path));
@@ -293,5 +294,24 @@ describe("the Lighthouse badge in the footer", () => {
     expect(scoreWords({ performance: 96, accessibility: 100, bestPractices: 100, seo: 100 })).toBe(
       "Performance 96, Accessibility 100, Best practices 100, SEO 100",
     );
+  });
+});
+
+describe("Last updated in the footer", () => {
+  it("shows the deploy date in South African time", () => {
+    expect(lastUpdatedLabel("2026-11-04T08:45:00Z")).toMatch(/^4 Nov 2026$/);
+    // 23:30 in London on 4 Nov is already 5 Nov in Johannesburg
+    expect(lastUpdatedLabel("2026-11-04T23:30:00Z")).toMatch(/^5 Nov 2026$/);
+  });
+
+  it("shows nothing if the build time is missing or broken, instead of a wrong date", () => {
+    expect(lastUpdatedLabel(undefined)).toBeNull();
+    expect(lastUpdatedLabel("not a date")).toBeNull();
+  });
+
+  it("links to the exact change on GitHub, or the list of changes when working locally", () => {
+    expect(lastChangeUrl("d09a4f9")).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commit/d09a4f9");
+    expect(lastChangeUrl(undefined)).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commits/main");
+    expect(lastChangeUrl("<script>")).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commits/main");
   });
 });

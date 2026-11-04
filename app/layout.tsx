@@ -14,6 +14,7 @@ import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
 import { siteUrl } from "@/lib/site";
+import { lastChangeUrl, lastUpdatedLabel } from "@/lib/last-updated";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
@@ -114,6 +115,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const { email, github, linkedin } = about.contact;
+  const updated = lastUpdatedLabel(process.env.BUILT_AT);
 
   return (
     // suppressHydrationWarning: the theme script below may add data-theme="light" before React loads
@@ -153,6 +155,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p className="font-mono text-xs text-mist">
                 © {new Date().getFullYear()} · Built with Next.js, Tailwind CSS and Supabase
               </p>
+              {updated && (
+                <p className="mt-1 font-mono text-xs text-mist">
+                  Last updated{" "}
+                  <a
+                    href={lastChangeUrl(process.env.VERCEL_GIT_COMMIT_SHA)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-offset-2 hover:text-teal hover:underline"
+                  >
+                    <time dateTime={process.env.BUILT_AT}>{updated}</time>
+                    <span className="sr-only"> (see the change on GitHub, opens in a new tab)</span>
+                  </a>
+                </p>
+              )}
             </div>
 
             {/* My latest Lighthouse scores on a phone and on a laptop (components/LighthouseBadge.tsx) */}

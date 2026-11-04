@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import { securityHeaders } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
+  // When this copy of the site was built, for "Last updated" in the footer (lib/last-updated.ts).
+  // It's saved once at build time, so it shows the deploy, not the moment a page was refreshed.
+  env: { BUILT_AT: new Date().toISOString() },
   // Security headers on every page and file (lib/security-headers.ts explains each one)
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

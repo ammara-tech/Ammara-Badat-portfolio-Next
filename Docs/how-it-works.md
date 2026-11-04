@@ -71,6 +71,10 @@ Next.js uses **file-based routing**: the folder name is the address.
 
 Special files:
 - `app/layout.tsx` wraps **every** page: the `<html>`, fonts, navbar, footer, phone navigation bar and the skip link.
+  The footer's **Last updated** date comes from `BUILT_AT`, which `next.config.ts` saves once while Vercel builds
+  the site, so it shows the deploy, not the moment a page was refreshed later. `lib/last-updated.ts` writes it in
+  South African time (a late-night deploy shows the right day) and links it to the commit Vercel built
+  (`VERCEL_GIT_COMMIT_SHA`), or to the list of commits when there's no commit ID, such as on my own computer.
 - `app/template.tsx` also wraps every page but is created fresh on each page change. That's why the
   page-change animation plays every time.
 - `app/not-found.tsx` is my custom 404 page ("Off the track").
@@ -455,11 +459,11 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 150 checks:
+  example inputs and check the answers. There are 153 checks:
   - page addresses (`slug.test.ts`), the contact form rules, its draft, the local time and the email alert (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
-    the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, the Share links, the Lighthouse badge, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+    the contact card, the Currently building list, the About page's project count, the dev notes topic filter and related notes, the Share links, the Lighthouse badge, the Last updated date, and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
   - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
     formula protection), the activity log wording, filters, counts and
     grouping, the tab icon badge, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in rule, the two-step sign-in steps, the backup codes, the "2 days ago" wording and Duplicate project
@@ -585,4 +589,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, 135 with the Share links and "2 days ago", 137 with Duplicate project, 139 with the Lighthouse badge, 145 with the CV PDF, and 150 with More projects on the CV.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, 135 with the Share links and "2 days ago", 137 with Duplicate project, 139 with the Lighthouse badge, 145 with the CV PDF, 150 with More projects on the CV, and 153 with Last updated.
