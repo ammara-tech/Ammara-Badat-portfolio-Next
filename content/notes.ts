@@ -505,7 +505,7 @@ return NextResponse.json({ ok: true });`,
       { type: "h2", text: "Chores that come back by themselves" },
       {
         type: "p",
-        text: "A weekly chore like taking the bins out comes back to the list without any server job. The app stores when it was last done, and works out on the phone that it's due again from the same day next week. Until then it shows \"back next Friday\". The tests check this in any time zone.",
+        text: "A weekly chore like taking the bins out comes back to the list without any server job. The app stores when it was last done, and works out on the phone that it's due again from the same day next week. Until then it waits in Done, showing \"Back tomorrow\" or a date like \"Back Mon 9 Nov\". The tests check this in any time zone.",
       },
       {
         type: "tip",
