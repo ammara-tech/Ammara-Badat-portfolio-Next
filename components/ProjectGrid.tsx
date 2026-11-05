@@ -82,7 +82,7 @@ export default function ProjectGrid({ projects }: { projects: Project[] }) {
           </p>
           <div role="group" aria-labelledby="filter-label" className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => choose(null)} aria-pressed={active === null} className={chip(active === null)}>
-              All <span className="opacity-70">{projects.length}</span>
+              All <span className={active === null ? "" : "opacity-70"}>{projects.length}</span>
             </button>
             {tags.map(([tag, count]) => (
               <button
@@ -92,7 +92,7 @@ export default function ProjectGrid({ projects }: { projects: Project[] }) {
                 aria-pressed={active === tag}
                 className={chip(active === tag)}
               >
-                {tag} <span className="opacity-70">{count}</span>
+                {tag} <span className={active === tag ? "" : "opacity-70"}>{count}</span>
               </button>
             ))}
           </div>

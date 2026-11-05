@@ -2,16 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motionReduced } from "@/lib/motion";
+import { splitCount } from "@/lib/count-up";
 
 /**
  * Counts a number up from 0 when it scrolls into view, e.g. "10+" or "7".
  * Years (4 digits) and text without a number are shown as they are.
  * Visitors who prefer reduced motion just see the final number.
+ * Screen readers get the final number once (the sr-only copy), never the counting.
  */
 export default function CountUp({ value, duration = 1200 }: { value: string; duration?: number }) {
-  const match = value.match(/^(\d{1,3})(.*)$/);
-  const target = match ? Number(match[1]) : null;
-  const suffix = match ? match[2] : "";
+  const parts = splitCount(value); // lib/count-up.ts: "10+" counts to 10; a year like "2026" isn't counted
+  const target = parts ? parts.target : null;
+  const suffix = parts ? parts.suffix : "";
 
   const ref = useRef<HTMLSpanElement>(null);
   const [shown, setShown] = useState<number | null>(target);
@@ -50,7 +52,8 @@ export default function CountUp({ value, duration = 1200 }: { value: string; dur
   if (target === null) return <span>{value}</span>;
 
   return (
-    <span ref={ref} aria-label={value}>
+    <span ref={ref}>
+      <span className="sr-only">{value}</span>
       <span aria-hidden="true">
         {shown}
         {suffix}

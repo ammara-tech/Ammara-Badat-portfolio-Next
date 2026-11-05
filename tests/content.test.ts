@@ -15,6 +15,7 @@ import { about } from "@/content/about";
 import { shareLinks, prefersNativeShare } from "@/lib/share";
 import { scoreWords } from "@/components/LighthouseBadge";
 import { lastChangeUrl, lastUpdatedLabel } from "@/lib/last-updated";
+import { splitCount } from "@/lib/count-up";
 import { GET as vcard } from "@/app/ammara-badat.vcf/route";
 
 const publicFile = (path: string) => existsSync(join(process.cwd(), "public", path));
@@ -313,5 +314,17 @@ describe("Last updated in the footer", () => {
     expect(lastChangeUrl("d09a4f9")).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commit/d09a4f9");
     expect(lastChangeUrl(undefined)).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commits/main");
     expect(lastChangeUrl("<script>")).toBe("https://github.com/ammara-tech/Ammara-Badat-portfolio-Next/commits/main");
+  });
+});
+
+describe("the counting numbers on the About page", () => {
+  it("counts up to the number and keeps what comes after it", () => {
+    expect(splitCount("10+")).toEqual({ target: 10, suffix: "+" });
+    expect(splitCount("7")).toEqual({ target: 7, suffix: "" });
+  });
+
+  it("shows a year or words as they are, without counting", () => {
+    expect(splitCount("2026")).toBeNull(); // used to count up to 202 and add a "6"
+    expect(splitCount("Gauteng")).toBeNull();
   });
 });

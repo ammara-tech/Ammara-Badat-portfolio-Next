@@ -31,6 +31,94 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "checking-every-page-with-axe",
+    title: "Checking every page of my site with axe",
+    description:
+      "An accessibility tool ran on every page of my live site, in dark and light mode. It found four problems, and while fixing one I found a bug it couldn't see.",
+    date: "2026-11-05",
+    tags: ["Accessibility", "Testing", "Next.js"],
+    body: [
+      {
+        type: "p",
+        text: "Lighthouse gives my site 100 for accessibility, but Lighthouse only looks at the pages I point it at. Before I hand in my final project I wanted every page checked: every project, every dev note, the CV, the 404 page and the sign-in screen for my admin page.",
+      },
+      { type: "h2", text: "How I ran it" },
+      {
+        type: "p",
+        text: "axe is a free accessibility checker made by Deque, and it's what Lighthouse uses inside. I loaded it into my live site in the browser, then moved from page to page using Next.js's own navigation, so one visit could check every address in my sitemap. I ran the whole list in dark mode, then again in light mode, at phone width.",
+      },
+      { type: "h2", text: "What it found" },
+      {
+        type: "ul",
+        items: [
+          "The counting numbers on the About page (\"10+ technologies\") gave a label to a plain span. Screen readers are allowed to ignore a label on an element with no role, so some would read nothing. Now the final number is written once in hidden text that screen readers read, and the counting animation is hidden from them.",
+          "The \"role I want\" card on the About page was an aside inside the main content. An aside is meant for a sidebar, so screen readers announced it as a separate area. It's now an ordinary part of the page.",
+          "On the Projects and Notes pages, the number inside the selected filter button was faded to 70%. White at 70% on my racing red is only 2.7:1, well below the 4.5:1 that small text needs. The number is now full white on the selected button and stays faded on the others.",
+          "In light mode, the small \"Takeaway\" label at the end of a dev note was 4.2:1, just under the line. It now uses a slightly darker teal in light mode only.",
+        ],
+      },
+      { type: "h2", text: "The bug axe couldn't see" },
+      {
+        type: "p",
+        text: "While fixing the counting numbers I read the code again and found that \"2026\" was being counted up to 202 with a \"6\" stuck on the end. It ended on the right number, so it looked fine, but the code said years should never count. The pattern allowed up to three digits followed by anything, and \"6\" counted as anything. Now it only counts when the number is followed by something that isn't a digit, and a test checks \"2026\" stays as it is.",
+      },
+      { type: "h2", text: "One false alarm" },
+      {
+        type: "p",
+        text: "On the admin sign-in screen axe reported grey text that was too faint, but only in light mode. I had just switched the theme, and the phone navigation bar fades its colours over a moment. axe measured it halfway through the fade. Run again a second later, the page passed.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: an automatic checker finds problems I can't see by looking, like a label screen readers ignore. But it checks what's on screen, not what the code means, so I still read the code, and I check a result again before trusting it.",
+      },
+    ],
+  },
+  {
+    slug: "papertrail-expenses-and-stock",
+    title: "PaperTrail learns expenses and stock",
+    description:
+      "My invoicing app now keeps receipts, works out profit and VAT owed, and tracks stock that invoices take off, without paying for any extra service.",
+    date: "2026-11-05",
+    tags: ["Firebase", "Next.js", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "PaperTrail started as quotes and invoices for small South African businesses. A plumber also needs to know what they spent, whether they made a profit, what they owe SARS, and whether there's a geyser element left on the shelf. This week I added Expenses and Stock.",
+      },
+      { type: "h2", text: "Expenses without paying for file storage" },
+      {
+        type: "p",
+        text: "Each expense can have a photo of the receipt. Firebase's file storage now needs a paid plan, and I wanted PaperTrail to stay free, so the phone makes the photo small first and saves it as text in the database instead. Receipt photos are kept apart from the list of expenses and only loaded when you open one, so the list stays quick.",
+      },
+      {
+        type: "p",
+        text: "From the expenses and the invoices, PaperTrail works out profit, and for VAT-registered businesses the VAT owed: VAT on invoices minus the VAT that can be claimed on receipts. It covers this month, last month, the two-month VAT period and the tax year, and it's labelled as a guide, not tax advice.",
+      },
+      { type: "h2", text: "Stock that can't be taken off twice" },
+      {
+        type: "p",
+        text: "The obvious way to track stock is to save a number and subtract from it every time you invoice. But then editing an invoice, deleting one, or two phones saving at the same time can all take stock off twice, or not at all. So PaperTrail doesn't save how many are left. It saves how many there were when you last counted, and works out what's left from the invoices made since then.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Edit an invoice from 4 tins to 7, and 3 more come off. Delete it, and they come back.",
+          "Quotes don't take stock off. Turning a quote into an invoice does.",
+          "A delivery adds to the count. Counting the shelf starts a new count from that moment.",
+          "Items running low are listed first, and the Overview shows a warning.",
+        ],
+      },
+      {
+        type: "p",
+        text: "On an invoice line, \"From your stock\" fills in the name and price and says how many will be left, or warns you if you don't have enough. The tests cover editing, deleting, duplicating, quotes becoming invoices and part quantities like 0.1 litres.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: if a number can be worked out from data you already keep, work it out instead of saving it. A saved total can drift from the truth, but one you work out every time can't.",
+      },
+    ],
+  },
+  {
     slug: "a-cv-that-updates-itself",
     title: "A CV that updates itself",
     description:

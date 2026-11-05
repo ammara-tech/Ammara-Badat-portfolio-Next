@@ -77,8 +77,8 @@ export default async function About() {
           </div>
         </div>
 
-        {/* What I'm looking for */}
-        <aside
+        {/* What I'm looking for (a div, not an aside: it's part of the page, not a sidebar inside <main>) */}
+        <div
           className={`${card} fx-rise relative isolate h-fit overflow-hidden border-l-[3px] border-l-racing p-6`}
           style={{ animationDelay: "260ms" }}
         >
@@ -102,7 +102,7 @@ export default async function About() {
               ),
             )}
           </ul>
-        </aside>
+        </div>
       </section>
 
       {/* Stats */}
