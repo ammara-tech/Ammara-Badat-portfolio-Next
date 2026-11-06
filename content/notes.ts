@@ -166,15 +166,15 @@ export const notes: Note[] = [
   },
   {
     slug: "why-my-phone-lighthouse-score-moves",
-    title: "100 on a laptop, 91 to 99 on a phone: why my Lighthouse score moves",
+    title: "100 on a laptop, 91 to 100 on a phone: why my Lighthouse score moves",
     description:
-      "My portfolio scores 100 for everything on a laptop. On a phone, Performance lands anywhere from 91 to 99. Why that happens, and how I show it honestly.",
+      "My portfolio scores 100 for everything on a laptop. On a phone, Performance lands anywhere from 91 to 100. Why that happens, and how I show it honestly.",
     date: "2026-11-03",
     tags: ["Lighthouse", "Performance", "Mobile"],
     body: [
       {
         type: "p",
-        text: "My footer has a Lighthouse badge. It used to show one row of scores, from a phone test. Now it shows two: a phone and a laptop. On a laptop, my Home page scores 100 for Performance, Accessibility, Best Practices and SEO. On a phone, the last three are always 100, but Performance comes out anywhere from 91 to 99, even when I run it twice in a row without changing anything.",
+        text: "My footer has a Lighthouse badge. It used to show one row of scores, from a phone test. Now it shows two: a phone and a laptop. On a laptop, my Home page scores 100 for Performance, Accessibility, Best Practices and SEO. On a phone, the last three are always 100, but Performance comes out anywhere from 91 to 100 (I've seen 100 once, on 6 November), even when I run it twice in a row without changing anything.",
       },
       { type: "h2", text: "A phone test is a slow phone on purpose" },
       {
@@ -196,7 +196,7 @@ export const notes: Note[] = [
       { type: "h2", text: "Showing it honestly" },
       {
         type: "p",
-        text: "It would be easy to run the phone test until it says 99 and show only that. Instead the badge shows a real recent result, and its hover text says the phone Performance score is usually between 91 and 99. My README has the same range, with a real screenshot from each device, cropped to the same size, with the site's address at the top so it's clear which site was tested.",
+        text: "It would be easy to run the phone test until it says 100 and show only that. Instead the badge shows a real recent result, and its hover text says the phone Performance score is usually between 91 and 100. My README has the same range, with a real screenshot from each device, cropped to the same size, with the site's address at the top so it's clear which site was tested.",
       },
       {
         type: "tip",

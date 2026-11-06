@@ -73,7 +73,7 @@ export const about = {
     phone: { performance: 96, accessibility: 100, bestPractices: 100, seo: 100 },
     laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
     // Phone Performance moves a little between runs, because Lighthouse pretends to be a slower phone
-    phonePerformanceRange: "91–99",
+    phonePerformanceRange: "91–100",
     proof: "https://github.com/ammara-tech/Ammara-Badat-portfolio-Next#lighthouse-scores-phone-and-laptop",
   },
 };

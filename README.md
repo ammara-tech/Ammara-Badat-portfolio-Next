@@ -201,7 +201,7 @@ Extras beyond the milestones, in the order I built them.
 #### ✅ SEO and performance
 | Feature | What it does |
 |---|---|
-| Lighthouse | On a laptop, **100 for Performance, Accessibility, Best Practices and SEO**. On a phone, **Performance 91 to 99** (it moves a little between runs) and **100 for the other three**. Both are shown as a badge in the footer ([details](#lighthouse-scores-phone-and-laptop)). |
+| Lighthouse | On a laptop, **100 for Performance, Accessibility, Best Practices and SEO**. On a phone, **Performance 91 to 100** (it moves a little between runs) and **100 for the other three**. Both are shown as a badge in the footer ([details](#lighthouse-scores-phone-and-laptop)). |
 | Last updated | The footer shows the date of the latest deploy and links to that change on GitHub (`lib/last-updated.ts`, `next.config.ts`). |
 | Findable | Titles, descriptions, canonical URLs, share images, a sitemap, robots.txt and structured data on every page ([details](#findable-what-every-page-has)). |
 | Google Search Console | The site is verified with Google and the sitemap is submitted. The verification code comes from the `GOOGLE_SITE_VERIFICATION` setting in Vercel (`app/layout.tsx`). |
@@ -457,19 +457,19 @@ Every page was checked at **360px and 390px (phones), 768px (tablet), 1024px and
   grid column (`grid-cols-1` = `minmax(0, 1fr)`), letting the role line wrap, and making the code
   smaller on phones.
 - **Re-checked:** after Upgrade pack 2 added light mode, every check was run again in **both** themes, and everything still passes.
-- **axe on every page (5 November 2026):** I ran axe (the checker Lighthouse uses inside) on every page in the
-  sitemap, the 404 page and the admin sign-in screen, in dark and light mode. It found four problems, all fixed:
+- **axe on every page (5 November 2026):** axe (the checker Lighthouse uses inside) was run on every page in the
+  sitemap, the 404 page and the admin sign-in screen, in dark and light mode, at phone and laptop width. It found four problems, all fixed:
   the counting numbers on About now give screen readers the final number in hidden text instead of a label on a
   plain `span`; the "role I want" card is no longer an `aside` inside `<main>`; the count on the selected filter
   button is full white instead of 70% (2.7:1 → passes); and the dev note "Takeaway" label uses a darker teal in
-  light mode (4.2:1 → 5.3:1).
+  light mode (4.2:1 → 5.3:1). After the fixes went live, every page was checked again: no problems left.
 
 ### Lighthouse and SEO
 #### Lighthouse scores (phone and laptop)
 | Page | Device | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|---|
 | Home | Laptop | 100 | 100 | 100 | 100 |
-| Home | Phone | 96 (91 to 99 between runs) | 100 | 100 | 100 |
+| Home | Phone | 96 (91 to 100 between runs) | 100 | 100 | 100 |
 
 Phone Performance moves a few points from run to run, because Lighthouse pretends to be a mid-range
 phone on slow 4G, and small differences in timing count for more there. The other scores don't move.
@@ -622,6 +622,9 @@ Things I know are missing or could be better:
   projects, activity log) is still checked by hand. Signing in from GitHub would mean storing my password
   and authenticator secret there.
 - **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
+- **The full accessibility check isn't automatic.** axe was run on every page by hand (5 November 2026);
+  Lighthouse CI only checks six pages on each push, so a new problem on another page would wait for the
+  next check by hand.
 - **Some things are hard-coded:** my user ID in the SQL files and my site address in `lib/site.ts`,
   so someone setting it up must change them (see [Setup](#setup-run-it-yourself)).
 - **No script rule in my Content Security Policy.** My security headers block framing, plugins and
@@ -649,8 +652,9 @@ video walkthrough; editing my reflections, About text and dev notes; and every c
 **What Claude did:** wrote the code from my requirements (pages, components, SQL and RLS policies,
 spam protection, SEO and performance work, and the code that builds the CV PDF), made the wireframe images, share images and
 LinkedIn banner, cut my walkthrough recordings to 3 minutes and added the captions and blurring,
-and drafted parts of the README, reflections, case study, dev notes and LinkedIn
-text, which I then edited.
+drafted parts of the README, reflections, case study, dev notes and LinkedIn
+text, which I then edited, and ran the axe accessibility check and some PageSpeed checks in my browser,
+with my permission for each site.
 
 I can explain how every part of the site works. The guide I learned from is
 [Docs/how-it-works.md](Docs/how-it-works.md), which I keep updated as the site changes.
