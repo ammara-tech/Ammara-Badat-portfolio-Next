@@ -26,6 +26,7 @@ const clinic = `${gh}/nextjs-dashoard`;
 const papertrail = `${gh}/papertrail`;
 const ticklist = `${gh}/ticklist`;
 const rememba = `${gh}/rememba`;
+const shiftboard = `${gh}/shiftboard`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -172,13 +173,14 @@ export const skillGroups: SkillGroup[] = [
       },
       {
         name: "Firebase (Auth & Firestore)",
-        note: "Email and Google sign-in, private data per user, and lists shared live between a household's members.",
+        note: "Email and Google sign-in, private data per user, and data shared live with a household, or a team where managers and staff see different things.",
         evidence: [
           { label: "PaperTrail: firestore.rules", href: `${papertrail}/blob/main/firestore.rules` },
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
           { label: "TickList: live lists for a whole household", href: `${ticklist}/blob/main/lib/store.ts` },
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
           { label: "Rememba: firestore.rules", href: `${rememba}/blob/main/firestore.rules` },
+          { label: "ShiftBoard: managers and staff with different access", href: `${shiftboard}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -214,6 +216,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "PaperTrail (live)", href: "https://papertrail-ten-sable.vercel.app" },
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
           { label: "Rememba (live)", href: "https://rememba-one.vercel.app" },
+          { label: "ShiftBoard (live)", href: "https://shiftboard-zeta.vercel.app" },
         ],
       },
       {

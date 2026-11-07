@@ -31,6 +31,66 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "building-shiftboard-staff-rotas",
+    title: "Building ShiftBoard: a staff rota that lives on everyone's phone",
+    description:
+      "My fourth Firebase app: a staff rota with drafts staff can't see, private pay rates, clocking in that can't be backdated, and a bug my test page missed.",
+    date: "2026-11-07",
+    tags: ["Firebase", "Next.js", "Security"],
+    body: [
+      {
+        type: "p",
+        text: "At a lot of small cafés and salons, the rota is a photo of a whiteboard sent to a WhatsApp group. If someone swaps a shift, the photo is out of date and nobody knows which version is right. ShiftBoard is a rota for a small team: the manager builds the week and publishes it, staff see their shifts on their phone, give a shift away or ask for time off, and the hours add up for payroll.",
+      },
+      {
+        type: "p",
+        text: "I started from my TickList app, which already had sign-in, invite links and live updates between phones. What was new was that people in the same team have different jobs: a manager can do things a barista can't, and some things a barista shouldn't even see.",
+      },
+      { type: "h2", text: "Drafts that staff can't see" },
+      {
+        type: "p",
+        text: "A manager builds the week as drafts and presses Publish week when it's ready, so staff don't see a half-finished rota and plan around it. Hiding drafts on the screen isn't enough, because the data still reaches the phone. So the security rules on Google's servers refuse to send a draft to anyone who isn't a manager.",
+      },
+      {
+        type: "p",
+        text: "That changed how the app asks for shifts. Firestore checks the question, not each answer: if a staff member's phone asks for \"all of this team's shifts\", the whole request is refused, because it could include drafts. Staff phones ask only for published shifts, which the rules can see is safe.",
+      },
+      { type: "h2", text: "Pay rates in a separate place" },
+      {
+        type: "p",
+        text: "Managers can add each person's pay per hour to get a pay estimate. Firestore's rules give access to a whole record or none of it, never to part of one. If the rates were kept with the rest of the team's details, every member could read everyone's pay. So the rates are kept in their own record that only managers can open, and staff see their hours without any amounts.",
+      },
+      { type: "h2", text: "Times without time zones" },
+      {
+        type: "p",
+        text: "A shift is saved as a day and two clock times, like 8:00 to 16:00, not as a moment in time. A shift at 8:00 should say 8:00 on every phone, even one set to another time zone. Weeks run Monday to Sunday, and a shift from 22:00 to 6:00 ends the next morning, with its hours still counted on the day it starts. The tests run these sums for weeks that cross a month and a year.",
+      },
+      { type: "h2", text: "Clocking in that can't be backdated" },
+      {
+        type: "p",
+        text: "From half an hour before a shift, a Clock in button appears, then Clock out. Hours then use the real times, and arriving late is noted. A phone's clock can be set to any time, so the rules compare the time the phone sends with the server's own clock, and refuse it if they're far apart. Nobody can clock in for yesterday. If someone forgets to clock out, a manager corrects it in the shift editor.",
+      },
+      { type: "h2", text: "The bug my test page couldn't see" },
+      {
+        type: "p",
+        text: "I test the screens on a page with made-up data and no real database, so I can try every situation quickly. On that page, editing a shift worked. On the real site, it would have been refused. The form sent back the whole shift, including details it doesn't own, like whether it's published and when it was made, and the rules only let the editor change the shift's person, day, times, break and note. Now the form sends only what it owns, and I check every save against the rules, not just my test page.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Staff added by name: a manager can put someone on the rota before they've joined, then link them up when they join, and their shifts move to their account.",
+          "When you can't work: everyone adds the times they can't work each week, and the rota warns in red if they're booked then.",
+          "A notice board: managers post a short notice and can see who's pressed Got it.",
+          "It works with no signal, installs on a phone, and scored 99 to 100 on Lighthouse when I checked it.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: a test page without the real security rules can only tell you the screen works. Whether a save is allowed is decided by the rules, so check every save against them.",
+      },
+    ],
+  },
+  {
     slug: "checking-every-page-with-axe",
     title: "Checking every page of my site with axe",
     description:

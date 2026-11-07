@@ -16,13 +16,6 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "ShiftBoard",
-    summary:
-      "Staff rotas for small businesses: a drag-and-drop weekly rota, shift swaps that a manager approves, and hours totals for payroll. Free for small teams.",
-    tags: ["Next.js", "TypeScript", "Firebase"],
-    stage: "next",
-  },
-  {
     name: "HireTrack",
     summary:
       "A job application tracker: a drag-and-drop board from Applied to Offer, interview dates and follow-up reminders. I'm building it for my own job hunt first.",

@@ -120,7 +120,7 @@ Extras beyond the milestones, in the order I built them.
 | 20 | Copy code and unsaved changes | Final project | A Copy button on every code example in the dev notes, and a warning before I lose typing in the admin project form |
 | 21 | Contact draft and copy link | Final project | The contact form keeps what a visitor typed if they refresh, and project pages and the case study have a Copy link button |
 | 22 | Browser tests and Show password | Final project | Playwright tests that click through the live site as a laptop and a phone after every deploy, and a Show / Hide button on the admin password box |
-| 23 | Currently building | Final project | A section under my projects for apps I'm building and building next (now ShiftBoard and HireTrack, marked Up next), which disappears when they're live |
+| 23 | Currently building | Final project | A section under my projects for apps I'm building and building next (ShiftBoard was listed until it went live; now HireTrack, marked Up next), which disappears when the list is empty |
 | 24 | Live project count | Final project | The "Projects built & shipped" number on the About page is counted from Supabase, so it goes up by itself when I publish a project in `/admin` |
 | 25 | Four small additions | Final project | A Mark all read button in the admin inbox (one request, with Undo), a Filter by topic row on the Dev notes page with counts and shareable links (`/notes?tag=Security`), related notes at the end of every note, and my local time on the Contact page |
 | 26 | Email alerts | Final project | An email to me (through Resend) whenever a new contact message is saved, with Reply going straight to the visitor. It's sent after the visitor already has their reply, so they never wait and a failed email never loses a message |
@@ -132,6 +132,7 @@ Extras beyond the milestones, in the order I built them.
 | 32 | CV PDF built automatically | Final project | The PDF download is now built from `content/cv.ts`, with selectable text and clickable links, so it can never fall behind my CV page. A **More projects** section on the page and in the PDF adds every project I publish in `/admin` by itself |
 | 33 | Last updated | Final project | The footer says when the site was last deployed ("Last updated 4 Nov 2026", in South African time), linked to that change on GitHub. The date is saved while Vercel builds the site, so it's always right without me editing it |
 | 34 | Accessibility check with axe | Final project | Every page in the sitemap, plus the 404 page and the admin sign-in, checked with axe in dark and light mode. Four problems fixed: the About page's counting numbers (a label screen readers can ignore), a card marked as a sidebar, the count on the selected filter button (2.7:1 contrast) and the dev note "Takeaway" label in light mode (4.2:1). A bug where the year "2026" counted up as "202" + "6" was fixed too ([details](#responsive-and-accessibility-checks)) |
+| 35 | ShiftBoard | Final project | My fourth Firebase app went live, so it moved from **Up next** to a real project card (added in `/admin`), with a dev note about how it keeps drafts and pay rates private and stops clocking in from being backdated, and ShiftBoard links added as evidence on the Skills page |
 
 ### ✅ What the site has now
 
@@ -194,8 +195,8 @@ Extras beyond the milestones, in the order I built them.
 | Installable | A web app manifest and icons, so the portfolio can be added to a phone's home screen. |
 
 #### ✅ Dev notes
-- **37 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, building TickList, with lists live on everyone's phone, getting an email when someone messages me, building Rememba, flashcards that know when you'll forget, backup codes for when I lose my phone, getting three Firebase apps to 100 on Lighthouse, testing my database rules automatically, two warnings from GitHub: a moved test machine and a fake secret, three small features: Share, "2 days ago" and Duplicate, why my phone Lighthouse score moves, a CV that updates itself, PaperTrail learning expenses and stock, and checking every page of my site with axe).
-- Short posts (thirty-seven so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
+- **38 dev notes** about what I learned (Row Level Security, spam, Lighthouse, testing on a phone, the navigation bar, the animations switch, automated tests, the live admin inbox, drafts with an activity log, a sign-in that ends when the tab closes, two-step sign-in, how my tests grew from 47 to 65, writing about security without helping attackers, keeping my docs honest, the Lighthouse check that never ran, how my tests grew from 65 to 83, one timeline for projects, messages and images, why my missing project pages said 200, security headers, small things that save people's work, keeping a visitor's message safe, testing my site like a real visitor, showing work in progress honestly, building PaperTrail with Firebase, four small additions: Mark all read, topics, related notes and my local time, building TickList, with lists live on everyone's phone, getting an email when someone messages me, building Rememba, flashcards that know when you'll forget, backup codes for when I lose my phone, getting three Firebase apps to 100 on Lighthouse, testing my database rules automatically, two warnings from GitHub: a moved test machine and a fake secret, three small features: Share, "2 days ago" and Duplicate, why my phone Lighthouse score moves, a CV that updates itself, PaperTrail learning expenses and stock, checking every page of my site with axe, and building ShiftBoard, a staff rota that lives on everyone's phone).
+- Short posts (thirty-eight so far) (`content/notes.ts`), each with its own page, share image and structured data, plus an RSS feed at `/notes/rss.xml`. New notes are added to the sitemap, the feed and Ctrl+K search automatically.
 - A reading progress bar, a **#** link on every sub-heading, **Older note** / **Newer note** links, an "Updated" date on notes I changed later, and a **Copy** button on every code example (`components/ReadingProgress.tsx`, `components/CopyCode.tsx`, `headingIds()`, `noteNeighbours()` and `updated` in `content/notes.ts`).
 
 #### ✅ SEO and performance
@@ -646,12 +647,12 @@ programmer, working in short rounds, one feature at a time:
 
 **What I did:** the site's audience, role, pages and design direction; which projects, certificates and
 evidence to show and how to describe them; every account and setting (GitHub, Vercel, Supabase, Google
-Search Console, LinkedIn); every test, screenshot and proof image; recording the clinic demo and this site's
+Search Console, LinkedIn); every test, proof image and screenshot of this site; recording the clinic demo and this site's
 video walkthrough; editing my reflections, About text and dev notes; and every commit and deploy.
 
 **What Claude did:** wrote the code from my requirements (pages, components, SQL and RLS policies,
 spam protection, SEO and performance work, and the code that builds the CV PDF), made the wireframe images, share images and
-LinkedIn banner, cut my walkthrough recordings to 3 minutes and added the captions and blurring,
+LinkedIn banner, took the screenshots on my Firebase app cards (from a test page with made-up data), cut my walkthrough recordings to 3 minutes and added the captions and blurring,
 drafted parts of the README, reflections, case study, dev notes and LinkedIn
 text, which I then edited, and ran the axe accessibility check and some PageSpeed checks in my browser,
 with my permission for each site.
