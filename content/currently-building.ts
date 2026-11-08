@@ -16,9 +16,16 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "HireTrack",
+    name: "StokvelBook",
     summary:
-      "A job application tracker: a drag-and-drop board from Applied to Offer, interview dates and follow-up reminders. I'm building it for my own job hunt first.",
+      "A shared record book for stokvels and savings clubs: monthly contributions, who has paid, whose turn the payout is, and a statement every member can see.",
+    tags: ["Next.js", "TypeScript", "Firebase"],
+    stage: "next",
+  },
+  {
+    name: "QueueUp",
+    summary:
+      "A walk-in queue for barbers, clinics and small shops: customers join by scanning a QR code and see their place in line live on their phone, instead of waiting inside.",
     tags: ["Next.js", "TypeScript", "Firebase"],
     stage: "next",
   },

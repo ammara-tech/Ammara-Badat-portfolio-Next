@@ -27,6 +27,7 @@ const papertrail = `${gh}/papertrail`;
 const ticklist = `${gh}/ticklist`;
 const rememba = `${gh}/rememba`;
 const shiftboard = `${gh}/shiftboard`;
+const hiretrack = `${gh}/hiretrack`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -181,6 +182,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
           { label: "Rememba: firestore.rules", href: `${rememba}/blob/main/firestore.rules` },
           { label: "ShiftBoard: managers and staff with different access", href: `${shiftboard}/blob/main/firestore.rules` },
+          { label: "HireTrack: checking every field and link", href: `${hiretrack}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -217,6 +219,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "TickList (live)", href: "https://ticklist-pi.vercel.app" },
           { label: "Rememba (live)", href: "https://rememba-one.vercel.app" },
           { label: "ShiftBoard (live)", href: "https://shiftboard-zeta.vercel.app" },
+          { label: "HireTrack (live)", href: "https://hiretrack-five-phi.vercel.app" },
         ],
       },
       {

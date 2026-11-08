@@ -31,6 +31,57 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "building-hiretrack-job-hunt-board",
+    title: "Building HireTrack: my job hunt on one board",
+    description:
+      "My fifth Firebase app, built for my own job hunt: a board from Saved to Offer, follow-up reminders, interview prep, and stats that stay honest.",
+    date: "2026-11-08",
+    tags: ["Firebase", "Next.js", "Accessibility"],
+    body: [
+      {
+        type: "p",
+        text: "I'm about to start looking for my first developer job, and I could already see the problem: applications on LinkedIn, PNet and company websites, and no single place that says where each one stands. It's easy to forget to follow up, or to walk into an interview without having looked the company up. So I built HireTrack for myself first.",
+      },
+      {
+        type: "p",
+        text: "It's a board with five columns: Saved, Applied, Interview, Offer and Closed. Each job has a page with its details, a follow-up reminder, interviews, interview prep and which CV I sent. A Today page lists what needs doing, and a Stats page shows how the job hunt is going.",
+      },
+      { type: "h2", text: "One function decides what a move means" },
+      {
+        type: "p",
+        text: "Moving a card changes more than its column. Moving it to Applied fills in the date I applied and sets a reminder to follow up a week later. The first answer after applying (an interview, an offer, or a no) is saved as the day I heard back. Once they answer, the automatic reminder goes. Instead of spreading these rules across the screens, they all live in one plain function that takes the job and the new stage and returns what changes. That made them easy to test: every kind of move has its own test.",
+      },
+      { type: "h2", text: "Keeping the stats honest" },
+      {
+        type: "p",
+        text: "I wanted the response rate to mean something. \"They said no\" counts as hearing back, but \"no reply\" doesn't, so closing a job asks why it closed. A job that had an interview and then closed still counts as reaching an interview, because each job keeps its story of when it moved. And everything counts from the day I applied, so jobs I've only saved don't make the rates look worse.",
+      },
+      { type: "h2", text: "Drag and drop that isn't the only way" },
+      {
+        type: "p",
+        text: "Dragging cards between columns feels natural with a mouse, but it doesn't work with a keyboard, and it's clumsy on a phone. So every card also has a small Move to box, and on a phone the stages become tabs showing one column at a time. When a card is dropped between two others, it gets an order number halfway between theirs, so only that one card is saved, not the whole column.",
+      },
+      { type: "h2", text: "Using what ShiftBoard taught me" },
+      {
+        type: "p",
+        text: "In ShiftBoard, editing a shift would have been refused because the form sent back fields it didn't own. This time I started with that lesson: every form on a job's page sends its changes through one function that keeps only the fields that form is allowed to change, trims the text and checks links and dates. The security rules check the same things on Google's servers, so only links starting with http or https can be saved.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Follow-up emails: Email them opens my own email app with a polite message already written, so HireTrack never sends anything itself.",
+          "CVs as links: it keeps each CV version's name and a link to where the file lives, not the file, which keeps it free and private.",
+          "Interviews go into my phone's calendar, so the phone does the reminding.",
+          "Example jobs with made-up companies let anyone try every part, and one press removes them.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: when a feature has rules, like what applying or hearing back means, put them in one plain function. The screens get simpler, and the tests can check every case without a database.",
+      },
+    ],
+  },
+  {
     slug: "building-shiftboard-staff-rotas",
     title: "Building ShiftBoard: a staff rota that lives on everyone's phone",
     description:
