@@ -445,7 +445,9 @@ html[data-motion="reduced"].fx-io .fx-reveal {
 /* The "Takeaway" label on a dev note sits on a light teal tint in light mode, where the usual
    teal is just under WCAG AA (4.2:1) for small text. A darker teal there reads at 5.3:1. */
 /* (the tip box in app/notes/[slug]/page.tsx: the teal-tinted box with the teal left border) */
-:root[data-theme="light"] .border-l-\[3px\].bg-teal\/10 > .text-teal {
+:root[data-theme="light"] .border-l-\[3px\].bg-teal\/10 > .text-teal,
+:root[data-theme="light"] .bg-teal\/10.text-teal {
+  /* and the "open to work" badge on the Home page: teal text on its own light teal tint */
   color: #00695c;
 }
 

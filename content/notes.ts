@@ -31,6 +31,129 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "try-the-demo-without-an-account",
+    title: "Letting people try my apps without making an account",
+    description:
+      "Recruiters rarely make accounts, so my five Firebase apps now have a Try the demo button: a guest account, example data, and one press to delete it all.",
+    date: "2026-11-09",
+    tags: ["Firebase", "Security", "UX"],
+    body: [
+      {
+        type: "p",
+        text: "Every one of my Firebase apps starts with a sign-in screen. That's right for the people who use them, but it's a wall for someone looking at my portfolio for two minutes. Nobody wants to make an account just to see what a rota app does. So I added a Try the demo button to PaperTrail, TickList, Rememba, ShiftBoard and HireTrack, and a matching button on each of their project pages here.",
+      },
+      { type: "h2", text: "A guest is still a real account" },
+      {
+        type: "p",
+        text: "The demo uses Firebase's anonymous sign-in. One press, and Firebase gives the visitor their own account with no email or password. The part I like most is that I didn't have to change a single security rule. My rules already say \"you can only see your own data\", and a guest has their own ID like anyone else, so a demo is protected in exactly the same way. Two guests trying the demo at the same time can't see each other's examples.",
+      },
+      { type: "h2", text: "Filling it with examples, once" },
+      {
+        type: "p",
+        text: "An empty app doesn't show much, so the first time a guest has nothing saved, the app fills it with examples: a café with staff and a rota in ShiftBoard, a plumbing business with an overdue invoice in PaperTrail, a household with a shopping list in TickList. PaperTrail's dates are worked out from today, so its demo always has something due, overdue and paid. A small note on the device remembers that the examples were added, so a guest who deletes them doesn't get them back on the next refresh.",
+      },
+      { type: "h2", text: "Ending a demo, and what the rules taught me" },
+      {
+        type: "p",
+        text: "End the demo deletes everything the guest saved, then the guest account itself. Writing that, I found that in three apps my rules only allowed the profile to be written, never deleted, so a batch that tried to delete it would have failed completely. Instead of loosening the rules, the demo empties the profile. In ShiftBoard I learned something else: the rules check a batch against the database as it was before the batch. So the made-up staff have to be saved first, on their own, before their shifts, because the rules check that a shift's person is in the team.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Each app's sign-in screen moves the demo box to the top when it's opened from my portfolio's button.",
+          "A strip at the top says it's a demo the whole time, so nobody mistakes it for their real data.",
+          "Signing out as a guest ends the demo, so nothing is left behind by accident.",
+          "Known gap: a guest who just closes the tab leaves their examples in the database. It's small, but nothing cleans it up yet.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: when you add a new way to sign in, check it against the rules you already have. If the rules are about whose data it is, not how they signed in, the new way is protected for free.",
+      },
+    ],
+  },
+  {
+    slug: "a-guestbook-that-spam-cant-take-over",
+    title: "A guestbook that spam can't take over",
+    description:
+      "Visitors can now leave a message on my site. Nothing shows until I approve it, and most of the protection lives in the database, where it can't be skipped.",
+    date: "2026-11-09",
+    tags: ["Supabase", "Security", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "A guestbook is a friendly way for visitors to say hello. It's also an open door for spam, and anything a stranger writes on my site reflects on me. So I built it in layers, with the most important ones in the database.",
+      },
+      { type: "h2", text: "Nothing shows until I approve it" },
+      {
+        type: "p",
+        text: "Every new entry is saved as waiting. Not because the form says so: a database trigger sets it, whatever is sent, so even someone calling the database directly can't post something straight onto the page. The guestbook page reads as a visitor, and Row Level Security only gives visitors approved entries. Approving, hiding and deleting are only allowed for my account with its second sign-in step, and I do them from my admin area.",
+      },
+      { type: "h2", text: "Hiding one column from everyone" },
+      {
+        type: "p",
+        text: "To slow down someone posting again and again, each entry keeps a one-way hash of the visitor's IP address, never the address itself. But approved entries are public, and Row Level Security works on whole rows. I didn't want the hash to be readable with the rest of the row. The answer was column rights: visitors are only allowed to read the name, message and date columns. Asking for the hash is refused, even on an approved entry.",
+      },
+      { type: "h2", text: "The spam checks" },
+      {
+        type: "ul",
+        items: [
+          "A hidden field that people never see but bots fill in, and a check that the form wasn't sent impossibly fast. Bots are told it worked, so they don't learn what gave them away.",
+          "No links allowed, in the name or the message, because links are what spam is for.",
+          "A limit in the database on how many entries one visitor can post in a few minutes, and on how many arrive in an hour.",
+        ],
+      },
+      { type: "h2", text: "Proving it" },
+      {
+        type: "p",
+        text: "My database tests run every setup file in a real PostgreSQL database and then act as a visitor, a signed-in stranger and me. I added fifteen checks for the guestbook: who can sign it, read it, approve it and delete it, that a new entry can't approve itself, that the hash stays hidden, and that the limit works.",
+      },
+      {
+        type: "tip",
+        text: "Lesson: Row Level Security decides which rows someone can see. When part of a row is private, column rights decide which parts.",
+      },
+    ],
+  },
+  {
+    slug: "how-it-works-diagrams-and-a-status-page",
+    title: "Showing how my apps work, and whether they're up",
+    description:
+      "A How it works diagram on ten project pages, built from HTML instead of pictures, and a status page that checks whether every one of my live sites is up.",
+    date: "2026-11-09",
+    tags: ["Next.js", "Accessibility", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "Screenshots show what an app looks like. They don't show how it works, and that's what I'd want to know if I were hiring. So ten of my project pages now have a How it works diagram, and a new status page shows that all my sites are actually running.",
+      },
+      { type: "h2", text: "Diagrams made of HTML, not pictures" },
+      {
+        type: "p",
+        text: "Each diagram has three lanes with labelled arrows between them, then numbered steps that follow one action through the lanes. I built them from ordinary HTML boxes instead of drawing images. They fit a phone (the lanes stack and the arrows point down), they follow light and dark mode, and a screen reader reads them as text, which a picture of a diagram can't do. The words live in one content file, and a test checks that they stay general, with no database paths in them.",
+      },
+      {
+        type: "p",
+        text: "Drawing them made me be precise. My first version put Vercel in the middle, with arrows from the phone through Vercel to Firebase. That's wrong for my Firebase apps: Vercel only sends the app once, and after that the phone talks to Firebase directly. The diagram now says exactly that. For my plain JavaScript projects, the third lane is the free services the browser talks to, or the progress it saves on the device.",
+      },
+      { type: "h2", text: "A status page that checks itself" },
+      {
+        type: "p",
+        text: "The status page asks every site in my projects list for its home page, all at the same time, and times the answer: up, slow or down. The list comes from my projects in the database, so a new app is checked without me editing anything. Next.js keeps the result for a few minutes, so the sites aren't asked on every visit. The check takes its fetch function as an argument, so the tests can pass in a fake one and check up, slow and down without the internet.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Each site's card also shows its Lighthouse scores, but only the ones I've actually measured, with the date.",
+          "Other new pages: For recruiters (me in 60 seconds), My journey, a Now page, and By the numbers on the Home page, where every number is counted from real data.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: if a diagram could be text, build it from text. It's easier to keep correct, and everyone can read it.",
+      },
+    ],
+  },
+  {
     slug: "building-hiretrack-job-hunt-board",
     title: "Building HireTrack: my job hunt on one board",
     description:

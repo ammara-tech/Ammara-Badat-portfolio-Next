@@ -256,7 +256,7 @@ export default function Terminal() {
         }}
         className="max-h-[22rem] overflow-y-auto p-4 font-mono text-[11px] leading-6 text-snow sm:p-5 sm:text-[13px] sm:leading-7"
       >
-        <pre className="overflow-x-auto" aria-label="Code card describing me">
+        <pre className="overflow-x-auto" aria-label="Code card describing me" tabIndex={0}>
           <code>
             {codeLines.map((line, i) => (
               <span key={i} className="fx-type block" style={{ animationDelay: `${250 + i * 120}ms` }}>
