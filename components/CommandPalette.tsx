@@ -37,6 +37,11 @@ const groupOrder: Item["group"][] = ["Pages", "Projects", "Notes", "Actions", "S
 
 const pages: Item[] = [
   { id: "p-home", group: "Pages", label: "Home", icon: "window", href: "/", keywords: "start terminal" },
+  { id: "p-recruiters", group: "Pages", label: "For recruiters", icon: "user", href: "/recruiters", keywords: "hire 60 seconds summary cv recruiter" },
+  { id: "p-guestbook", group: "Pages", label: "Guestbook", icon: "chat", href: "/guestbook", keywords: "guestbook hello leave a message sign" },
+  { id: "p-now", group: "Pages", label: "Now: what I'm doing this month", icon: "clock", href: "/now", keywords: "now learning building this month current" },
+  { id: "p-status", group: "Pages", label: "Status of my live sites", icon: "chart", href: "/status", keywords: "uptime up down lighthouse scores live" },
+  { id: "p-journey", group: "Pages", label: "My journey", icon: "chart", href: "/about#journey", keywords: "timeline history growth" },
   { id: "p-about", group: "Pages", label: "About", icon: "document", href: "/about", keywords: "me bio education role" },
   { id: "p-projects", group: "Pages", label: "Projects", icon: "cube", href: "/projects", keywords: "work portfolio built" },
   { id: "p-case", group: "Pages", label: `Case study: ${caseStudy.title}`, icon: "document", href: "/projects/nextjs-dashboard", keywords: "capstone clinic demo video" },

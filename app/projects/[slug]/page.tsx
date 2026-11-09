@@ -11,6 +11,11 @@ import { LightboxTrigger } from "@/components/Lightbox";
 import { Accent, Eyebrow, SmartLink, btnGhost, btnIcon, btnPrimary, card } from "@/components/ui";
 import CopyLink from "@/components/CopyLink";
 import ShareButton from "@/components/ShareButton";
+import HowItWorks from "@/components/HowItWorks";
+import BeforeAfter from "@/components/BeforeAfter";
+import { thenAndNow } from "@/content/then-and-now";
+import { demoUrl, demos } from "@/content/demos";
+import { architectures } from "@/content/architecture";
 
 /*
   A page for every project, e.g. /projects/myflix.
@@ -151,6 +156,12 @@ export default async function ProjectPage({ params }: Props) {
                 <Icon name="arrow-up-right" className={`h-3.5 w-3.5 ${btnIcon}`} />
               </SmartLink>
             )}
+            {project.live_url && demos.has(slug) && (
+              <SmartLink href={demoUrl(project.live_url)} className={btnGhost}>
+                <Icon name="play" className="h-4 w-4" />
+                Try the demo
+              </SmartLink>
+            )}
             {project.repo_url && (
               <SmartLink href={project.repo_url} className={btnGhost}>
                 <Icon name="github" className="h-4 w-4" />
@@ -189,6 +200,21 @@ export default async function ProjectPage({ params }: Props) {
           )}
         </figure>
       </header>
+
+      {/* Then and now: a before-and-after slider (content/then-and-now.ts) */}
+      {thenAndNow[slug] && (
+        <section aria-labelledby="then-title" className="mt-24">
+          <h2 id="then-title" className="fx-reveal font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+            Then and <Accent>now</Accent>
+          </h2>
+          <div className="fx-reveal mt-6">
+            <BeforeAfter data={thenAndNow[slug]} />
+          </div>
+        </section>
+      )}
+
+      {/* How it works: a diagram for my bigger apps (content/architecture.ts) */}
+      {architectures[slug] && <HowItWorks architecture={architectures[slug]} />}
 
       {/* More projects */}
       {more.length > 0 && (

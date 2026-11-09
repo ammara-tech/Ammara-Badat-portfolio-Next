@@ -18,14 +18,14 @@ run() { PGOPTIONS="-c client_min_messages=error" psql -q -v ON_ERROR_STOP=1 -d "
 run tests/database/supabase-stand-in.sql
 for file in schema.sql 003-screenshots-video-case-study.sql 004-messages-contact-form.sql \
   005-project-images-storage.sql 006-realtime-inbox.sql 007-drafts-activity-log.sql \
-  008-two-step-sign-in.sql 009-activity-log-messages-images.sql 010-backup-codes.sql; do
+  008-two-step-sign-in.sql 009-activity-log-messages-images.sql 010-backup-codes.sql 011-guestbook.sql; do
   echo "Loading Supabase/$file"
   run "Supabase/$file"
 done
 
 # Running the setup files a second time must work too ("safe to run twice")
 for file in 005-project-images-storage.sql 006-realtime-inbox.sql 007-drafts-activity-log.sql \
-  008-two-step-sign-in.sql 009-activity-log-messages-images.sql 010-backup-codes.sql; do
+  008-two-step-sign-in.sql 009-activity-log-messages-images.sql 010-backup-codes.sql 011-guestbook.sql; do
   run "Supabase/$file"
 done
 echo "Every setup file ran twice without errors"

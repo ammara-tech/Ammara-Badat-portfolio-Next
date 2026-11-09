@@ -11,6 +11,10 @@ test("every main page loads with its own title", async ({ page }) => {
     ["/notes", /notes/i],
     ["/contact", /Contact/],
     ["/cv", /CV/],
+    ["/recruiters", /recruiters/],
+    ["/status", /Status/],
+    ["/now", /Now/],
+    ["/guestbook", /Guestbook/],
   ] as const) {
     const res = await page.goto(path);
     expect(res?.status(), path).toBe(200);

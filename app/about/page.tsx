@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { about } from "@/content/about";
 import Certifications from "@/components/Certifications";
+import Journey from "@/components/Journey";
 import CountUp from "@/components/CountUp";
 import Icon from "@/components/Icon";
 import { certificationGroups } from "@/content/certifications";
@@ -144,6 +145,13 @@ export default async function About() {
             <p className="mt-3 leading-relaxed text-mist">{about.education.description}</p>
           </div>
         </div>
+
+        {/* My journey: from my first repository to five live apps (content/journey.ts) */}
+        <h3 id="journey" className="fx-reveal mt-12 scroll-mt-24 font-display text-xl font-black uppercase tracking-tight">
+          My <Accent>journey</Accent> so far
+        </h3>
+        <p className="fx-reveal mt-2 text-mist">Each date is when I created the project on GitHub.</p>
+        <Journey />
       </section>
 
       <Divider />

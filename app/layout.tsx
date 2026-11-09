@@ -5,6 +5,7 @@ import { Inter, JetBrains_Mono, Titillium_Web } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Icon from "@/components/Icon";
+import Link from "next/link";
 import LazyExtras from "@/components/LazyExtras";
 import ScrollReveal from "@/components/ScrollReveal";
 import MobileNav from "@/components/MobileNav";
@@ -154,6 +155,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </p>
               <p className="font-mono text-xs text-mist">
                 © {new Date().getFullYear()} · Built with Next.js, Tailwind CSS and Supabase
+              </p>
+              <p className="mt-1 font-mono text-xs text-mist">
+                <Link href="/recruiters" className="underline-offset-2 hover:text-teal hover:underline">
+                  For recruiters: me in 60 seconds
+                </Link>
+                {" · "}
+                <Link href="/status" className="underline-offset-2 hover:text-teal hover:underline">
+                  Status of my sites
+                </Link>
+                {" · "}
+                <Link href="/now" className="underline-offset-2 hover:text-teal hover:underline">
+                  Now
+                </Link>
+                {" · "}
+                <Link href="/guestbook" className="underline-offset-2 hover:text-teal hover:underline">
+                  Guestbook
+                </Link>
               </p>
               {updated && (
                 <p className="mt-1 font-mono text-xs text-mist">

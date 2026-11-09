@@ -8,6 +8,7 @@ import { nextStep } from "@/lib/two-step";
 import { TwoStepCode, TwoStepSetup } from "@/components/TwoStep";
 import BackupCodes from "@/components/BackupCodes";
 import Inbox from "@/components/Inbox";
+import GuestbookAdmin from "@/components/GuestbookAdmin";
 import AdminOverview from "@/components/AdminOverview";
 import ImageUpload from "@/components/ImageUpload";
 import ProjectOrderList from "@/components/ProjectOrderList";
@@ -438,6 +439,9 @@ function Dashboard({ email }: { email: string }) {
 
       {/* Contact form messages (owner only) */}
       <Inbox onChange={() => setStatsKey((k) => k + 1)} />
+
+      {/* Guestbook entries to approve (owner only) */}
+      <GuestbookAdmin />
 
       {/* Add / edit form */}
       <UnsavedChangesGuard dirty={unsaved} />

@@ -8,6 +8,12 @@ import { showBackToTop } from "@/lib/back-to-top";
 import { historyButtons } from "@/lib/nav-arrows";
 import { caseStudy } from "@/content/case-study";
 import { currentlyBuilding } from "@/content/currently-building";
+import { journey, journeyDate } from "@/content/journey";
+import { architectures } from "@/content/architecture";
+import { recruiters } from "@/content/recruiters";
+import { now } from "@/content/now";
+import { thenAndNow } from "@/content/then-and-now";
+import { demoUrl, demos } from "@/content/demos";
 import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { projectStat } from "@/lib/stats";
 import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags";
@@ -159,6 +165,87 @@ describe("currently building", () => {
   it("doesn't list the same project twice", () => {
     const names = currentlyBuilding.map((p) => p.name.toLowerCase());
     expect(new Set(names).size).toBe(names.length);
+  });
+});
+
+describe("my journey", () => {
+  it("goes from oldest to newest, with a date and a line for every step", () => {
+    const dates = journey.map((s) => s.date);
+    expect([...dates].sort()).toEqual(dates);
+    for (const s of journey) {
+      expect(s.date).toMatch(/^20\d\d-(0[1-9]|1[0-2])$/);
+      expect(s.title.trim().length).toBeGreaterThan(0);
+      expect(s.line.length).toBeGreaterThan(20);
+      expect(s.line.length).toBeLessThanOrEqual(160);
+    }
+  });
+
+  it("only links to project pages on this site", () => {
+    for (const s of journey) if (s.href) expect(s.href).toMatch(/^\/projects\/[a-z0-9-]+$/);
+  });
+
+  it("shows months the way people say them", () => {
+    expect(journeyDate("2026-06")).toBe("Jun 2026");
+    expect(journeyDate("2026-11")).toBe("Nov 2026");
+  });
+});
+
+describe("how it works diagrams", () => {
+  it("each has three lanes with boxes, two arrows and a few steps", () => {
+    for (const [key, a] of Object.entries(architectures)) {
+      expect(key).toMatch(/^[a-z0-9-]+$/);
+      expect(a.lanes).toHaveLength(3);
+      for (const lane of a.lanes) expect(lane.boxes.length).toBeGreaterThan(0);
+      expect(a.arrows).toHaveLength(2);
+      expect(a.steps.length).toBeGreaterThanOrEqual(3);
+      expect(a.steps.length).toBeLessThanOrEqual(6);
+    }
+  });
+
+  it("stays general: no database paths or code in the text", () => {
+    const text = JSON.stringify(architectures);
+    expect(text).not.toMatch(/\{uid\}|users\/|teams\/|_id\b|=>/);
+  });
+});
+
+describe("try the demo", () => {
+  it("adds ?demo to an app's live address", () => {
+    expect(demoUrl("https://hiretrack-five-phi.vercel.app/")).toBe("https://hiretrack-five-phi.vercel.app/?demo");
+    expect(demoUrl("https://ticklist-pi.vercel.app")).toBe("https://ticklist-pi.vercel.app/?demo");
+  });
+
+  it("is only on my Firebase apps", () => {
+    expect([...demos].sort()).toEqual(["hiretrack", "papertrail", "rememba", "shiftboard", "ticklist"]);
+  });
+});
+
+describe("then and now", () => {
+  it("uses real screenshots that exist in public/", () => {
+    for (const t of Object.values(thenAndNow)) {
+      for (const pic of [t.before, t.after]) {
+        expect(existsSync(join(process.cwd(), "public", pic.src))).toBe(true);
+        expect(pic.label.length).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe("the Now page", () => {
+  it("has a real updated date and something in every list", () => {
+    expect(now.updated).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(Number.isNaN(new Date(now.updated).getTime())).toBe(false);
+    expect(now.focus.length).toBeGreaterThan(20);
+    expect(now.learning.length).toBeGreaterThan(0);
+    expect(now.improving.length).toBeGreaterThan(0);
+  });
+});
+
+describe("for recruiters", () => {
+  it("keeps the short version short", () => {
+    expect(recruiters.shortVersion.length).toBeGreaterThanOrEqual(2);
+    expect(recruiters.shortVersion.length).toBeLessThanOrEqual(4);
+    for (const line of recruiters.shortVersion) expect(line.length).toBeLessThanOrEqual(160);
+    expect(recruiters.liveApps).toBeGreaterThan(0);
   });
 });
 

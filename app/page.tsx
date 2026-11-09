@@ -6,6 +6,7 @@ import Icon from "@/components/Icon";
 import Screenshot from "@/components/Screenshot";
 import Terminal from "@/components/Terminal";
 import GitHubActivity from "@/components/GitHubActivity";
+import ByTheNumbers from "@/components/ByTheNumbers";
 import { pageMetadata } from "@/lib/seo";
 import { Accent, Divider, Eyebrow, Para, SmartLink, btnGhost, btnIcon, btnPrimary } from "@/components/ui";
 
@@ -31,6 +32,9 @@ const tech = [
   "Vercel",
   "Git & GitHub",
 ];
+
+// The project count in "By the numbers" comes from Supabase: rebuilt at most once a minute, like the About page
+export const revalidate = 60;
 
 export default function Home() {
   return (
@@ -88,6 +92,12 @@ export default function Home() {
               Download CV
             </a>
           </div>
+          <p className="fx-rise mt-5 font-mono text-xs uppercase tracking-widest text-mist" style={{ animationDelay: "700ms" }}>
+            Hiring?{" "}
+            <Link href="/recruiters" className="text-teal underline-offset-2 hover:underline">
+              Me in 60 seconds
+            </Link>
+          </p>
         </div>
 
         {/* The code card from my first portfolio, now an interactive terminal */}
@@ -120,6 +130,9 @@ export default function Home() {
           </ul>
         </div>
       </section>
+
+      {/* ---------- By the numbers (counted from real data) ---------- */}
+      <ByTheNumbers />
 
       {/* ---------- Featured capstone ---------- */}
       <section className="mt-24">
