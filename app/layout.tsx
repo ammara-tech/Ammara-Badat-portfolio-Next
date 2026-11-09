@@ -10,6 +10,8 @@ import LazyExtras from "@/components/LazyExtras";
 import ScrollReveal from "@/components/ScrollReveal";
 import MobileNav from "@/components/MobileNav";
 import BackToTop from "@/components/BackToTop";
+import MoreBelow from "@/components/MoreBelow";
+import PageProgress from "@/components/PageProgress";
 import LighthouseBadge from "@/components/LighthouseBadge";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
@@ -138,8 +140,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
 
-        {/* Reading progress bar and background glow (see globals.css) */}
-        <div aria-hidden="true" className="fx-progress fixed inset-x-0 top-0 z-[60] h-0.5 bg-linear-to-r from-racing to-teal" />
+        {/* Progress bar on long pages (components/PageProgress.tsx) and the background glow (see globals.css) */}
+        <PageProgress />
         <div aria-hidden="true" className="site-backdrop" />
 
         <Navbar />
@@ -227,7 +229,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LazyExtras />
         <ScrollReveal />
 
-        {/* Bottom navigation bar on phones only */}
+        {/* "More below" at the top of long pages, back to top further down, and the bottom navigation bar on phones only */}
+        <MoreBelow />
         <BackToTop />
         <MobileNav />
 

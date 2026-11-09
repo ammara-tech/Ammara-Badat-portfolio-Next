@@ -6,6 +6,8 @@ import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
 import ReadingProgress from "@/components/ReadingProgress";
+import OnThisPage from "@/components/OnThisPage";
+import { onThisPage } from "@/lib/page-nav";
 import Icon from "@/components/Icon";
 import { card } from "@/components/ui";
 import CopyCode from "@/components/CopyCode";
@@ -98,6 +100,9 @@ export default async function NotePage({ params }: Props) {
   const { older, newer } = noteNeighbours(note.slug);
   const related = relatedNotes(notes, note.slug, [older?.slug, newer?.slug].filter((s): s is string => Boolean(s)));
   const ids = headingIds(note.body);
+  // Longer notes (three or more sub-headings) list them at the top, so readers can see what's coming
+  const headings = note.body.flatMap((block, i) => (block.type === "h2" && ids[i] ? [{ id: ids[i], label: block.text }] : []));
+  const sections = headings.length >= 3 ? onThisPage(headings) : [];
 
   return (
     <article className="mx-auto max-w-3xl">
@@ -180,6 +185,7 @@ export default async function NotePage({ params }: Props) {
             </li>
           ))}
         </ul>
+        <OnThisPage sections={sections} className="mt-6" />
         <div aria-hidden="true" className="mt-8 h-1 w-40 rounded-full bg-linear-to-r from-racing to-teal" />
       </header>
 

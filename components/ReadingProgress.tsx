@@ -8,8 +8,8 @@ import { readingProgress } from "@/lib/reading";
   It measures the note's text only, so it is full when you reach the last
   paragraph (not the footer). Works in every browser, including on iPhones.
 
-  The site-wide scroll bar in app/layout.tsx is hidden on note pages
-  (see .reading-progress in app/globals.css), so there are never two bars.
+  The bar on other long pages (components/PageProgress.tsx) isn't shown on
+  note pages, so there are never two bars.
 */
 export default function ReadingProgress({ targetId }: { targetId: string }) {
   const bar = useRef<HTMLDivElement>(null);

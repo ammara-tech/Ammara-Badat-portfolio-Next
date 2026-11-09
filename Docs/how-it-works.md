@@ -399,6 +399,15 @@ with **429** ("Too Many Requests").
   - the image viewer and search use the native `<dialog>` element: Escape closes them, focus stays
     inside them, and focus goes back to the button afterwards
   - switches use `role="switch"` and `aria-checked`, and pop-ups use `role="status"` so screen readers announce them
+  - **nothing gets missed on long pages** (`lib/page-nav.ts`), without ever forcing anyone to scroll:
+    the important things come first (on a phone, a project's Live site and Try the demo buttons, and the
+    About page's buttons, move up onto the first screen with CSS `order`; laptops keep the same layout),
+    **On this page** links to the sections further down (`OnThisPage.tsx`: plain `#` links, on project
+    pages with two or more sections, the About page, the case study on phones and tablets, and dev notes
+    with three or more sub-headings), a **More below** button at the bottom of the first screen
+    (`MoreBelow.tsx`: it never moves the page by itself, fades away once you scroll, and moves keyboard
+    focus to the next heading when pressed), and a progress bar on pages more than two screens tall
+    (`PageProgress.tsx`, which works in every browser and isn't shown on dev notes, which have their own)
 - **Mobile first** (works at every screen size): checked at 360, 390, 768, 1024 and 1440 pixels wide,
   and on my own phone. Phones get a navigation bar at the bottom (`MobileNav.tsx`). It once moved
   because an invisible glow made the page 8 pixels wider than the screen; the glow is now limited and
@@ -474,11 +483,12 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
 ## 14. Tests and checks on GitHub
 
 - **Unit tests** (`tests/`, run with `npm test`) use **Vitest**: small programs that run my code with
-  example inputs and check the answers. There are 177 checks:
+  example inputs and check the answers. There are 186 checks:
   - page addresses (`slug.test.ts`), the contact form rules, its draft, the local time and the email alert (`contact.test.ts`)
   - every skill having evidence, every linked file existing, the dev notes (including unique heading
     addresses, the older/newer links and updated dates), the back-to-top button, the back/forward buttons, SEO helpers
     the contact card, the Currently building list, my journey timeline (oldest first, dated, linked to project pages), the How it works diagrams (three lanes, two arrows, a few steps, and no database paths in the text), the For recruiters page's short version, the About page's project count, the dev notes topic filter and related notes, the Share links, the Lighthouse badge, the Last updated date, the counting numbers on the About page (`lib/count-up.ts`), and no loading screen above the project pages (`content.test.ts`), and the reading progress bar (`reading.test.ts`)
+  - the long-page helpers (`page-nav.test.ts`): which On this page links show, when More below shows and where it jumps, and which pages get the progress bar
   - the guestbook's checks (`guestbook.test.ts`): the honeypot, the speed check, the lengths and no links; and By the numbers (`numbers.test.ts`)
   - the status page (`status.test.ts`): up, slow and down, timing an answer, an error page or no answer counting as down, the summary line, and the Lighthouse scores being real numbers with a date
   - the admin logic (`admin.test.ts`): inbox search, Mark all read, the Reply link and the CSV download (including the
@@ -502,7 +512,7 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
   - `admin.spec.ts`: `/admin` shows only the sign-in form (no dashboard text), has `noindex`, and the
     **Show password** button switches the box between hidden and visible. It never types a real password.
   - `site.spec.ts`: every main page loads with its title, the CV PDF downloads as a real PDF, a made-up project gets a real 404, the live
-    security headers, and the phone menu opening and closing with Escape.
+    security headers, the phone menu opening and closing with Escape, and the About page's On this page links and More below button (it moves focus to the next section and fades away).
   - If anything fails, the run has a report with screenshots and a step-by-step **trace** to download.
   - The browser tests and Lighthouse run on **Ubuntu 24.04**, not "latest". When GitHub moved "latest" to a
     newer Ubuntu, Playwright couldn't install Chromium on it yet, so every run failed before testing anything.
@@ -606,4 +616,4 @@ slide instead of fade and loaded the extras only when first used.
 **What do your tests check, and why did the number grow?**
 Page addresses, the contact form rules, skills evidence, files, notes, SEO, the admin logic and the docs.
 It grew from 47 to 65 because every admin feature came with its own tests, then to 69 when I added
-checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, 135 with the Share links and "2 days ago", 137 with Duplicate project, 139 with the Lighthouse badge, 145 with the CV PDF, 150 with More projects on the CV, 153 with Last updated, 155 with the counting numbers on the About page, 159 with my journey timeline and the For recruiters page, 161 with the How it works diagrams, 167 with the status page, 175 with By the numbers, the Now page, Then and now and the guestbook, and 177 with the Try the demo links.
+checks that my README and this guide stay in step with the code, 72 with the dev note navigation, 76 with updated dates and the back-to-top button, 78 with the back/forward buttons, 79 with a check for broken links inside the README, 83 with the CSV download, 86 with the activity log for messages and images, 89 with the activity counts and the 404 check, 95 with the security headers and the tab badge, 98 with the unsaved changes warning, 101 with the contact form draft, 103 with the Currently building list, 104 with the Firebase skill, 106 with the live project count, 112 with Mark all read and the dev notes topic filter, 117 with related notes and the local time, 122 with the email alert, 123 with Up next on the Currently building list, 124 with the Automated testing skill, 129 with the backup codes, 135 with the Share links and "2 days ago", 137 with Duplicate project, 139 with the Lighthouse badge, 145 with the CV PDF, 150 with More projects on the CV, 153 with Last updated, 155 with the counting numbers on the About page, 159 with my journey timeline and the For recruiters page, 161 with the How it works diagrams, 167 with the status page, 175 with By the numbers, the Now page, Then and now and the guestbook, 177 with the Try the demo links, and 186 with the long-page helpers (On this page, More below and the progress bar).

@@ -8,6 +8,7 @@ import { Accent, Eyebrow, Para, SectionTitle, SmartLink, btnGhost, btnIcon, btnP
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import { siteUrl } from "@/lib/site";
+import OnThisPage from "@/components/OnThisPage";
 import CopyLink from "@/components/CopyLink";
 import ShareButton from "@/components/ShareButton";
 
@@ -92,6 +93,9 @@ export default function CaseStudy() {
           <ShareButton url={`${siteUrl}/projects/nextjs-dashboard`} title={cs.title} label="this case study" />
           <CopyLink url={`${siteUrl}/projects/nextjs-dashboard`} label="this case study" />
         </div>
+
+        {/* On phones and tablets, the sections as links here (laptops have the list down the side) */}
+        <OnThisPage sections={sections} className="mt-8 lg:hidden" />
 
         {/* Quick facts */}
         <dl className="fx-rise mt-10 grid gap-4 sm:grid-cols-3" style={{ animationDelay: "300ms" }}>

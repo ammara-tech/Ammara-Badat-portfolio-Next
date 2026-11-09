@@ -13,7 +13,7 @@ export default function HowItWorks({ architecture }: { architecture: Architectur
   const { intro, lanes, arrows, steps } = architecture;
   return (
     <section aria-labelledby="how-title" className="mt-24">
-      <h2 id="how-title" className="fx-reveal font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+      <h2 id="how-title" className="fx-reveal scroll-mt-24 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
         How it <span className="text-racing">works</span>
       </h2>
       <p className="fx-reveal mt-3 max-w-3xl text-lg leading-relaxed text-mist">{intro}</p>

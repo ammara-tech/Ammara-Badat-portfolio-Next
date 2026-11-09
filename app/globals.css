@@ -182,22 +182,6 @@
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
-/* Reading progress bar at the very top of the page */
-.fx-progress { display: none; transform-origin: left; }
-
-@supports (animation-timeline: scroll()) {
-  .fx-progress {
-    display: block;
-    animation: fx-grow linear both;
-    animation-timeline: scroll(root);
-  }
-}
-
-/* On a dev note, the reading bar (components/ReadingProgress.tsx) replaces the site-wide scroll bar */
-html:has(.reading-progress) .fx-progress {
-  display: none !important;
-}
-
 /* Sections and cards fade up as they scroll into view */
 @supports (animation-timeline: view()) {
   .fx-reveal {
@@ -387,12 +371,10 @@ html.fx-io .fx-reveal.is-visible {
   .fx-underline,
   .fx-glow,
   .fx-marquee,
-  .fx-progress,
   .fx-reveal {
     animation: none !important;
   }
 
-  .fx-progress,
   .fx-sweep {
     display: none !important;
   }
@@ -420,11 +402,11 @@ html[data-motion="reduced"] .fx-marquee > [aria-hidden="true"] {
   display: none;
 }
 
-html[data-motion="reduced"] :is(.fx-live, .fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-progress, .fx-reveal) {
+html[data-motion="reduced"] :is(.fx-live, .fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-reveal) {
   animation: none !important;
 }
 
-html[data-motion="reduced"] :is(.fx-progress, .fx-sweep) {
+html[data-motion="reduced"] .fx-sweep {
   display: none !important;
 }
 
@@ -481,7 +463,6 @@ html[data-motion="reduced"].fx-io .fx-reveal {
   dialog,
   .no-print,
   .site-backdrop,
-  .fx-progress,
   .fx-sweep {
     display: none !important;
   }

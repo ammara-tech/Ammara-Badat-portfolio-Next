@@ -16,6 +16,8 @@ import BeforeAfter from "@/components/BeforeAfter";
 import { thenAndNow } from "@/content/then-and-now";
 import { demoUrl, demos } from "@/content/demos";
 import { architectures } from "@/content/architecture";
+import OnThisPage from "@/components/OnThisPage";
+import { onThisPage } from "@/lib/page-nav";
 
 /*
   A page for every project, e.g. /projects/myflix.
@@ -63,6 +65,11 @@ export default async function ProjectPage({ params }: Props) {
 
   const words = project.title.split(" ");
   const more = others.slice(0, 3);
+  const sections = onThisPage([
+    { id: "then-title", label: "Then and now", show: Boolean(thenAndNow[slug]) },
+    { id: "how-title", label: "How it works", show: Boolean(architectures[slug]) },
+    { id: "more-title", label: "More projects", show: more.length > 0 },
+  ]);
 
   const structuredData = [
     breadcrumbs([
@@ -113,7 +120,7 @@ export default async function ProjectPage({ params }: Props) {
       </nav>
 
       <header className="mt-8 grid grid-cols-1 items-start gap-10 lg:grid-cols-[1fr_1.15fr]">
-        <div className="min-w-0">
+        <div className="flex min-w-0 flex-col">
           <Eyebrow>Project</Eyebrow>
           <h1 className="fx-rise font-display text-4xl font-black uppercase leading-none tracking-tight sm:text-6xl">
             {words.length > 1 ? (
@@ -131,25 +138,9 @@ export default async function ProjectPage({ params }: Props) {
             </p>
           )}
 
-          {project.tags.length > 0 && (
-            <div className="fx-rise mt-6" style={{ animationDelay: "200ms" }}>
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-mist">Built with</p>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <li key={tag}>
-                    <Link
-                      href={`/projects?tag=${encodeURIComponent(tag)}`}
-                      className="inline-block rounded-full border border-line-strong px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-mist transition hover:border-teal hover:text-teal"
-                    >
-                      {tag}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="fx-rise mt-8 flex flex-wrap gap-3" style={{ animationDelay: "280ms" }}>
+          {/* The buttons come before "Built with" on phones, so the live site and demo are on the first screen.
+              On a laptop, where both fit, "Built with" shows first as before. */}
+          <div className="fx-rise mt-8 flex flex-wrap gap-3 lg:order-2" style={{ animationDelay: "280ms" }}>
             {project.live_url && (
               <SmartLink href={project.live_url} className={btnPrimary}>
                 Live site
@@ -177,6 +168,27 @@ export default async function ProjectPage({ params }: Props) {
             <ShareButton url={`${siteUrl}/projects/${slug}`} title={project.title} label={project.title} />
             <CopyLink url={`${siteUrl}/projects/${slug}`} label={project.title} />
           </div>
+
+          {/* Links to the sections further down, so nothing is missed (lib/page-nav.ts) */}
+          <OnThisPage sections={sections} className="fx-rise mt-8 lg:order-3" />
+
+          {project.tags.length > 0 && (
+            <div className="fx-rise mt-6 lg:order-1" style={{ animationDelay: "200ms" }}>
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-mist">Built with</p>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <li key={tag}>
+                    <Link
+                      href={`/projects?tag=${encodeURIComponent(tag)}`}
+                      className="inline-block rounded-full border border-line-strong px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-mist transition hover:border-teal hover:text-teal"
+                    >
+                      {tag}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <figure className="fx-rise" style={{ animationDelay: "160ms" }}>
@@ -204,7 +216,7 @@ export default async function ProjectPage({ params }: Props) {
       {/* Then and now: a before-and-after slider (content/then-and-now.ts) */}
       {thenAndNow[slug] && (
         <section aria-labelledby="then-title" className="mt-24">
-          <h2 id="then-title" className="fx-reveal font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+          <h2 id="then-title" className="fx-reveal scroll-mt-24 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
             Then and <Accent>now</Accent>
           </h2>
           <div className="fx-reveal mt-6">
@@ -220,7 +232,7 @@ export default async function ProjectPage({ params }: Props) {
       {more.length > 0 && (
         <section aria-labelledby="more-title" className="mt-24">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 id="more-title" className="fx-reveal font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
+            <h2 id="more-title" className="fx-reveal scroll-mt-24 font-display text-2xl font-black uppercase tracking-tight sm:text-3xl">
               More <Accent>projects</Accent>
             </h2>
             <Link href="/projects" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-teal">

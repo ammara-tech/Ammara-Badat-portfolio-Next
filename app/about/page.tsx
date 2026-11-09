@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { about } from "@/content/about";
 import Certifications from "@/components/Certifications";
 import Journey from "@/components/Journey";
+import OnThisPage from "@/components/OnThisPage";
+import { onThisPage } from "@/lib/page-nav";
 import CountUp from "@/components/CountUp";
 import Icon from "@/components/Icon";
 import { certificationGroups } from "@/content/certifications";
@@ -27,6 +29,13 @@ const certificateCount = certificationGroups.reduce((n, g) => n + g.certificates
 // so a project published in /admin shows up in the number within a minute
 export const revalidate = 60;
 
+// The sections further down, for the "On this page" links
+const sections = onThisPage([
+  { id: "education", label: "How I got here" },
+  { id: "journey", label: "My journey" },
+  { id: "certifications", label: "Certifications" },
+]);
+
 export default async function About() {
   // Technologies first, then my live project count, the year, and a count of my certificates
   const projects = projectStat(await countProjects());
@@ -48,19 +57,20 @@ export default async function About() {
       />
       {/* 30-second intro */}
       <section className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-        <div>
+        <div className="flex flex-col">
           <Eyebrow>About me</Eyebrow>
           <PageTitle>
             Who <Accent>I am</Accent>
           </PageTitle>
 
-          <div className="fx-rise mt-8 space-y-5 text-lg" style={{ animationDelay: "200ms" }}>
-            {about.paragraphs.map((text, i) => (
-              <Para key={i} text={text} className="leading-relaxed text-mist first:text-snow" />
-            ))}
+          {/* On phones the buttons and section links come after the first paragraph, so they're on the
+              first screen; the rest of my intro follows. On a laptop, where it all fits, the order is
+              the same as before: all three paragraphs, then the buttons. */}
+          <div className="fx-rise mt-8 text-lg" style={{ animationDelay: "200ms" }}>
+            <Para text={about.paragraphs[0]} className="leading-relaxed text-snow" />
           </div>
 
-          <div className="fx-rise mt-9 flex flex-wrap gap-4" style={{ animationDelay: "320ms" }}>
+          <div className="fx-rise mt-9 flex flex-wrap gap-4 lg:order-2" style={{ animationDelay: "320ms" }}>
             <Link href="/projects" className={btnPrimary}>
               See my projects
               <Icon name="arrow-right" className={`h-4 w-4 ${btnIcon}`} />
@@ -75,6 +85,15 @@ export default async function About() {
               <Icon name="download" className="h-4 w-4" />
               Download CV
             </a>
+          </div>
+
+          {/* Links to the sections further down, so nothing is missed (lib/page-nav.ts) */}
+          <OnThisPage sections={sections} className="fx-rise mt-9 lg:order-3" />
+
+          <div className="fx-rise mt-9 space-y-5 text-lg lg:order-1 lg:mt-5" style={{ animationDelay: "200ms" }}>
+            {about.paragraphs.slice(1).map((text, i) => (
+              <Para key={i} text={text} className="leading-relaxed text-mist" />
+            ))}
           </div>
         </div>
 
@@ -129,7 +148,7 @@ export default async function About() {
 
       {/* Education */}
       <section>
-        <SectionTitle>
+        <SectionTitle id="education">
           How I <Accent>got here</Accent>
         </SectionTitle>
         <div className={`${card} fx-reveal mt-6 grid gap-4 p-6 sm:grid-cols-[6rem_1fr]`}>
