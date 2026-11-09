@@ -62,10 +62,12 @@ test("long pages show what's below: On this page links and a More below button",
   await page.goto("/about");
   const links = page.getByRole("navigation", { name: "On this page" });
   await expect(links.getByRole("link", { name: /Certifications/ })).toBeVisible();
-  const more = page.getByRole("button", { name: "More below" });
+  // Found by its text, not its role: once it fades away it's hidden from screen readers too
+  const more = page.locator("button", { hasText: "More below" });
   await expect(more).toBeVisible();
   await more.click();
-  // It moves to the next section and takes keyboard focus there, then fades away
+  // It moves to the next section and takes keyboard focus there, then fades away and is hidden
   await expect(page.getByRole("heading", { level: 2 }).first()).toBeFocused();
+  await expect(more).toHaveAttribute("aria-hidden", "true");
   await expect(more).toHaveCSS("opacity", "0");
 });
