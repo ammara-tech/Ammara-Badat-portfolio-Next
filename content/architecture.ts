@@ -143,6 +143,95 @@ export const architectures: Record<string, Architecture> = {
       "Everything syncs to your other devices, and works offline.",
     ],
   },
+  stokvelbook: {
+    intro: "StokvelBook is one shared book for the whole group. Every member sees the same records live, and Google's servers make sure nobody can quietly change them.",
+    lanes: [
+      vercel,
+      device([{ title: "Your WhatsApp", line: "Remind opens WhatsApp with a polite message already written. StokvelBook never sends anything itself." }]),
+      firebase("Only members see the group. Only the chairperson and treasurer add to the money book, and nobody, not even them, can change or delete an entry."),
+    ],
+    arrows: firebaseArrows,
+    steps: [
+      "The chairperson starts the group and shares an invite link in the group's WhatsApp chat.",
+      "Each month, the treasurer records who has paid. Late payments are flagged, and fines can be added in one press.",
+      "Every member's phone shows the new entry within a moment, with who recorded it and when.",
+      "A mistake is never edited: the treasurer cancels it with a reason, and both stay in the history for everyone to see.",
+      "Payouts, votes, meeting notes and statements all come from the same shared records.",
+    ],
+  },
+  colourcheck: {
+    intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
+    lanes: [
+      {
+        title: "Vercel",
+        icon: "cube",
+        boxes: [{ title: "Hosting", line: "Serves the Next.js pages and files once. There's no database and no server code." }],
+      },
+      {
+        title: "In your browser",
+        icon: "window",
+        boxes: [
+          { title: "Contrast", line: "Works out each colour's brightness with the WCAG formula, and the ratio between them." },
+          { title: "Fixes", line: "Tries every lightness in the same hue and picks the closest one that passes." },
+          { title: "Colour blindness", line: "Shows each colour as people with four kinds of colour blindness would see it." },
+        ],
+      },
+      {
+        title: "Saved on your device",
+        icon: "database",
+        boxes: [
+          { title: "Saved pairs", line: "Pairs you save stay in this browser. There are no accounts." },
+          { title: "Share links", line: "The two colours live in the address, so a link opens the same pair anywhere." },
+        ],
+      },
+    ],
+    arrows: [
+      { label: "Sends the app once", bothWays: false },
+      { label: "Saves and loads your pairs", bothWays: true },
+    ],
+    steps: [
+      "You type or pick two colours, in any format.",
+      "The browser works out the contrast ratio and checks it against the five WCAG rules.",
+      "If it fails, it finds the closest lighter or darker colour that passes, and one press uses it.",
+      "You can paste a whole palette to see every pair at once, or share a link to one pair.",
+    ],
+  },
+  cvcraft: {
+    intro: "CVcraft keeps your CVs on your device and makes the PDF in the browser, so nothing about you is uploaded.",
+    lanes: [
+      {
+        title: "Vercel",
+        icon: "cube",
+        boxes: [{ title: "Hosting", line: "Serves the Next.js pages and files once. There's no database and no server code." }],
+      },
+      {
+        title: "In your browser",
+        icon: "window",
+        boxes: [
+          { title: "The editor", line: "A form and a live preview that matches the PDF, with tips as you type." },
+          { title: "The PDF", line: "Drawn with pdf-lib: real text and clickable links, fitted to one A4 page." },
+        ],
+      },
+      {
+        title: "Saved on your device",
+        icon: "database",
+        boxes: [
+          { title: "Your CVs", line: "Every version is saved in this browser as you type. There are no accounts." },
+          { title: "Backups", line: "One file holds all your CVs, to keep them safe or move them to another device." },
+        ],
+      },
+    ],
+    arrows: [
+      { label: "Sends the app once", bothWays: false },
+      { label: "Saves and loads your CVs", bothWays: true },
+    ],
+    steps: [
+      "You fill in your details, or start from a finished example.",
+      "The CV check suggests fixes as you type, like leaving out your ID number.",
+      "In the background, the PDF is built to check that it fits on one page, making the text slightly smaller if needed.",
+      "Download PDF saves a file that job sites' CV readers can read.",
+    ],
+  },
   "portfolio-v2-this-site": {
     intro: "This site is drawn on Vercel's servers from my projects in Supabase, and an admin area lets only me change them.",
     lanes: [

@@ -17,7 +17,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-// Tech shown in the scrolling strip
+// Tech shown in the scrolling strip: what my live projects are actually built with
 const tech = [
   "Next.js",
   "React",
@@ -27,10 +27,18 @@ const tech = [
   "Supabase",
   "PostgreSQL",
   "Row Level Security",
-  "HTML5",
-  "CSS",
+  "Firebase",
+  "Firestore security rules",
+  "Vitest",
+  "Playwright",
+  "GitHub Actions",
   "Vercel",
   "Git & GitHub",
+  "PWA & offline",
+  "Accessibility (WCAG)",
+  "pdf-lib",
+  "HTML5",
+  "CSS",
 ];
 
 // The project count in "By the numbers" comes from Supabase: rebuilt at most once a minute, like the About page
@@ -116,7 +124,8 @@ export default function Home() {
       <section aria-label="Tech I work with" className="fx-reveal">
         <p className="mb-5 text-center font-mono text-xs uppercase tracking-[0.18em] text-mist">Tech I work with</p>
         <div className="fx-marquee-wrap overflow-hidden">
-          <ul className="fx-marquee flex w-max gap-3">
+          {/* About 3 seconds per item, so the strip moves at the same speed however many there are */}
+          <ul className="fx-marquee flex w-max gap-3" style={{ animationDuration: `${Math.round(tech.length * 3.2)}s` }}>
             {[...tech, ...tech].map((name, i) => (
               <li
                 key={i}

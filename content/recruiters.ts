@@ -7,11 +7,11 @@
 export const recruiters = {
   shortVersion: [
     "Junior full stack developer: React, Next.js and TypeScript on the front end, SQL, Supabase and Firebase underneath.",
-    "Five Firebase apps built and deployed in 2026, each with automated tests, security rules and offline support.",
+    "Six Firebase apps built and deployed in 2026, each with automated tests, security rules and offline support.",
     "Every skill on this site links to the code or the live page that proves it.",
   ],
-  // The number of Firebase apps that are live (PaperTrail, TickList, Rememba, ShiftBoard, HireTrack)
-  liveApps: 5,
+  // The number of Firebase apps that are live (PaperTrail, TickList, Rememba, ShiftBoard, HireTrack, StokvelBook)
+  liveApps: 6,
   // The line next to "Let's talk" at the bottom of the page
   closing: "I can start immediately, and I'm happy to do a technical interview or a take-home task.",
 };

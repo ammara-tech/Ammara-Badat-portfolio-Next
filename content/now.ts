@@ -6,7 +6,7 @@
   what I shipped recently from content/journey.ts, so those parts update themselves.
 */
 export const now = {
-  updated: "2026-11-09",
+  updated: "2026-11-10",
   focus: "Finishing my final IT Programming project at Unicollege, and looking for my first developer role.",
   learning: [
     "Testing Firebase security rules automatically with the Firebase emulator",

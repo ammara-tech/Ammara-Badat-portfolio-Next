@@ -215,7 +215,7 @@ describe("try the demo", () => {
   });
 
   it("is only on my Firebase apps", () => {
-    expect([...demos].sort()).toEqual(["hiretrack", "papertrail", "rememba", "shiftboard", "ticklist"]);
+    expect([...demos].sort()).toEqual(["hiretrack", "papertrail", "rememba", "shiftboard", "stokvelbook", "ticklist"]);
   });
 });
 

@@ -28,6 +28,9 @@ const ticklist = `${gh}/ticklist`;
 const rememba = `${gh}/rememba`;
 const shiftboard = `${gh}/shiftboard`;
 const hiretrack = `${gh}/hiretrack`;
+const stokvelbook = `${gh}/stokvelbook`;
+const colourcheck = `${gh}/colourcheck`;
+const cvcraft = `${gh}/cvcraft`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -86,6 +89,16 @@ export const skillGroups: SkillGroup[] = [
             href: `${gh}/F1-Race-Hub-2026/blob/main/js/features/favourites.js`,
           },
           { label: "Neon Arcade: js/core.js", href: `${gh}/Neon-Arcade/blob/main/js/core.js` },
+          { label: "CVcraft: CVs and backups saved in the browser", href: `${cvcraft}/blob/main/lib/storage.ts` },
+        ],
+      },
+      {
+        name: "Accessibility (WCAG)",
+        note: "Text that passes contrast checks, keyboard and screen reader support, and colour never used as the only clue.",
+        evidence: [
+          { label: "ColourCheck: the WCAG contrast maths", href: `${colourcheck}/blob/main/lib/colour.ts` },
+          { label: "ColourCheck (live)", href: "https://colourcheck-two.vercel.app" },
+          { label: "This site: On this page links and More below", href: `${portfolio}/blob/main/lib/page-nav.ts` },
         ],
       },
       {
@@ -183,6 +196,16 @@ export const skillGroups: SkillGroup[] = [
           { label: "Rememba: firestore.rules", href: `${rememba}/blob/main/firestore.rules` },
           { label: "ShiftBoard: managers and staff with different access", href: `${shiftboard}/blob/main/firestore.rules` },
           { label: "HireTrack: checking every field and link", href: `${hiretrack}/blob/main/firestore.rules` },
+          { label: "StokvelBook: a money book nobody can change or delete", href: `${stokvelbook}/blob/main/firestore.rules` },
+        ],
+      },
+      {
+        name: "Making PDFs (pdf-lib)",
+        note: "PDFs with real, selectable text and clickable links, built on the server or in the browser.",
+        evidence: [
+          { label: "This site: my CV as a PDF", href: `${portfolio}/blob/main/lib/cv-pdf.ts` },
+          { label: "CVcraft: one-page CVs made in the browser", href: `${cvcraft}/blob/main/lib/pdf.ts` },
+          { label: "CVcraft (live)", href: "https://cvcraft-green.vercel.app" },
         ],
       },
       {
@@ -220,6 +243,9 @@ export const skillGroups: SkillGroup[] = [
           { label: "Rememba (live)", href: "https://rememba-one.vercel.app" },
           { label: "ShiftBoard (live)", href: "https://shiftboard-zeta.vercel.app" },
           { label: "HireTrack (live)", href: "https://hiretrack-five-phi.vercel.app" },
+          { label: "StokvelBook (live)", href: "https://stokvelbook.vercel.app" },
+          { label: "ColourCheck (live)", href: "https://colourcheck-two.vercel.app" },
+          { label: "CVcraft (live)", href: "https://cvcraft-green.vercel.app" },
         ],
       },
       {
@@ -229,6 +255,8 @@ export const skillGroups: SkillGroup[] = [
           { label: "This site: tests/", href: `${portfolio}/tree/main/tests` },
           { label: "This site: browser tests (e2e/)", href: `${portfolio}/tree/main/e2e` },
           { label: "Rememba: spaced repetition tests", href: `${rememba}/blob/main/tests/srs.test.ts` },
+          { label: "StokvelBook: the money book's tests", href: `${stokvelbook}/blob/main/tests/ledger.test.ts` },
+          { label: "CVcraft: real PDFs read back in the tests", href: `${cvcraft}/blob/main/tests/pdf.test.ts` },
         ],
       },
       {

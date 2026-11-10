@@ -1,6 +1,6 @@
 /*
   MY JOURNEY — the timeline on the About page (components/Journey.tsx).
-  From my first repository to five live Firebase apps, oldest first.
+  From my first repository to my latest live apps, oldest first.
 
   Each date is the month I created that project's GitHub repository, so anyone can check it
   on my GitHub. "href" is the project's page on this site (or its live site).
@@ -85,6 +85,12 @@ export const journey: JourneyStep[] = [
     title: "HireTrack",
     line: "A board for my own job hunt, with reminders, interview prep and honest stats.",
     href: "/projects/hiretrack",
+  },
+  {
+    date: "2026-11",
+    title: "StokvelBook, ColourCheck and CVcraft",
+    line: "Three apps in one day: a stokvel's record book nobody can quietly change, a colour contrast checker, and a CV builder.",
+    href: "/projects/stokvelbook",
   },
 ];
 

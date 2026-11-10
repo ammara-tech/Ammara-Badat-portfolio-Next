@@ -16,16 +16,23 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "StokvelBook",
+    name: "QueueUp",
     summary:
-      "A shared record book for stokvels and savings clubs: monthly contributions, who has paid, whose turn the payout is, and a statement every member can see.",
+      "A walk-in queue for barbers, clinics and small shops: customers join by scanning a QR code and see their place in line live on their phone, instead of waiting inside.",
     tags: ["Next.js", "TypeScript", "Firebase"],
     stage: "next",
   },
   {
-    name: "QueueUp",
+    name: "BookMe",
     summary:
-      "A walk-in queue for barbers, clinics and small shops: customers join by scanning a QR code and see their place in line live on their phone, instead of waiting inside.",
+      "An online booking page for salons, tutors and mechanics: customers pick a free time slot, and the owner sees the day's bookings and can block time off.",
+    tags: ["Next.js", "TypeScript", "Firebase"],
+    stage: "next",
+  },
+  {
+    name: "RSVPme",
+    summary:
+      "Event invites with RSVPs, and a QR code check-in at the door using the phone's camera, for church events, braais and student societies.",
     tags: ["Next.js", "TypeScript", "Firebase"],
     stage: "next",
   },

@@ -31,6 +31,84 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "a-money-book-nobody-can-quietly-change",
+    title: "A money book nobody can quietly change",
+    description:
+      "StokvelBook keeps a stokvel's records where every member can see them. The key to trusting it: entries can be added, but never edited or deleted.",
+    date: "2026-11-10",
+    tags: ["Firebase", "Security", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "A stokvel runs on trust. Members hand over money every month, and usually one person, the treasurer, keeps the record in a notebook or a WhatsApp chat. If a payment goes missing from the record, it's one person's word against another's. So when I built StokvelBook, the most important feature wasn't a page. It was a rule: once something is in the money book, nobody can change it.",
+      },
+      { type: "h2", text: "Only ever adding" },
+      {
+        type: "p",
+        text: "Payments, payouts, fines and corrections are all entries in one list. My Firebase security rules let the chairperson and treasurer add an entry, always in their own name and stamped with the real time, and then refuse every edit and every delete, from anyone. Not even the chairperson can tidy the past.",
+      },
+      {
+        type: "p",
+        text: "Mistakes still happen, so the fix is another entry: a correction that points at the wrong one and needs a reason. The rules check that it points at a real entry for the same member and amount. In the history, the wrong entry is crossed out with the reason next to it. Everyone can see what was fixed, by whom and why, which is exactly what a treasurer's notebook can't show.",
+      },
+      { type: "h2", text: "One function for every total" },
+      {
+        type: "p",
+        text: "Because entries are never changed, every total is worked out from the list itself: one function leaves out corrections and the entries they cancel, and the balances, the payout turns and the statements all start from that. So the totals can never disagree with the history. My tests check it with made-up groups: a payment recorded twice and cancelled, a member who's behind with a fine, and turns paid out in order.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Roles: the chairperson runs the group, the treasurer keeps the book, and members see everything and vote.",
+          "Members without a smartphone can be added by name, so the whole group is in the book.",
+          "Remind on WhatsApp opens a polite message already written, so it comes from someone the member knows, and costs nothing.",
+          "Deleting a whole group is still possible, but only by a chairperson, and only after marking it as being deleted.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: if people need to trust a record, don't make editing safer. Make editing unnecessary, and keep every correction visible.",
+      },
+    ],
+  },
+  {
+    slug: "two-apps-with-no-database",
+    title: "Two apps with no database: ColourCheck and CVcraft",
+    description:
+      "Not every app needs accounts. A contrast checker and a CV builder that do everything in the browser: free to run, offline, and private.",
+    date: "2026-11-10",
+    tags: ["Next.js", "Accessibility", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "After six apps with Firebase, I built two with no database at all. ColourCheck checks whether text is easy to read, and CVcraft makes a one-page CV. Neither needs to know who you are, so neither asks: everything happens in the browser.",
+      },
+      { type: "h2", text: "ColourCheck: a fix, not just a fail" },
+      {
+        type: "p",
+        text: "Most contrast checkers just say pass or fail. ColourCheck works out each colour's brightness with the WCAG formula, and if a pair fails, it tries every lightness of the same hue and suggests the closest one that passes, so the fix still looks like your colour. My tests check it against known answers: black on white is 21:1, and one particular grey is the lightest that passes on white. I also made sure a ratio like 4.496 is shown as 4.49, never rounded up to 4.50 next to a fail.",
+      },
+      { type: "h2", text: "CVcraft: a PDF made on your phone" },
+      {
+        type: "p",
+        text: "A CV holds personal details, so CVcraft keeps it in the browser and makes the PDF there too, with pdf-lib, the same library I use for my own CV on this site. The PDF has real text that job sites can read, and it's fitted to one A4 page: if it's a little too long, the text gets slightly smaller before a second page is allowed. The tests build real PDFs and read them back to check the page count and the links.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Both work offline and install like apps.",
+          "Saved work stays on the device. CVcraft can download a backup file to move your CVs to another phone or laptop.",
+          "CVcraft's tips warn people to leave out their ID number and date of birth, which employers don't need.",
+          "Known gap: without accounts, saved work lives in one browser until you move it.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: ask what an app really needs to store, and where. If the answer is \"nothing, on a server\", leaving the database out makes it simpler, free and more private.",
+      },
+    ],
+  },
+  {
     slug: "try-the-demo-without-an-account",
     title: "Letting people try my apps without making an account",
     description:
