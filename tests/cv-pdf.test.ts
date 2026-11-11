@@ -117,8 +117,9 @@ describe("More projects on the CV (from /admin)", () => {
 
   it("still fits on one page with five extra projects", async () => {
     const five = ["PaperTrail", "TickList", "Rememba", "Personal Portfolio", "Fish-bones"].map((t) => ({
-      title: t,
+           title: t,
       summary: "A one-line summary of what this project does for the people who use it",
+      tags: ["Next.js", "Firebase"],
       links: [{ label: "Live", href: "https://example.com" }, { label: "Code", href: "https://github.com/x/y" }],
     }));
     const pdf = await PDFDocument.load(await buildCvPdf(five));
