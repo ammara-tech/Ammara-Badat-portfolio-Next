@@ -35,8 +35,11 @@ jobs:
         with:
           node-version: 22
       - run: npm install
+      # GitHub's machines already have the system libraries Chromium needs. --with-deps also tops up
+      # a few extra fonts from Ubuntu's servers, and when those can't be reached the step used to fail
+      # the whole run, so if that part fails it installs just the browser instead.
       - name: Install the test browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium || npx playwright install chromium
 
       - name: Wait until Vercel is serving this commit
         if: github.event_name == 'push'
