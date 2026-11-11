@@ -3,6 +3,7 @@ import { about } from "@/content/about";
 import { cv } from "@/content/cv";
 import { siteUrl } from "@/lib/site";
 import type { CvExtra } from "@/lib/cv-projects";
+import type { CvProject } from "@/content/cv";
 
 /*
   My CV as a PDF, built from the same words as the /cv page (content/cv.ts and content/about.ts),
@@ -67,8 +68,11 @@ export function fitText(text: string, font: PDFFont, size: number, width: number
 const absolute = (href: string) => (href.startsWith("/") ? `${siteUrl}${href}` : href);
 const bare = (href: string) => href.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 
-/** extra: the "More projects" lines (lib/cv-projects.ts), from my published projects in /admin */
-export async function buildCvPdf(extra: CvExtra[] = []): Promise<Uint8Array> {
+/**
+ * extra: the "More projects" lines, and projects: the full entries (both from cvProjects() in
+ * lib/cv-projects.ts, worked out from my published projects in /admin)
+ */
+export async function buildCvPdf(extra: CvExtra[] = [], projects: CvProject[] = cv.projects, hidden = 0): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`${about.name} – CV`);
   doc.setAuthor(about.name);
@@ -180,7 +184,7 @@ export async function buildCvPdf(extra: CvExtra[] = []): Promise<Uint8Array> {
 
   // ---------- Projects ----------
   heading("Projects");
-  for (const p of cv.projects) {
+  for (const p of projects) {
     space(40);
     text(p.title, MARGIN, 10.5, bold);
     // Links on the right: "Live · Code · Case study"
@@ -220,7 +224,10 @@ export async function buildCvPdf(extra: CvExtra[] = []): Promise<Uint8Array> {
       text(p.title, MARGIN, 9.6, bold);
       const titleWidth = bold.widthOfTextAtSize(pdfSafe(p.title), 9.6) + 3;
       const room = WIDTH - titleWidth - linksWidth - 20;
-      const summary = p.summary ? fitText(`\u2013 ${p.summary}`, regular, 9.2, room) : "";
+      // The summary, then up to three tags, cut at a whole word if the line is full
+      const tags = (p.tags ?? []).slice(0, 3).join(", ");
+      const line = [p.summary, tags].filter(Boolean).join(" \u00B7 ");
+      const summary = line ? fitText(`\u2013 ${line}`, regular, 9.2, room) : "";
       if (summary) text(summary, MARGIN + titleWidth, 9.2, regular, SOFT);
       let x = A4.width - MARGIN - linksWidth;
       p.links.forEach((l, i) => {
@@ -230,6 +237,12 @@ export async function buildCvPdf(extra: CvExtra[] = []): Promise<Uint8Array> {
         }
         x += link(l.label, l.href, x, 9);
       });
+      y -= 12.5;
+    }
+    // Projects left out to keep my CV to one page: a link to all of them
+    if (hidden > 0) {
+      space(13);
+      link(`+ ${hidden} more on my portfolio: ${bare(siteUrl)}/projects`, "/projects", MARGIN, 9);
       y -= 12.5;
     }
   }
@@ -264,3 +277,27 @@ export async function buildCvPdf(extra: CvExtra[] = []): Promise<Uint8Array> {
 
   return doc.save();
 }
+
+/**
+ * My CV as one page, whatever I add in /admin. It tries, in order:
+ *   1. everything, with two points for each of my newest projects
+ *   2. one point for each of them
+ *   3. fewer one-line "More projects" (the oldest go first), with a link to the rest on my site
+ * and only allows a second page if even that doesn't fit.
+ */
+export async function buildFittedCv(extra: CvExtra[], projects: CvProject[]): Promise<Uint8Array> {
+  const featured = new Set(projects.filter((p) => !cv.projects.some((m) => m.title === p.title)).map((p) => p.title));
+  const onePoint = projects.map((p) => (featured.has(p.title) ? { ...p, points: p.points.slice(0, 1) } : p));
+  const tries: [CvExtra[], CvProject[], number][] = [
+    [extra, projects, 0],
+    [extra, onePoint, 0],
+    ...Array.from({ length: Math.max(0, extra.length - 3) }, (_, i): [CvExtra[], CvProject[], number] => [extra.slice(0, extra.length - (i + 2)), onePoint, i + 2]),
+  ];
+  let last: Uint8Array = new Uint8Array();
+  for (const [e, p, hidden] of tries) {
+    last = await buildCvPdf(e, p, hidden);
+    if ((await PDFDocument.load(last)).getPageCount() === 1) return last;
+  }
+  return last;
+}
+

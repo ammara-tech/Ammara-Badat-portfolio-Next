@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { PDFDocument, PDFName, StandardFonts, type PDFDict, type PDFArray, type PDFString } from "pdf-lib";
-import { buildCvPdf, fitText, pdfSafe, wrap } from "@/lib/cv-pdf";
-import { firstSentence, moreProjects, sameAddress } from "@/lib/cv-projects";
+import { buildCvPdf, buildFittedCv, fitText, pdfSafe, wrap } from "@/lib/cv-pdf";
+import { cvProjects, firstSentence, moreProjects, sameAddress, sentences } from "@/lib/cv-projects";
 import type { Project } from "@/lib/supabase";
 import { cv } from "@/content/cv";
 import { about } from "@/content/about";
@@ -125,3 +125,54 @@ describe("More projects on the CV (from /admin)", () => {
     expect(pdf.getPageCount()).toBe(1);
   });
 });
+
+describe("the CV keeps itself up to date", () => {
+  const made = (title: string, created_at: string, tags: string[] = ["Next.js", "Firebase"]): Project => ({
+    id: title, title, summary: `${title} helps people with something useful. It works offline on any phone. Next.js + Firebase.`,
+    live_url: `https://${title.toLowerCase()}.example`, repo_url: `https://github.com/x/${title.toLowerCase()}`, image_url: null,
+    video_url: null, case_study_url: null, tags, sort_order: 0, published: true, created_at,
+  });
+  // Roughly what's published in /admin now
+  const all = [
+    made("PaperTrail", "2026-10-20"), made("TickList", "2026-10-22"), made("Rememba", "2026-10-24"), made("ShiftBoard", "2026-11-05"),
+    made("HireTrack", "2026-11-08"), made("StokvelBook", "2026-11-10T20:00"), made("ColourCheck", "2026-11-10T20:05"), made("CVcraft", "2026-11-10T20:10"),
+    made("Fish-bones", "2026-03-01", ["JavaScript", "Canvas"]),
+  ];
+
+  it("shows my two main projects first, then my three newest in full", () => {
+    const { projects } = cvProjects(cv.projects, all);
+    expect(projects.map((p) => p.title)).toEqual([cv.projects[0].title, cv.projects[1].title, "CVcraft", "ColourCheck", "StokvelBook"]);
+    const newest = projects[2];
+    expect(newest.stack).toBe("Next.js, Firebase");
+    expect(newest.points).toEqual(["CVcraft helps people with something useful", "It works offline on any phone"]); // "Next.js + Firebase" is too short to be a point
+    expect(newest.links.map((l) => l.label)).toEqual(["Live", "Code", "Details"]);
+  });
+
+  it("lists everything else under More projects with tags, newest first, then my older main projects", () => {
+    const { extra } = cvProjects(cv.projects, all);
+    expect(extra.map((e) => e.title)).toEqual(["HireTrack", "ShiftBoard", "Rememba", "TickList", "PaperTrail", "Fish-bones", ...cv.projects.slice(2).map((p) => p.title)]);
+    expect(extra[0].tags).toEqual(["Next.js", "Firebase"]);
+    expect(extra[0].links.map((l) => l.label)).toEqual(["Live", "Code"]);
+    const neon = extra.find((e) => e.title === "Neon Arcade")!;
+    expect(neon.tags).toContain("Canvas");
+  });
+
+  it("puts a brand-new project at the top part of my CV by itself", () => {
+    const { projects } = cvProjects(cv.projects, [...all, made("QueueUp", "2026-11-11")]);
+    expect(projects[2].title).toBe("QueueUp");
+  });
+
+  it("splits a summary into sentences for the points", () => {
+    expect(sentences("Quotes and invoices for small shops. Works offline with no signal at all. Yay.")).toEqual(["Quotes and invoices for small shops", "Works offline with no signal at all"]);
+  });
+
+  it("still fits on one page with today's projects, and with many more", async () => {
+    const layout = cvProjects(cv.projects, all);
+    expect((await PDFDocument.load(await buildFittedCv(layout.extra, layout.projects))).getPageCount()).toBe(1);
+    const many = [...all, ...["QueueUp", "BookMe", "RSVPme", "PowerPlan", "RandWise", "StudyBuddy"].map((t, i) => made(t, `2026-11-1${i}`))];
+    const big = cvProjects(cv.projects, many);
+    const pdf = await PDFDocument.load(await buildFittedCv(big.extra, big.projects));
+    expect(pdf.getPageCount()).toBe(1);
+  });
+});
+

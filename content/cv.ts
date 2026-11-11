@@ -1,8 +1,9 @@
 /*
   ✍️ MY CV — shown as a web page at /cv.
   The PDF download (/cv/Ammara-Badat-CV.pdf) is built from this file too (lib/cv-pdf.ts),
-  so changing a word here changes the page and the PDF together. Any other project I publish
-  in /admin is added under "More projects" by itself (lib/cv-projects.ts).
+  so changing a word here changes the page and the PDF together. The projects keep themselves up
+  to date from /admin (lib/cv-projects.ts): my newest ones are shown in full after the first two
+  below, and the rest go under "More projects".
 */
 
 const gh = "https://github.com/ammara-tech";
@@ -17,7 +18,7 @@ export type CvProject = {
 
 export const cv = {
   profile:
-    "Junior full stack developer who builds complete web applications, from responsive interfaces in React and Next.js to secure back ends with SQL and Supabase. Certified in HTML and CSS, HTML5 Application Development, JavaScript and Software Development (Certiport IT Specialist). Available immediately for junior full stack or front-end roles in Gauteng, hybrid or on-site.",
+    "Junior full stack developer who builds complete web applications, from responsive interfaces in React and Next.js to secure back ends with SQL, Supabase and Firebase. Certified in HTML and CSS, HTML5 Application Development, JavaScript and Software Development (Certiport IT Specialist). Available immediately for junior full stack or front-end roles in Gauteng, hybrid or on-site.",
 
   skills: [
     {
@@ -27,12 +28,12 @@ export const cv = {
     },
     {
       label: "Back end & data",
-      value: "SQL, PostgreSQL, Supabase (Auth, Row Level Security, Storage), REST APIs, server-side validation",
+      value: "SQL, PostgreSQL, Supabase (Auth, Row Level Security, Storage), Firebase (Auth, Firestore, security rules), REST APIs, server-side validation",
     },
     {
       label: "Tools & practice",
       value:
-        "Git and GitHub, Vercel, VS Code, accessibility (WCAG AA contrast, keyboard navigation), SEO, Lighthouse, automated tests, technical writing",
+        "Git and GitHub, GitHub Actions, Vercel, VS Code, Vitest and Playwright tests, accessibility (WCAG AA contrast, keyboard navigation), SEO, Lighthouse, technical writing",
     },
   ],
 

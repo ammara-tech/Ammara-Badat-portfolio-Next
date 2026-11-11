@@ -31,6 +31,46 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "my-newest-projects-first-on-my-cv",
+    title: "My newest projects first, on one page",
+    description:
+      "When I publish a project, my CV page and PDF now show it in full near the top, by themselves, and the PDF shortens itself to stay on one page.",
+    date: "2026-11-11",
+    tags: ["Next.js", "Supabase", "Testing"],
+    body: [
+      {
+        type: "p",
+        text: "My CV already added new projects by itself (I wrote about that in an earlier note), as one line each at the bottom. But I was building a new app almost every day, and my newest, best work was sitting in the smallest print, under projects from months ago. A CV should lead with what you can do now.",
+      },
+      { type: "h2", text: "Newest first, in full" },
+      {
+        type: "p",
+        text: "Now one function works out the CV's projects from what I've published. My capstone and this site keep their hand-written points at the top. Straight after them come my three newest projects, in full: their tags become the stack line, and the sentences of their summary become the bullet points. Everything else moves to More projects, one line each, now with its tags. So when I publish an app in the evening, it's near the top of my CV within ten minutes, with no editing and no new deploy.",
+      },
+      {
+        type: "p",
+        text: "Summaries aren't always written as bullet points, so the function leaves out scraps: a summary ending in \"Next.js + Firebase.\" doesn't turn into a three-word point.",
+      },
+      { type: "h2", text: "Staying on one page" },
+      {
+        type: "p",
+        text: "The catch: more projects in full means a longer PDF, and recruiters prefer one page. My first try spilled four lines onto a second page. Trimming it by hand would only break again with the next app, so the PDF now fits itself. It builds the whole CV, checks the page count, and if it's too long it tries again, one small step at a time: one point for each new project, then fewer one-line projects, oldest first, with a link to the rest on my site. It stops at the first version that fits.",
+      },
+      {
+        type: "ul",
+        items: [
+          "The tests build real PDFs: one page with today's projects, and still one page with six more apps added.",
+          "A brand-new project going straight to the top part is tested too.",
+          "I also added Firebase, GitHub Actions, Vitest and Playwright to my CV's skills, which had fallen behind my work.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "Lesson: if something has a hard limit, like one page, don't fix it once by hand. Make the code check the limit and adjust itself, so the next change can't break it.",
+      },
+    ],
+  },
+  {
     slug: "a-money-book-nobody-can-quietly-change",
     title: "A money book nobody can quietly change",
     description:

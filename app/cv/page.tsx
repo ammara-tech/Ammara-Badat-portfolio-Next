@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { about } from "@/content/about";
 import { cv } from "@/content/cv";
 import { loadProjects } from "@/lib/projects";
-import { moreProjects } from "@/lib/cv-projects";
+import { cvProjects } from "@/lib/cv-projects";
 import { breadcrumbs, pageMetadata, personRef } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import JsonLd from "@/components/JsonLd";
@@ -13,8 +13,9 @@ import { Accent, SmartLink, btnPrimary } from "@/components/ui";
 /*
   My CV as a web page: easy to read on a phone, readable by Google, and it prints
   cleanly on white paper (see the @media print rules in globals.css).
-  The text lives in content/cv.ts. "More projects" is every other project I've published in
-  /admin (lib/cv-projects.ts), so a new project appears here, and in the PDF, by itself.
+  The text lives in content/cv.ts. The projects come from what I've published in /admin
+  (lib/cv-projects.ts): my newest ones in full, and the rest under "More projects" with their tags,
+  so a new project appears here, and in the PDF, by itself.
 */
 
 // Look for newly published projects at most every 10 minutes
@@ -38,7 +39,7 @@ function Heading({ children }: { children: React.ReactNode }) {
 
 export default async function CvPage() {
   const { email, phone, github, linkedin, cv: pdf } = about.contact;
-  const extra = moreProjects(cv.projects, (await loadProjects()).projects);
+  const { projects, extra } = cvProjects(cv.projects, (await loadProjects()).projects);
 
   return (
     <article className="mx-auto max-w-3xl">
@@ -113,7 +114,7 @@ export default async function CvPage() {
 
       <Heading>Projects</Heading>
       <div className="mt-4 space-y-7">
-        {cv.projects.map((p) => (
+        {projects.map((p) => (
           <section key={p.title} className="cv-block">
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <h3 className="font-semibold text-snow">{p.title}</h3>
@@ -125,7 +126,7 @@ export default async function CvPage() {
                 ))}
               </p>
             </div>
-            <p className="mt-1 text-sm italic text-mist">{p.stack}</p>
+            {p.stack && <p className="mt-1 text-sm italic text-mist">{p.stack}</p>}
             <ul className="mt-2 space-y-1.5">
               {p.points.map((point) => (
                 <li key={point} className="flex gap-3 text-mist">
@@ -147,6 +148,7 @@ export default async function CvPage() {
                 <span className="text-mist">
                   <strong className="font-semibold text-snow">{p.title}</strong>
                   {p.summary && <> – {p.summary}</>}
+                  {p.tags.length > 0 && <span className="block font-mono text-xs text-mist sm:inline"> · {p.tags.slice(0, 4).join(", ")}</span>}
                 </span>
                 <span className="flex flex-wrap gap-3 font-mono text-xs">
                   {p.links.map((l) => (
