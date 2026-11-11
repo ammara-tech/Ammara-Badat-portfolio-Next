@@ -31,6 +31,51 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "giving-each-of-my-apps-its-own-look",
+    title: "Giving each of my apps its own look",
+    description:
+      "My six Firebase apps all looked like the same template. I gave each one its own colours, fonts, sign-in screen and layout, without breaking any.",
+    date: "2026-11-11",
+    tags: ["CSS", "Accessibility", "UX"],
+    body: [
+      {
+        type: "p",
+        text: "Looking at my portfolio side by side, I noticed something a visitor would notice too: PaperTrail, TickList, Rememba, ShiftBoard, HireTrack and StokvelBook all had the same sign-in screen (a coloured half with example cards, a form on the other half) and the same bar along the top. They were different apps that looked like one template. So I gave each one an idea, and let the idea decide the colours, the fonts, the sign-in screen and where the pages live.",
+      },
+      { type: "h2", text: "One idea per app" },
+      {
+        type: "ul",
+        items: [
+          "PaperTrail: an invoice on a desk. The sign-in is a tax invoice where every feature costs R 0,00, with a FREE stamp. Inside, the pages are in a sidebar.",
+          "TickList: sticky notes on the fridge, with a handwritten font. The sign-in is a sticky note held up by magnets. On a phone, the pages are a bar at the bottom.",
+          "Rememba: studying at night, dark by default. The sign-in is an index card you turn over, like a flashcard. Inside, the pages are a floating dock.",
+          "ShiftBoard: a rota on a whiteboard, with a grid behind everything and times in a monospace font. Signing in is itself a shift on the board. Inside, the pages are an icon rail.",
+          "HireTrack: a career studio in charcoal, violet and coral. The sign-in card sits over a job board drifting slowly behind it. Inside, a dark sidebar counts the jobs in each stage.",
+          "StokvelBook: a savings passbook, deep green and gold with a pattern inspired by shweshwe. The sign-in is an open passbook. Inside, the group's card is at the top of every page, and on a phone the pages are a bar at the bottom, like a banking app.",
+        ],
+      },
+      { type: "h2", text: "Changing the look without breaking the apps" },
+      {
+        type: "p",
+        text: "Each app names its colours in one CSS file (the main colour, its soft background, the quiet text), and every component uses those names, not real colours. So most of the redesign was changing what the names mean, plus new fonts and a new header. The sign-in screens were rewritten, but only their markup: the code that signs you in stayed exactly as it was, so the tests that cover it didn't need to change.",
+      },
+      { type: "h2", text: "Checking it" },
+      {
+        type: "ul",
+        items: [
+          "Every pair of text and background colours was checked against WCAG AA (4.5 to 1), in light and dark mode. One failed on the first try (Rememba's orange streak flame on its light page, at 3.9 to 1), so it was darkened.",
+          "Each app was photographed on a laptop and a phone, in both themes, and checked for pages that scroll sideways.",
+          "Moving things (the drifting job board, the flipping card) stand still for people who ask their device for less motion, and the card you turn over keeps the keyboard on the side you can see.",
+          "The pictures of these apps on this site are now their new sign-in screens.",
+        ],
+      },
+      {
+        type: "tip",
+        text: "If your components use colour names like \"main\" and \"soft\" instead of real colours, a whole redesign can start in one file.",
+      },
+    ],
+  },
+  {
     slug: "my-newest-projects-first-on-my-cv",
     title: "My newest projects first, on one page",
     description:
