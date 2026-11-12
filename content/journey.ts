@@ -104,6 +104,12 @@ export const journey: JourneyStep[] = [
     line: "An online booking page for salons, tutors and mechanics, where two people can never book the same time.",
     href: "/projects/bookme",
   },
+  {
+    date: "2026-11",
+    title: "PowerPlan",
+    line: "A prepaid electricity tracker: a few meter readings, and it knows when your units will run out.",
+    href: "/projects/powerplan",
+  },
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

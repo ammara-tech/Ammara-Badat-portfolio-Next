@@ -33,6 +33,7 @@ const colourcheck = `${gh}/colourcheck`;
 const cvcraft = `${gh}/cvcraft`;
 const queueup = `${gh}/queueup`;
 const bookme = `${gh}/bookme`;
+const powerplan = `${gh}/powerplan`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -212,6 +213,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "CVcraft (live)", href: "https://cvcraft-green.vercel.app" },
           { label: "QueueUp (live)", href: "https://queueup-seven.vercel.app" },
           { label: "BookMe (live)", href: "https://bookme-taupe-three.vercel.app" },
+          { label: "PowerPlan (live)", href: "https://powerplan-seven.vercel.app" },
         ],
       },
       {
@@ -265,6 +267,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "CVcraft: real PDFs read back in the tests", href: `${cvcraft}/blob/main/tests/pdf.test.ts` },
           { label: "QueueUp: QR codes checked against a second version", href: `${queueup}/blob/main/tests/code.test.ts` },
           { label: "BookMe: free times, opening hours and calendar files", href: `${bookme}/blob/main/tests/schedule.test.ts` },
+          { label: "PowerPlan: the sums behind units left and run-out dates", href: `${powerplan}/blob/main/tests/power.test.ts` },
         ],
       },
       {

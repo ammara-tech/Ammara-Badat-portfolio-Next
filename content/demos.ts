@@ -3,7 +3,7 @@
   the page address (/projects/<key>). The button opens the live site with ?demo on the end, which
   puts "Try the demo" at the top of its sign-in screen: one press, no account, with example data.
 */
-export const demos = new Set(["papertrail", "ticklist", "rememba", "shiftboard", "hiretrack", "stokvelbook", "queueup", "bookme"]);
+export const demos = new Set(["papertrail", "ticklist", "rememba", "shiftboard", "hiretrack", "stokvelbook", "queueup", "bookme", "powerplan"]);
 
 /** "https://hiretrack-five-phi.vercel.app/" -> "https://hiretrack-five-phi.vercel.app/?demo" */
 export function demoUrl(liveUrl: string) {

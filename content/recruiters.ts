@@ -10,8 +10,8 @@ export const recruiters = {
     "Six Firebase apps built and deployed in 2026, each with automated tests, security rules and offline support.",
     "Every skill on this site links to the code or the live page that proves it.",
   ],
-  // The number of Firebase apps that are live (PaperTrail, TickList, Rememba, ShiftBoard, HireTrack, StokvelBook, QueueUp, BookMe)
-  liveApps: 8,
+  // The number of Firebase apps that are live (PaperTrail, TickList, Rememba, ShiftBoard, HireTrack, StokvelBook, QueueUp, BookMe, PowerPlan)
+  liveApps: 9,
   // The line next to "Let's talk" at the bottom of the page
   closing: "I can start immediately, and I'm happy to do a technical interview or a take-home task.",
 };

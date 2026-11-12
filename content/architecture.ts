@@ -189,6 +189,17 @@ export const architectures: Record<string, Architecture> = {
       "The booking appears in the owner's diary within a moment. The customer can add it to their calendar, or cancel it.",
     ],
   },
+  powerplan: {
+    intro: "PowerPlan turns a few readings of a prepaid meter into answers: how much you use a day, how many units are left right now, and when they'll run out.",
+    lanes: [vercel, device([]), firebase("Your readings, purchases and appliances live under your own account: only you can read or change them.")],
+    arrows: firebaseArrows,
+    steps: [
+      "You read your meter now and then, and add the units you buy.",
+      "Between two readings, what you used is the earlier reading, plus what you bought, minus what's left.",
+      "From the last two weeks, PowerPlan works out your use a day, the units on the meter right now and the day they'll run out.",
+      "With your recent price per unit, it also says what a month costs, what an amount buys and what each appliance costs to run.",
+    ],
+  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [
