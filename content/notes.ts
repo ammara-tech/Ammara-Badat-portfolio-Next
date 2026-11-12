@@ -31,6 +31,49 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "two-people-can-never-book-the-same-time",
+    title: "Two people can never book the same time",
+    description:
+      "In BookMe, two customers might tap the same free time at the same moment. Here's how one gets it, the other is told, and the diary never ends up double-booked.",
+    date: "2026-11-12",
+    tags: ["Firebase", "Security"],
+    body: [
+      {
+        type: "p",
+        text: "A booking page has one job it can't get wrong: if Zanele and Lerato both open the salon's page on Friday night and both tap Saturday at 09:00, only one of them can have it. Checking \"is 09:00 free?\" on each phone isn't enough, because both phones see it free a moment before either books.",
+      },
+      { type: "h2", text: "A record for every taken time" },
+      {
+        type: "p",
+        text: "Each taken time slot is its own small record in the database, named by its date and time, so \"Saturday at 09:00\" has exactly one possible name. A three-hour service takes six half-hour slots. The records have no names on them, so the booking page can read them to show which times are free.",
+      },
+      { type: "h2", text: "Check and take, in one step" },
+      {
+        type: "p",
+        text: "Booking is a transaction: on the server, it checks that every slot the service needs is still free, then takes them all and saves the booking, in one step. If someone else got there first, the transaction fails, and the customer sees \"Someone has just booked that time. Please choose another.\" Meanwhile their list of times updates by itself, so the taken time has usually gone before they tap it.",
+      },
+      { type: "h2", text: "The security rules back it up" },
+      {
+        type: "ul",
+        items: [
+          "A slot's name has to match the date and time inside it, so nobody can sneak a second record in for the same time.",
+          "A slot can only be made or removed, never changed, so a taken time can't be handed to someone else.",
+          "A customer can only take slots for their own new booking, inside its start and end, and can only free them by cancelling it.",
+          "A booking, with a name and phone number, can only be read by the owner and the customer who made it.",
+        ],
+      },
+      { type: "h2", text: "A bug I learned from" },
+      {
+        type: "p",
+        text: "When I first published the rules, Firebase rejected them: one of my booking's fields was called \"service\", and that's a word the rules language keeps for itself (every rules file starts with \"service cloud.firestore\"). Writing the field as d['service'] instead of d.service fixed it. The checks I run before sending code can't run Firebase's rules checker, so publishing the rules is now the first step when a project is set up.",
+      },
+      {
+        type: "tip",
+        text: "If two people might want the same thing at once, don't check and then take: make taking it the check.",
+      },
+    ],
+  },
+  {
     slug: "letting-strangers-into-my-database-safely",
     title: "Letting strangers into my database, safely",
     description:

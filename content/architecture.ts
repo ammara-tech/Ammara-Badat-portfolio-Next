@@ -174,6 +174,21 @@ export const architectures: Record<string, Architecture> = {
       "The owner presses Call next. Within a moment the customer's phone turns green and dings.",
     ],
   },
+  bookme: {
+    intro: "BookMe has two sides: the owner's diary, and a booking page anyone can open without an account. The hard part is making sure two people can never book the same time.",
+    lanes: [
+      vercel,
+      device([{ title: "Customers' phones", line: "The booking link opens the business's page. Booking gives a guest account: no email, no password." }]),
+      firebase("Anyone can see the services, hours and which times are taken, never a name. Each time slot can only be taken once, and a booking can only be read by the owner and the customer who made it."),
+    ],
+    arrows: firebaseArrows,
+    steps: [
+      "The owner sets their services, prices and opening hours, and shares the booking link or QR code.",
+      "A customer picks a service, a day and a free time. Times someone else books disappear by themselves.",
+      "Booking checks with the server that every time it needs is still free, and takes them all in one step.",
+      "The booking appears in the owner's diary within a moment. The customer can add it to their calendar, or cancel it.",
+    ],
+  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [

@@ -98,6 +98,12 @@ export const journey: JourneyStep[] = [
     line: "A walk-in queue on everyone's phone: scan a QR code, take a number, and wait wherever you like.",
     href: "/projects/queueup",
   },
+  {
+    date: "2026-11",
+    title: "BookMe",
+    line: "An online booking page for salons, tutors and mechanics, where two people can never book the same time.",
+    href: "/projects/bookme",
+  },
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

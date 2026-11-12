@@ -32,6 +32,7 @@ const stokvelbook = `${gh}/stokvelbook`;
 const colourcheck = `${gh}/colourcheck`;
 const cvcraft = `${gh}/cvcraft`;
 const queueup = `${gh}/queueup`;
+const bookme = `${gh}/bookme`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -199,6 +200,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "HireTrack: checking every field and link", href: `${hiretrack}/blob/main/firestore.rules` },
           { label: "StokvelBook: a money book nobody can change or delete", href: `${stokvelbook}/blob/main/firestore.rules` },
           { label: "QueueUp: strangers can take a number, and nothing else", href: `${queueup}/blob/main/firestore.rules` },
+          { label: "BookMe: each time can only be booked once", href: `${bookme}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -209,6 +211,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "CVcraft: one-page CVs made in the browser", href: `${cvcraft}/blob/main/lib/pdf.ts` },
           { label: "CVcraft (live)", href: "https://cvcraft-green.vercel.app" },
           { label: "QueueUp (live)", href: "https://queueup-seven.vercel.app" },
+          { label: "BookMe (live)", href: "https://bookme-taupe-three.vercel.app" },
         ],
       },
       {
@@ -261,6 +264,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "StokvelBook: the money book's tests", href: `${stokvelbook}/blob/main/tests/ledger.test.ts` },
           { label: "CVcraft: real PDFs read back in the tests", href: `${cvcraft}/blob/main/tests/pdf.test.ts` },
           { label: "QueueUp: QR codes checked against a second version", href: `${queueup}/blob/main/tests/code.test.ts` },
+          { label: "BookMe: free times, opening hours and calendar files", href: `${bookme}/blob/main/tests/schedule.test.ts` },
         ],
       },
       {

@@ -16,13 +16,6 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "BookMe",
-    summary:
-      "An online booking page for salons, tutors and mechanics: customers pick a free time slot, and the owner sees the day's bookings and can block time off.",
-    tags: ["Next.js", "TypeScript", "Firebase"],
-    stage: "next",
-  },
-  {
     name: "RSVPme",
     summary:
       "Event invites with RSVPs, and a QR code check-in at the door using the phone's camera, for church events, braais and student societies.",
