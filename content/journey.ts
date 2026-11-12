@@ -92,6 +92,12 @@ export const journey: JourneyStep[] = [
     line: "Three apps in one day: a stokvel's record book nobody can quietly change, a colour contrast checker, and a CV builder.",
     href: "/projects/stokvelbook",
   },
+  {
+    date: "2026-11",
+    title: "QueueUp",
+    line: "A walk-in queue on everyone's phone: scan a QR code, take a number, and wait wherever you like.",
+    href: "/projects/queueup",
+  },
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

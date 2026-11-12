@@ -16,13 +16,6 @@ export type BuildingProject = {
 
 export const currentlyBuilding: BuildingProject[] = [
   {
-    name: "QueueUp",
-    summary:
-      "A walk-in queue for barbers, clinics and small shops: customers join by scanning a QR code and see their place in line live on their phone, instead of waiting inside.",
-    tags: ["Next.js", "TypeScript", "Firebase"],
-    stage: "next",
-  },
-  {
     name: "BookMe",
     summary:
       "An online booking page for salons, tutors and mechanics: customers pick a free time slot, and the owner sees the day's bookings and can block time off.",

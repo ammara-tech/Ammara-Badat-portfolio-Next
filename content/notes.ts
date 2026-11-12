@@ -31,6 +31,53 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "letting-strangers-into-my-database-safely",
+    title: "Letting strangers into my database, safely",
+    description:
+      "In QueueUp, anyone who scans a QR code can join a queue without an account. Here's how the security rules let them take a number and do nothing else.",
+    date: "2026-11-12",
+    tags: ["Firebase", "Security"],
+    body: [
+      {
+        type: "p",
+        text: "All my other Firebase apps have the same simple rule underneath: you only see and change your own things, or your team's. QueueUp is different. A customer walks into a barbershop, scans a QR code on the door, types their name and takes a number. They have no account, and they're writing to the shop's queue. So the question was: what exactly should a stranger be allowed to do?",
+      },
+      { type: "h2", text: "A guest account, not no account" },
+      {
+        type: "p",
+        text: "Joining signs the customer in with a guest account (Firebase's anonymous sign-in): no email, no password, nothing to remember. It still gives them an identity the security rules can see, so their ticket is theirs alone. Only they and the owner can read it, because it has their name on it.",
+      },
+      { type: "h2", text: "Two parts: public numbers, private names" },
+      {
+        type: "p",
+        text: "The join page and the TV screen in the waiting room need to show the line, but not who's in it. So the queue keeps a small public part with just the numbers: which are waiting, and which is being served. Anyone can read that. The names live on the tickets, which strangers can't read.",
+      },
+      { type: "h2", text: "Exactly two things a stranger can do" },
+      {
+        type: "ul",
+        items: [
+          "Take the next number: the number goes up by exactly one, exactly that number joins the end of the line, the queue has to be open, and the new ticket has to belong to them. All in one step, or not at all.",
+          "Leave the line: only their own number comes out, in the same step as their own ticket changes to \"left\".",
+          "Anything else (calling someone, skipping ahead, changing the shop's name, reading someone's name) is refused by Google's servers, whatever the app on their phone says.",
+        ],
+      },
+      { type: "h2", text: "Nobody gets the same number" },
+      {
+        type: "p",
+        text: "If two people scan at the same moment, both phones could read \"next is 13\". Taking a number is a transaction: it reads the next number and takes it in one step on the server, and if someone else got there first, Firestore runs it again with the new number. So one person is 13 and the other is 14, every time.",
+      },
+      { type: "h2", text: "What I tested" },
+      {
+        type: "p",
+        text: "The rules aren't in my automatic tests yet (that needs the Firebase emulator), so I tested them on the live site: a demo shop on my laptop, joining from my phone, calling my own number until my phone turned green, and leaving the line. The QR codes are tested automatically, square for square against a separate version of the same library.",
+      },
+      {
+        type: "tip",
+        text: "When strangers can write to your database, don't ask \"who is this?\". Ask \"what is the one change they're allowed to make?\", and check every part of it.",
+      },
+    ],
+  },
+  {
     slug: "giving-each-of-my-apps-its-own-look",
     title: "Giving each of my apps its own look",
     description:

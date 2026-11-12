@@ -31,6 +31,7 @@ const hiretrack = `${gh}/hiretrack`;
 const stokvelbook = `${gh}/stokvelbook`;
 const colourcheck = `${gh}/colourcheck`;
 const cvcraft = `${gh}/cvcraft`;
+const queueup = `${gh}/queueup`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -197,6 +198,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "ShiftBoard: managers and staff with different access", href: `${shiftboard}/blob/main/firestore.rules` },
           { label: "HireTrack: checking every field and link", href: `${hiretrack}/blob/main/firestore.rules` },
           { label: "StokvelBook: a money book nobody can change or delete", href: `${stokvelbook}/blob/main/firestore.rules` },
+          { label: "QueueUp: strangers can take a number, and nothing else", href: `${queueup}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -206,6 +208,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "This site: my CV as a PDF", href: `${portfolio}/blob/main/lib/cv-pdf.ts` },
           { label: "CVcraft: one-page CVs made in the browser", href: `${cvcraft}/blob/main/lib/pdf.ts` },
           { label: "CVcraft (live)", href: "https://cvcraft-green.vercel.app" },
+          { label: "QueueUp (live)", href: "https://queueup-seven.vercel.app" },
         ],
       },
       {
@@ -257,6 +260,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "Rememba: spaced repetition tests", href: `${rememba}/blob/main/tests/srs.test.ts` },
           { label: "StokvelBook: the money book's tests", href: `${stokvelbook}/blob/main/tests/ledger.test.ts` },
           { label: "CVcraft: real PDFs read back in the tests", href: `${cvcraft}/blob/main/tests/pdf.test.ts` },
+          { label: "QueueUp: QR codes checked against a second version", href: `${queueup}/blob/main/tests/code.test.ts` },
         ],
       },
       {

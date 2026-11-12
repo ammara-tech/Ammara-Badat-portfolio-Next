@@ -159,6 +159,21 @@ export const architectures: Record<string, Architecture> = {
       "Payouts, votes, meeting notes and statements all come from the same shared records.",
     ],
   },
+  queueup: {
+    intro: "QueueUp has two sides: the owner's screen, and every customer's phone. Customers need no account, so Google's security rules decide exactly what a stranger may do.",
+    lanes: [
+      vercel,
+      device([{ title: "Customers' phones", line: "Scanning the QR code opens the queue's page. Joining gives a guest account: no email, no password." }]),
+      firebase("Anyone can see a queue's numbers, never a name. A customer can only take the next number or leave the line. Everything else is the owner's."),
+    ],
+    arrows: firebaseArrows,
+    steps: [
+      "The owner starts a queue and prints its QR poster for the door.",
+      "A customer scans it, types their name and takes a number. The server hands out numbers one at a time, so nobody gets the same one.",
+      "Their phone shows their place in line and roughly how long they'll wait, and updates by itself as the line moves.",
+      "The owner presses Call next. Within a moment the customer's phone turns green and dings.",
+    ],
+  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [
