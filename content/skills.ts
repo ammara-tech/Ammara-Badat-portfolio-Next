@@ -34,6 +34,7 @@ const cvcraft = `${gh}/cvcraft`;
 const queueup = `${gh}/queueup`;
 const bookme = `${gh}/bookme`;
 const powerplan = `${gh}/powerplan`;
+const randwise = `${gh}/randwise`;
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -165,10 +166,12 @@ export const skillGroups: SkillGroup[] = [
     skills: [
       {
         name: "SQL & PostgreSQL",
-        note: "Designing tables and writing migrations for Supabase.",
+        note: "Designing tables, writing migrations for Supabase, and reports written in SQL on PostgreSQL.",
         evidence: [
           { label: "This site: Supabase/schema.sql", href: `${portfolio}/blob/main/Supabase/schema.sql` },
           { label: "Clinic platform: clinic-scheduling.sql", href: `${clinic}/blob/main/supabase/clinic-scheduling.sql` },
+          { label: "RandWise: monthly totals and spending reports in SQL", href: `${randwise}/blob/main/lib/reports.ts` },
+          { label: "RandWise: the tables and their checks", href: `${randwise}/blob/main/lib/schema.ts` },
         ],
       },
       {
@@ -214,6 +217,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "QueueUp (live)", href: "https://queueup-seven.vercel.app" },
           { label: "BookMe (live)", href: "https://bookme-taupe-three.vercel.app" },
           { label: "PowerPlan (live)", href: "https://powerplan-seven.vercel.app" },
+          { label: "RandWise (live)", href: "https://randwise-three.vercel.app" },
         ],
       },
       {
@@ -268,6 +272,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "QueueUp: QR codes checked against a second version", href: `${queueup}/blob/main/tests/code.test.ts` },
           { label: "BookMe: free times, opening hours and calendar files", href: `${bookme}/blob/main/tests/schedule.test.ts` },
           { label: "PowerPlan: the sums behind units left and run-out dates", href: `${powerplan}/blob/main/tests/power.test.ts` },
+          { label: "RandWise: money kept in whole cents, budgets and dates", href: `${randwise}/blob/main/tests/money.test.ts` },
         ],
       },
       {

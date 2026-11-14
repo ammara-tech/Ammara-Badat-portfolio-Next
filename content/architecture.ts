@@ -200,6 +200,45 @@ export const architectures: Record<string, Architecture> = {
       "With your recent price per unit, it also says what a month costs, what an amount buys and what each appliance costs to run.",
     ],
   },
+  randwise: {
+    intro: "RandWise isn't a Firebase app: its pages are built on a server, and the server asks a PostgreSQL database for the numbers, so the adding-up is done in SQL.",
+    lanes: [
+      {
+        title: "On your phone or laptop",
+        icon: "window",
+        boxes: [
+          { title: "The pages", line: "Next.js pages with light and dark mode. The charts are drawn as plain SVG, so there's no chart library." },
+          { title: "Your session", line: "A random code in a cookie that JavaScript can't read. It proves who you are on each visit." },
+        ],
+      },
+      {
+        title: "Vercel",
+        icon: "cube",
+        boxes: [
+          { title: "The server", line: "Runs in Frankfurt, next to the database. It checks your session, asks the database a question and sends back a finished page." },
+          { title: "Sign-in", line: "Passwords are mixed with a random salt and run through a slow hash, so they are never stored as typed." },
+        ],
+      },
+      {
+        title: "Neon PostgreSQL",
+        icon: "database",
+        boxes: [
+          { title: "Tables", line: "Your entries, categories and budgets. Every row belongs to one person, and the database refuses impossible amounts." },
+          { title: "SQL reports", line: "Totals by month, spending by category and budget progress are SQL queries, not sums done in the browser." },
+        ],
+      },
+    ],
+    arrows: [
+      { label: "Asks for a page", bothWays: true },
+      { label: "SQL questions and answers", bothWays: true },
+    ],
+    steps: [
+      "You add an entry. The amount is turned into whole cents, so adding up never drifts.",
+      "The server checks your session, then saves the entry with your id on it.",
+      "Opening Reports, the server sends the database a few SQL questions: this month's totals, the last twelve months, spending by category and your biggest spends.",
+      "The database does the adding up and sends back a short list. The server draws the charts from it and sends you the page.",
+    ],
+  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [

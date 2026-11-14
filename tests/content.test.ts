@@ -214,8 +214,8 @@ describe("try the demo", () => {
     expect(demoUrl("https://ticklist-pi.vercel.app")).toBe("https://ticklist-pi.vercel.app/?demo");
   });
 
-  it("is only on my Firebase apps", () => {
-    expect([...demos].sort()).toEqual(["bookme", "hiretrack", "papertrail", "powerplan", "queueup", "rememba", "shiftboard", "stokvelbook", "ticklist"]);
+  it("is only on my apps that have a demo button", () => {
+    expect([...demos].sort()).toEqual(["bookme", "hiretrack", "papertrail", "powerplan", "queueup", "randwise", "rememba", "shiftboard", "stokvelbook", "ticklist"]);
   });
 });
 
