@@ -31,6 +31,97 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "letting-the-database-do-the-adding-up",
+    title: "Letting the database do the adding-up",
+    description:
+      "RandWise is my first app on PostgreSQL. Its monthly totals, budget bars and biggest spends are SQL queries, not loops in my code. Here's why, and what bit me.",
+    date: "2026-11-14",
+    tags: ["PostgreSQL", "SQL", "Next.js"],
+    body: [
+      {
+        type: "p",
+        text: "RandWise is a budget tracker, and it's the first of my apps that doesn't use Firebase. Firestore is wonderful for things that stay in step on every phone, but it's built to fetch documents, not to answer \"how much did I spend on groceries in November?\". A budget app's questions are all sums and groups, so I used PostgreSQL (on Neon), a database made for exactly that kind of question.",
+      },
+      { type: "h2", text: "One question, a short answer" },
+      {
+        type: "p",
+        text: "\"Income and spending for each month\" is a single query: group the entries by month and add up the income and the spending separately, in the same pass. The database sends back about a dozen short rows instead of every entry from a year, and my code only draws them. There's no sum in my code that could disagree with the database's, and the page stays fast however many entries there are.",
+      },
+      { type: "h2", text: "Money in whole cents" },
+      {
+        type: "p",
+        text: "Amounts are stored as whole numbers of cents, never as decimals, so adding up never drifts (the same reason 0.1 + 0.2 isn't quite 0.3 in most programming languages). The database also refuses an amount of zero or less, or one that's silly big, so an impossible number can't get in even if I have a bug in the app.",
+      },
+      { type: "h2", text: "Four small things that bit" },
+      {
+        type: "ul",
+        items: [
+          "A month is a range that includes its first day and stops just before the first day of the next month. Then months never overlap, and the last day of a month is never lost.",
+          "A budget with nothing spent should show R0,00, not disappear. An ordinary join drops it, because it has no matching entries. A left join keeps it.",
+          "An entry with no category still has to appear in \"biggest spends\". Same cure: a left join, and \"No category\" as its name.",
+          "Every query starts with whose data it is. Firebase's security rules did that for my other apps; with a normal database connection nothing else stops one person reading another's rows, so the signed-in person's id is in every query.",
+        ],
+      },
+      { type: "h2", text: "Signing in without a sign-in service" },
+      {
+        type: "p",
+        text: "Without Firebase Authentication, I wrote the sign-in myself. A password is mixed with a random salt and run through a slow hash, so a stolen database doesn't reveal it. After signing in, the browser holds a random code in a cookie that JavaScript can't read, and the database stores only a hash of that code, so a leaked table can't be used to sign anyone in. The hashing, the salting and the checking are all covered by tests.",
+      },
+      { type: "h2", text: "Close to the server" },
+      {
+        type: "p",
+        text: "Each page asks the database several questions, and every question that has to cross an ocean adds a delay. So the database is in Frankfurt, and the app's server on Vercel is set to run in Frankfurt too. The sign-in page scores 100 on all four Lighthouse categories, on a phone and on a laptop.",
+      },
+      {
+        type: "tip",
+        text: "If your app's questions are \"how much, in total, by what?\", let the database answer them. It's what it's for.",
+      },
+    ],
+  },
+  {
+    slug: "when-will-my-electricity-run-out",
+    title: "Working out when my electricity will run out",
+    description:
+      "PowerPlan turns a few readings of a prepaid meter into the units left and the day they run out. It's one sum, a fair average and a way to spot typos.",
+    date: "2026-11-14",
+    tags: ["TypeScript", "Testing", "UX"],
+    body: [
+      {
+        type: "p",
+        text: "With prepaid electricity, the meter shows the units you have left, but not how fast you're using them, so the power cuts out at the worst moment. PowerPlan asks you to read the meter now and then, and works out the rest.",
+      },
+      { type: "h2", text: "One sum" },
+      {
+        type: "p",
+        text: "Between two readings, what you used is what was on the meter before, plus the units you bought in between, minus what's left now. Say the meter showed 60 on Monday, you bought 40 on Wednesday, and it shows 55 on Friday: 60 + 40 − 55 = 45 units in four days, about 11 a day. Everything else comes from that one sum.",
+      },
+      { type: "h2", text: "From the sum to answers" },
+      {
+        type: "ul",
+        items: [
+          "Use a day: an average over the last two weeks, where each gap between readings counts for the part of it that falls in that window, so one long gap doesn't outweigh last week.",
+          "Units on the meter now: the last reading, plus anything bought since, minus the use since.",
+          "When they run out: the units now divided by the use a day, shown as a date and in words like \"about 4 days\", because a time to the minute would pretend to know more than it does.",
+          "What things cost: the price per unit comes from your purchases in the last 90 days, so a whole month's cost can be compared with your budget, and each appliance's cost comes from its watts, hours a day and how many you have.",
+        ],
+      },
+      { type: "h2", text: "When the numbers don't add up" },
+      {
+        type: "p",
+        text: "If the sum comes out below zero, there's more on the meter than there could be, which almost always means a mistyped reading. PowerPlan marks that stretch as odd and leaves it out of the averages, rather than letting one slip of the finger ruin the forecast. Two readings less than an hour apart are too close to say anything, so the later one is skipped.",
+      },
+      { type: "h2", text: "Tested like a calculator" },
+      {
+        type: "p",
+        text: "All the sums are plain functions in one file with no Firebase in them, so 19 tests can check them with small numbers: purchases between readings, the two-week window, month ends, and the run-out date. The screens only show what the sums say.",
+      },
+      {
+        type: "tip",
+        text: "Keep the sums apart from the screens. Then a forecast you can't trust can be checked with a pencil and a few numbers.",
+      },
+    ],
+  },
+  {
     slug: "two-people-can-never-book-the-same-time",
     title: "Two people can never book the same time",
     description:
