@@ -116,12 +116,6 @@ export const journey: JourneyStep[] = [
     line: "A budget tracker on PostgreSQL: monthly limits, charts, and reports written in SQL.",
     href: "/projects/randwise",
   },
-  {
-    date: "2026-11",
-    title: "RSVPme",
-    line: "Wedding and party invitations where guests reply on their phone and the seats count themselves.",
-    href: "/projects/rsvpme",
-  },
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

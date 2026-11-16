@@ -239,21 +239,6 @@ export const architectures: Record<string, Architecture> = {
       "The database does the adding up and sends back a short list. The server draws the charts from it and sends you the page.",
     ],
   },
-  rsvpme: {
-    intro: "RSVPme has two sides: the host's guest list, and an invitation page anyone can open without an account. The hard part is showing how many seats are left without showing anyone's name, and never selling the same seat twice.",
-    lanes: [
-      vercel,
-      device([{ title: "Guests' phones", line: "The invitation link or QR code opens the event. Replying gives a guest account: no email, no password." }]),
-      firebase("Anyone with the link can see the event and how many seats are taken, never a name. A reply can only be read by the host and the guest who sent it, and the seat count can only move together with that guest's own reply."),
-    ],
-    arrows: firebaseArrows,
-    steps: [
-      "The host adds the date and venue, pastes a guest list, and shares the link, a QR code or each guest's personal link.",
-      "A guest opens the invitation, sees the seats left and taps yes, maybe or no, with who they're bringing and what they eat.",
-      "The reply and the seat count are saved in one step, so two guests can never take the last seat.",
-      "The reply appears on the host's list within a moment. They can remind everyone who hasn't answered on WhatsApp.",
-    ],
-  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [
