@@ -35,9 +35,6 @@ const queueup = `${gh}/queueup`;
 const bookme = `${gh}/bookme`;
 const powerplan = `${gh}/powerplan`;
 const randwise = `${gh}/randwise`;
-const rsvpme = `${gh}/rsvpme`;
-// My RSVPme address on Vercel. tests/content.test.ts fails until it's filled in.
-const RSVPME_LIVE = "https://rsvpme-REPLACE-ME.vercel.app";
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -208,7 +205,6 @@ export const skillGroups: SkillGroup[] = [
           { label: "StokvelBook: a money book nobody can change or delete", href: `${stokvelbook}/blob/main/firestore.rules` },
           { label: "QueueUp: strangers can take a number, and nothing else", href: `${queueup}/blob/main/firestore.rules` },
           { label: "BookMe: each time can only be booked once", href: `${bookme}/blob/main/firestore.rules` },
-          { label: "RSVPme: seats that can't be oversold, replies only the host can read", href: `${rsvpme}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -222,7 +218,6 @@ export const skillGroups: SkillGroup[] = [
           { label: "BookMe (live)", href: "https://bookme-taupe-three.vercel.app" },
           { label: "PowerPlan (live)", href: "https://powerplan-seven.vercel.app" },
           { label: "RandWise (live)", href: "https://randwise-three.vercel.app" },
-          { label: "RSVPme (live)", href: RSVPME_LIVE },
         ],
       },
       {
@@ -278,7 +273,6 @@ export const skillGroups: SkillGroup[] = [
           { label: "BookMe: free times, opening hours and calendar files", href: `${bookme}/blob/main/tests/schedule.test.ts` },
           { label: "PowerPlan: the sums behind units left and run-out dates", href: `${powerplan}/blob/main/tests/power.test.ts` },
           { label: "RandWise: money kept in whole cents, budgets and dates", href: `${randwise}/blob/main/tests/money.test.ts` },
-          { label: "RSVPme: seats, who hasn't replied and WhatsApp messages", href: `${rsvpme}/blob/main/tests/rsvp.test.ts` },
         ],
       },
       {

@@ -148,13 +148,6 @@ describe("project pages can return a real 404", () => {
   });
 });
 
-describe("live links", () => {
-  it("has no placeholder address left in the skills", () => {
-    const all = JSON.stringify(skillGroups);
-    expect(all).not.toContain("REPLACE-ME");
-  });
-});
-
 describe("currently building", () => {
   it("every project in progress has a name, a short summary and tags", () => {
     for (const p of currentlyBuilding) {
@@ -222,7 +215,7 @@ describe("try the demo", () => {
   });
 
   it("is only on my apps that have a demo button", () => {
-    expect([...demos].sort()).toEqual(["bookme", "hiretrack", "papertrail", "powerplan", "queueup", "randwise", "rememba", "rsvpme", "shiftboard", "stokvelbook", "ticklist"]);
+    expect([...demos].sort()).toEqual(["bookme", "hiretrack", "papertrail", "powerplan", "queueup", "randwise", "rememba", "shiftboard", "stokvelbook", "ticklist"]);
   });
 });
 

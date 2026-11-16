@@ -37,7 +37,7 @@ const numberWords = ["zero", "one", "two", "three", "four", "five", "six", "seve
   "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five",
   "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty",
   "forty-one", "forty-two", "forty-three", "forty-four", "forty-five", "forty-six", "forty-seven", "forty-eight",
-  "forty-nine", "fifty", "fifty-one", "fifty-two", "fifty-three", "fifty-four", "fifty-five"];
+  "forty-nine", "fifty"];
 
 /** Files a document points to: Markdown links, and `code` that looks like a file path */
 function referencedFiles(markdown: string) {

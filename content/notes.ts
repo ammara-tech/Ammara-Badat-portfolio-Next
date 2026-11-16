@@ -31,44 +31,6 @@ export type Note = {
 
 export const notes: Note[] = [
   {
-    slug: "counting-seats-without-showing-names",
-    title: "Counting seats without showing names",
-    description:
-      "RSVPme shows \"12 seats left\" to anyone with the link while every reply stays private. Here's the one number that does it, and the rule that protects it.",
-    date: "2026-11-16",
-    tags: ["Firebase", "Security", "Firestore"],
-    body: [
-      {
-        type: "p",
-        text: "RSVPme's invitation page tells anyone with the link how many seats are left, but a guest's reply (their name, what they eat, a message to the hosts) can only be read by the hosts and that guest. Both had to be true at once, and the second one rules out the obvious way of counting: adding up the replies.",
-      },
-      { type: "h2", text: "One public number" },
-      {
-        type: "p",
-        text: "The seats taken live in their own small document, with no names on it, and anyone can read it. The replies stay private. The invitation page only ever reads the number.",
-      },
-      { type: "h2", text: "Moving them together" },
-      {
-        type: "p",
-        text: "A guest's reply and the seat number have to change in the same step, or they drift apart. So answering is a transaction: it reads the number and the guest's old answer, works out the change (a yes for 3 adds 3; changing it to a yes for 2 takes 1 back), and writes the reply and the new number together. If two guests go for the last seats at the same moment, one transaction fails and that guest is told.",
-      },
-      { type: "h2", text: "The rules check the maths" },
-      {
-        type: "p",
-        text: "A transaction in my code isn't protection: someone could skip my app and write a smaller number straight to the database. So the security rules let a guest change the number only if it moves by exactly the seats of the reply written in the same step, and never past the event's seats. In simplified form:",
-      },
-      {
-        type: "code",
-        lang: "text",
-        code: "allow update on seats if\n  newSeats == oldSeats + seatsOf(replyAfter) - seatsOf(replyBefore)\n  and newSeats <= capacity",
-      },
-      {
-        type: "tip",
-        text: "Rules like these can't be checked by my automatic tests without the Firebase emulator, so I test them by hand: answering as a guest, changing my answer, and trying to write a number that doesn't match.",
-      },
-    ],
-  },
-  {
     slug: "letting-the-database-do-the-adding-up",
     title: "Letting the database do the adding-up",
     description:
