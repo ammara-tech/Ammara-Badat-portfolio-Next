@@ -14,12 +14,4 @@ export type BuildingProject = {
   stage: "building" | "next";
 };
 
-export const currentlyBuilding: BuildingProject[] = [
-  {
-    name: "RSVPme",
-    summary:
-      "Event invites with RSVPs, and a QR code check-in at the door using the phone's camera, for church events, braais and student societies.",
-    tags: ["Next.js", "TypeScript", "Firebase"],
-    stage: "next",
-  },
-];
+export const currentlyBuilding: BuildingProject[] = [];
