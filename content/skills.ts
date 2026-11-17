@@ -37,7 +37,7 @@ const powerplan = `${gh}/powerplan`;
 const randwise = `${gh}/randwise`;
 const rsvpme = `${gh}/rsvpme`;
 // My RSVPme address on Vercel. tests/content.test.ts fails until it's filled in.
-const RSVPME_LIVE = "https://rsv-pme.vercel.app";
+const RSVPME_LIVE = "https://rsv-pme.vercel.app/";
 
 export const skillGroups: SkillGroup[] = [
   {
