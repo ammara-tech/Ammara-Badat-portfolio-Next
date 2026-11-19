@@ -2,15 +2,17 @@
 #
 # After every push to main that changes the site, GitHub waits until Vercel is serving
 # that commit (it checks /api/version every 15 seconds), then runs Lighthouse on the live
-# site (as a phone, like Google does), once per page, and checks the scores:
+# site (as a phone, like Google does), three times per page (it uses the middle result,
+# so one slow run can't move a score), and checks the scores:
 #   - Accessibility and SEO must be 90 or more, or this check fails (red X)
 #   - Performance and Best practices below 90 show a warning
 # The full reports are uploaded and linked in the run summary.
 # You can also start it by hand: Actions tab -> Lighthouse -> Run workflow.
 #
 # Speed: it used to wait a fixed 4 minutes and test each page 3 times (about 9 minutes).
-# Now it starts as soon as the deploy is live, tests each page once (Accessibility and SEO
-# scores don't change between runs), and skips pushes that only change documents.
+# Now it starts as soon as the deploy is live and skips pushes that only change documents.
+# It tests each page 3 times again, because a Performance score can move a few points between
+# single runs (Accessibility and SEO don't change, so those were never the reason).
 
 name: Lighthouse
 

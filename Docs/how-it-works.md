@@ -520,13 +520,14 @@ Mobile scores: **Performance 96, Accessibility 100, Best Practices 100, SEO 100.
     a function can be right and the button that calls it still broken.
 - **Lighthouse CI** (`.github/workflows/lighthouse.yml`): after every push to main that changes the site,
   GitHub checks `/api/version` every 15 seconds until Vercel is serving that commit, then runs Lighthouse
-  once on six pages of the live site and fails the check if Accessibility or SEO drops below 90.
+  three times on six pages of the live site (using the middle score) and fails the check if Accessibility or SEO drops below 90.
   Pushes that only change documents skip it.
   - It first waited for a "deployment finished" message from Vercel, but my Vercel project doesn't send
     those, so it never ran. I found this by checking the Actions tab.
   - Then it waited a fixed 4 minutes and tested each page 3 times, which took about 9 minutes. Now it starts
-    as soon as the deploy is live and tests each page once, because Accessibility and SEO scores don't
-    change between runs (Performance is only a warning).
+    as soon as the deploy is live. It tests each page 3 times again, because a Performance score can move a
+    few points between single runs (Accessibility and SEO don't change, but a steadier middle score is
+    easier to trust).
 - **Database tests** (`tests/database/`, `.github/workflows/database-tests.yml`): the database rules (RLS,
   triggers, the aal2 rule, the spam limit, the backup code functions) run inside the database, so Vitest
   can't reach them. Instead GitHub starts an empty Postgres, loads `supabase-stand-in.sql` (Supabase's API

@@ -112,7 +112,7 @@ Extras beyond the milestones, in the order I built them.
 | 12 | Dev note navigation | Polish | Heading links and Older / Newer note links |
 | 13 | Updated dates and back to top | Polish | "Updated" dates on changed dev notes, and a back-to-top button |
 | 14 | Back, Forward and Refresh | Polish | Browser-style buttons on the site itself, and GitHub Actions updated to Node.js 22 |
-| 15 | Faster Lighthouse checks | Polish | Lighthouse starts as soon as Vercel is serving the new commit, runs once per page, and skips document-only changes |
+| 15 | Faster Lighthouse checks | Polish | Lighthouse starts as soon as Vercel is serving the new commit, and skips document-only changes |
 | 16 | Download messages as CSV | Admin upgrades | A "CSV" button in the inbox that saves the messages being viewed as a spreadsheet file, protected against formula tricks |
 | 17 | Activity log for messages and images | Final project | The activity log also records new and deleted messages and uploaded and deleted images, with All / Projects / Messages / Images buttons |
 | 18 | Real 404s and activity counts | Final project | A wrong project address now returns a real 404 (not a 200 page saying "not found"), and the activity filter buttons show how many entries each kind has |
@@ -240,7 +240,7 @@ Extras beyond the milestones, in the order I built them.
 | Automated tests | 193 checks in `tests/` (Vitest): project addresses, the contact form's spam rules and draft, the email alert (who it goes to, the Reply address, and no HTML or extra headers from a visitor), every skill having evidence, every linked file existing, the dev notes and their heading links, older/newer links and updated dates, the back-to-top button, the back/forward buttons, the SEO helpers, the contact card, the Currently building list, the live project count on the About page, the dev notes topic filter and related notes, the local time on the Contact page, the reading progress bar, the admin inbox search, Mark all read, Reply link and CSV download (including formula protection), the activity log wording, filters and counts, no loading screen above the project pages (so they can return a real 404), the security headers on every page, the unread badge on the tab icon, the unsaved changes warning, the auto sign-out timer, the one-tab sign-in, the two-step sign-in steps, the backup codes (their shape, the download file and the "codes left" warning), the Share links and "2 days ago" times, Duplicate project (the copy's name and fields), the Lighthouse badge, the footer's Last updated date, the About page's counting numbers (a year like 2026 isn't counted), the CV PDF (one A4 page even with extra projects, my name as its title, a working link to every project and contact, and More projects picking up new projects from `/admin` without repeating the ones already on my CV), my journey timeline (oldest first, dated and linked), the For recruiters page's short version, the How it works diagrams (and that they name no database paths), the status page (up, slow and down, with a fake fetch so no internet is needed), By the numbers, the Now page, the Then and now pictures existing, the guestbook's checks (honeypot, speed, lengths and no links), the Try the demo links, the long-page helpers (On this page links, when More below shows and where it jumps, and which pages get the progress bar), and docs checks (the dev note count, every SQL file listed in Setup, every file the docs mention existing, and every link inside the README working). A GitHub Action runs them on every push (`.github/workflows/tests.yml`). |
 | Database tests | 80 checks of the database rules in `tests/database/rules.sql`, run on GitHub on an empty Postgres with every SQL file in `Supabase/` loaded on top of a small stand-in for Supabase. They act as a visitor, another account, my account with only the password, and my account with two-step sign-in, and check who can read and change projects, drafts, messages, the activity log, images and backup codes, plus the spam limit and the backup code rules, and the guestbook (who can sign, read, approve and delete, and that the hashed IPs stay hidden). I checked they catch mistakes by breaking a rule on purpose: the run failed both times (`.github/workflows/database-tests.yml`). |
 | Browser tests | 17 tests in `e2e/` (Playwright) open the live site in a real browser, as a laptop and as a phone, and click through it like a visitor: the contact form (the spam trap is hidden, a too-short message is stopped, the right details are sent, errors are shown, the draft survives a refresh), the contact API ignoring bots and explaining mistakes, the admin page showing only the sign-in form and the Show password button, every main page and its title, the CV PDF downloading, a real 404, the security headers, the phone menu, and the About page's On this page links and More below button. They never send a real message or sign in. A GitHub Action runs them after each deploy (`.github/workflows/browser-tests.yml`). |
-| Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, once per page ([details](#lighthouse-scores-phone-and-laptop)). |
+| Lighthouse CI | Lighthouse runs on the live site as soon as Vercel has deployed each push that changes it, three runs per page ([details](#lighthouse-scores-phone-and-laptop)). |
 | Code guide | A plain-English guide to every part of the code: [Docs/how-it-works.md](Docs/how-it-works.md). |
 
 Also: **4 Certiport IT Specialist certifications** (HTML and CSS, HTML5 Application Development, Software Development, JavaScript), each with a verification code, shown on the About page and as evidence on the Skills page.
@@ -513,8 +513,8 @@ effect only after the page appears, and cut the heading font from 4 weights to 2
 
 Lighthouse also runs automatically: after every push to `main` that changes the site, a GitHub Action
 (`.github/workflows/lighthouse.yml`) checks `/api/version` (`app/api/version/route.ts`) every 15 seconds until
-Vercel is serving that commit, then runs Lighthouse once on each of six pages (Home, About, Projects, the case
-study, Skills and Contact) and fails if Accessibility or SEO drops below 90. Pushes that only change documents
+Vercel is serving that commit, then runs Lighthouse three times on each of six pages (Home, About, Projects, the case
+study, Skills and Contact), uses the middle score, and fails if Accessibility or SEO drops below 90. Pushes that only change documents
 (like this README) skip it. See the **Actions** tab.
 
 #### Findable: what every page has
@@ -648,7 +648,6 @@ Things I know are missing or could be better:
 - **The browser tests stop at the sign-in form.** They never sign in, so the dashboard itself (inbox,
   projects, activity log) is still checked by hand. Signing in from GitHub would mean storing my password
   and authenticator secret there.
-- **Lighthouse CI checks six pages, one run each**, so a score can move a few points between runs.
 - **The full accessibility check isn't automatic.** axe was run on every page by hand (5 November 2026);
   Lighthouse CI only checks six pages on each push, so a new problem on another page would wait for the
   next check by hand.
