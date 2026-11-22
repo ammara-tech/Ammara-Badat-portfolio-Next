@@ -31,6 +31,49 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "one-vote-per-person-and-nobody-types-a-number",
+    title: "One vote per person, and nobody can type in a number",
+    description:
+      "FixMyStreet SA shows how many people see a pothole. Here's how a vote and the count move together, so nobody can vote twice or type in a bigger number.",
+    date: "2026-11-22",
+    tags: ["Firebase", "Security", "Firestore"],
+    body: [
+      {
+        type: "p",
+        text: "On FixMyStreet SA anyone can say \"I see this too\" on a report, and that count decides which problems the council sees first. That makes it worth cheating: type in a bigger number, or vote ten times. A counter that anyone can write to is just a text box.",
+      },
+      { type: "h2", text: "Each vote is its own small document" },
+      {
+        type: "p",
+        text: "A vote is saved as a tiny document named after the report and the person together. A person can only have one per report, because the same name can't exist twice. And they can only read their own, so nobody can see who else voted.",
+      },
+      { type: "h2", text: "The count moves in the same step" },
+      {
+        type: "p",
+        text: "Adding a vote and raising the report's count by one happen as a single batch: both succeed or neither does. I use Firestore's increment instead of reading the number, adding one and writing it back, so two people voting at the same moment both count.",
+      },
+      { type: "h2", text: "The rules check the pair" },
+      {
+        type: "p",
+        text: "Code in my app isn't protection: someone could skip the app and write any number straight to the database. So the security rules let the count change only by exactly one, and only together with that person's own vote being added or taken back. In simplified form:",
+      },
+      {
+        type: "code",
+        lang: "text",
+        code: "allow update on count if\n  newCount == oldCount + 1 and my vote is created in this step\n  or newCount == oldCount - 1 and my vote is deleted in this step",
+      },
+      { type: "h2", text: "A status is different" },
+      {
+        type: "p",
+        text: "Only council staff can move a report from reported to acknowledged to fixed. A staff member is a document I add by hand in the Firebase console, and the app can only look at its own, never write one. Nobody can promote themselves, because there is no button for it and the rules refuse the write.",
+      },
+      {
+        type: "tip",
+        text: "My automatic tests can't run these rules without the Firebase emulator. They do check that the lists and limits in the rules file match the app's, and I test the rest by hand: voting twice, taking a vote back, and trying to write a different number.",
+      },
+    ],
+  },
+  {
     slug: "counting-seats-without-showing-names",
     title: "Counting seats without showing names",
     description:

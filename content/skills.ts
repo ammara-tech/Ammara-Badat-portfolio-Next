@@ -36,8 +36,11 @@ const bookme = `${gh}/bookme`;
 const powerplan = `${gh}/powerplan`;
 const randwise = `${gh}/randwise`;
 const rsvpme = `${gh}/rsvpme`;
+const fixmystreet = `${gh}/FixMyStreet-SA`;
 // My RSVPme address on Vercel. tests/content.test.ts fails until it's filled in.
 const RSVPME_LIVE = "https://rsv-pme.vercel.app/";
+// My FixMyStreet SA address on Vercel
+const FIXMYSTREET_LIVE = "https://fix-my-street-sa.vercel.app/";
 
 export const skillGroups: SkillGroup[] = [
   {
@@ -209,6 +212,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "QueueUp: strangers can take a number, and nothing else", href: `${queueup}/blob/main/firestore.rules` },
           { label: "BookMe: each time can only be booked once", href: `${bookme}/blob/main/firestore.rules` },
           { label: "RSVPme: seats that can't be oversold, replies only the host can read", href: `${rsvpme}/blob/main/firestore.rules` },
+          { label: "FixMyStreet SA: one vote per person, and only council can change a status", href: `${fixmystreet}/blob/main/firestore.rules` },
         ],
       },
       {
@@ -223,6 +227,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "PowerPlan (live)", href: "https://powerplan-seven.vercel.app" },
           { label: "RandWise (live)", href: "https://randwise-three.vercel.app" },
           { label: "RSVPme (live)", href: RSVPME_LIVE },
+          { label: "FixMyStreet SA (live)", href: FIXMYSTREET_LIVE },
         ],
       },
       {
@@ -279,6 +284,7 @@ export const skillGroups: SkillGroup[] = [
           { label: "PowerPlan: the sums behind units left and run-out dates", href: `${powerplan}/blob/main/tests/power.test.ts` },
           { label: "RandWise: money kept in whole cents, budgets and dates", href: `${randwise}/blob/main/tests/money.test.ts` },
           { label: "RSVPme: seats, who hasn't replied and WhatsApp messages", href: `${rsvpme}/blob/main/tests/rsvp.test.ts` },
+          { label: "FixMyStreet SA: tickets, nearby duplicates and rules that match the app", href: `${fixmystreet}/blob/main/tests/reports.test.ts` },
         ],
       },
       {

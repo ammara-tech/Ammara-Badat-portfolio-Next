@@ -254,6 +254,21 @@ export const architectures: Record<string, Architecture> = {
       "The reply appears on the host's list within a moment. They can remind everyone who hasn't answered on WhatsApp.",
     ],
   },
+  "fixmystreet-sa": {
+    intro: "FixMyStreet SA has two kinds of user: residents, who report problems and vote on them, and council staff, who move a report along. Anyone can look at a report, but a vote can only move the count by one, and only council can change a status.",
+    lanes: [
+      vercel,
+      device([{ title: "Residents' phones", line: "The map opens in the browser. A guest account is enough to report and vote: no email, no password." }]),
+      firebase("Anyone can read a report. A vote and the report's count can only change together, one at a time, and only council staff can change a status."),
+    ],
+    arrows: firebaseArrows,
+    steps: [
+      "A resident taps the map where the problem is and says what it is. If the same problem was already reported nearby, the app shows it first.",
+      "The report is saved with a ticket number, and its pin appears on everyone's map within a moment.",
+      "Neighbours tap \"I see this too\". Each vote and the report's count are saved in one step, so nobody can vote twice.",
+      "Council staff open their queue, most-voted first, and move a report from reported to acknowledged to fixed, with a note anyone can read.",
+    ],
+  },
   colourcheck: {
     intro: "ColourCheck does all its maths in the browser. Nothing you check is sent anywhere, and it works offline.",
     lanes: [

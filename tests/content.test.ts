@@ -222,7 +222,7 @@ describe("try the demo", () => {
   });
 
   it("is only on my apps that have a demo button", () => {
-    expect([...demos].sort()).toEqual(["bookme", "hiretrack", "papertrail", "powerplan", "queueup", "randwise", "rememba", "rsvpme", "shiftboard", "stokvelbook", "ticklist"]);
+    expect([...demos].sort()).toEqual(["bookme", "fixmystreet-sa", "hiretrack", "papertrail", "powerplan", "queueup", "randwise", "rememba", "rsvpme", "shiftboard", "stokvelbook", "ticklist"]);
   });
 });
 

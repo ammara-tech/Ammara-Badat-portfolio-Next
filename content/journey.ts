@@ -122,6 +122,12 @@ export const journey: JourneyStep[] = [
     line: "Wedding and party invitations where guests reply on their phone and the seats count themselves.",
     href: "/projects/rsvpme",
   },
+  {
+    date: "2026-11",
+    title: "FixMyStreet SA",
+    line: "A map for reporting potholes and broken streetlights, where neighbours vote and the council's progress is public.",
+    href: "/projects/fixmystreet-sa",
+  },
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
