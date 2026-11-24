@@ -50,7 +50,8 @@ export default function Navbar() {
         scrolled || open ? "border-line bg-ink/90" : "border-transparent bg-ink/50"
       }`}
     >
-      <nav aria-label="Main" className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8">
+      {/* On large screens the bar is wider than the page text, so the logo, links and buttons have room and sit evenly spaced */}
+      <nav aria-label="Main" className="relative mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-8 xl:max-w-7xl">
         <div className="flex shrink-0 items-center">
           {/* Back, Forward and Refresh, like a browser (laptops and desktops; phones have them in the menu) */}
           <div className="mr-3 hidden border-r border-line pr-2 lg:block">
@@ -64,7 +65,7 @@ export default function Navbar() {
 
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
-        <div className="flex items-center gap-3 md:order-last md:ml-4 md:gap-2 lg:ml-6 lg:gap-3 xl:gap-2">
+        <div className="flex items-center gap-3 md:order-last md:gap-2 lg:gap-3">
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("palette:open"))}
@@ -114,7 +115,7 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-5 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:ml-0 lg:gap-6 xl:gap-7 md:border-0 md:bg-transparent md:p-0`}
         >
           <li className="border-b border-line pb-5 md:hidden">
             <NavArrows variant="menu" onUse={() => setOpen(false)} />
