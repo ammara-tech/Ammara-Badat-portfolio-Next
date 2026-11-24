@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#15151e">
+<meta name="robots" content="noindex">
+<title>Endless Dash | Ammara Badat</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315151e'/%3E%3Crect x='9' y='8' width='14' height='15' rx='3' fill='%2327f4d2'/%3E%3Crect x='11' y='24' width='4' height='4' fill='%2327f4d2'/%3E%3Crect x='17' y='24' width='4' height='4' fill='%2327f4d2'/%3E%3C/svg%3E">
+<!--
+  ENDLESS DASH: the game that shows when my portfolio can't load.
+  Everything is in this one file (no fonts, images or scripts from anywhere else), so the
+  service worker (public/sw.js) can keep a copy in the browser and show it with no internet.
+  It also works online, at /dash-game. The runner is a plain-JavaScript version of the
+  Neon Runner game from my Neon Arcade project, in this site's colours.
+-->
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #15151e;
+    --panel: #1b1b26;
+    --snow: #f5f5f7;
+    --mist: #a3a6b5;
+    --line: rgba(245, 245, 247, 0.16);
+    --red: #e8002d;
+    --red-text: #ff3b5c;
+    --teal: #27f4d2;
+    --btn-text: #15151e;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --ink: #f4f4f7;
+      --panel: #ffffff;
+      --snow: #15151e;
+      --mist: #4d5062;
+      --line: rgba(21, 21, 30, 0.18);
+      --red-text: #c00026;
+      --teal: #00796b;
+      --btn-text: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--ink);
+    color: var(--snow);
+    font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 1.25rem 1rem calc(2rem + env(safe-area-inset-bottom));
+    background-image:
+      linear-gradient(rgba(128, 128, 150, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(128, 128, 150, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .wrap { max-width: 44rem; margin: 0 auto; }
+  .brand {
+    font-family: "Titillium Web", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 1.1rem;
+    margin: 0 0 2rem;
+  }
+  .brand span { color: var(--red-text); }
+  .tag {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red-text);
+    margin: 0 0 0.4rem;
+  }
+  h1 {
+    font-family: "Titillium Web", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 7vw, 3rem);
+    line-height: 1.05;
+    margin: 0 0 0.75rem;
+  }
+  .lead { color: var(--mist); margin: 0 0 1.25rem; max-width: 38rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0 0 1.5rem; align-items: center; }
+  .btn {
+    font: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.4rem;
+    border: 2px solid var(--line);
+    background: transparent;
+    color: var(--snow);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .btn[hidden] { display: none; }
+  .btn.main { background: var(--red); border-color: var(--red); color: #fff; }
+  .btn:hover { border-color: var(--teal); }
+  .btn.main:hover { filter: brightness(1.12); }
+  .btn:focus-visible, .play:focus-visible, canvas:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+  .note { color: var(--teal); font-weight: 600; margin: 0 0 1rem; }
+  .note[hidden] { display: none; }
+
+  .stats {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.8rem; color: var(--mist);
+    margin: 0 0 0.5rem;
+  }
+  .stats b { color: var(--snow); font-size: 1rem; margin-left: 0.35rem; }
+
+  .screen {
+    position: relative;
+    border: 2px solid var(--line);
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: #15151e;
+    touch-action: manipulation;
+  }
+  canvas { display: block; width: 100%; height: auto; aspect-ratio: 640 / 240; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  .overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 0.35rem;
+    background: rgba(21, 21, 30, 0.82);
+    color: #f5f5f7;
+    padding: 1rem;
+  }
+  .overlay[hidden] { display: none; }
+  .overlay h2 {
+    font-family: "Titillium Web", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
+    font-weight: 900; text-transform: uppercase;
+    font-size: clamp(1.4rem, 5vw, 2rem); margin: 0;
+  }
+  .overlay p { margin: 0 0 0.5rem; color: #c3c6d4; font-size: 0.95rem; }
+  .play {
+    font: inherit; font-weight: 800; font-size: 1rem;
+    min-height: 44px; padding: 0.5rem 1.5rem;
+    border-radius: 0.4rem; border: 0;
+    background: #27f4d2; color: #15151e; cursor: pointer;
+  }
+  /* On a phone the track is short, so the start / crashed panel sits under it instead of on top */
+  @media (max-width: 560px) {
+    .overlay { position: static; inset: auto; background: #15151e; border-top: 1px solid var(--line); padding: 0.9rem 1rem 1rem; }
+    .overlay h2 { font-size: 1.3rem; }
+  }
+  .hint { color: var(--mist); font-size: 0.85rem; margin: 0.6rem 0 0; }
+  kbd {
+    font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 0.25rem;
+    padding: 0 0.35rem; font-size: 0.8em;
+  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  noscript p { color: var(--mist); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="brand">Ammara Badat<span>.</span></p>
+
+  <p class="tag" id="tag">Endless Dash</p>
+  <h1 id="title">Endless Dash</h1>
+  <p class="lead" id="lead">Jump the blocks, dodge the drones and grab the coins. This game works without internet too.</p>
+  <p class="note" id="note" role="status" hidden></p>
+
+  <div class="actions">
+    <button type="button" class="btn main" id="retry" hidden>Try again</button>
+    <a class="btn" href="/" id="home">Back to the portfolio</a>
+  </div>
+
+  <div class="stats" aria-hidden="true">
+    <span>Distance<b id="dist">0 m</b></span>
+    <span>Coins<b id="coins">0</b></span>
+    <span>Best<b id="best">&mdash;</b></span>
+  </div>
+  <p class="sr" id="live" role="status"></p>
+
+  <div class="screen" id="screen">
+    <canvas id="c" width="640" height="240" role="img" aria-label="Endless Dash game track. Press space, the up arrow or tap to jump."></canvas>
+    <div class="overlay" id="overlay">
+      <h2 id="oTitle">Endless Dash</h2>
+      <p id="oText">Jump over the blocks and don&rsquo;t jump into a drone.</p>
+      <button type="button" class="play" id="oBtn">Play</button>
+    </div>
+  </div>
+  <p class="hint"><kbd>Space</kbd> or <kbd>&uarr;</kbd> to jump (hold for a higher jump) &middot; <kbd>P</kbd> to pause &middot; on a phone, tap the track</p>
+  <noscript><p>The game needs JavaScript. Please turn it on, or try the page again.</p></noscript>
+</div>
+
+<script>
+'use strict';
+(function () {
+  /* ---------- what the page says: offline, slow, or just here to play ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  // The service worker shows this page at the address that failed to load, so when the
+  // address isn't /dash-game, a real page was trying to open.
+  var fallback = location.pathname !== '/dash-game' && location.pathname !== '/dash.html';
+  var title = $('title'), tag = $('tag'), lead = $('lead'), note = $('note'), retry = $('retry'), home = $('home');
+  var wasOffline = false;
+
+  function describe() {
+    if (!fallback) return;
+    var online = navigator.onLine !== false;
+    document.title = (online ? 'Still loading' : "You're offline") + ' | Ammara Badat';
+    tag.textContent = online ? 'Taking a while' : 'No internet';
+    title.textContent = online ? 'That page is slow' : "You're offline";
+    lead.textContent = online
+      ? "The connection is slow, so the page hasn't opened yet. Play a round while you wait, or try again."
+      : "I couldn't load that page without internet. Play a round of Endless Dash instead, then try again when you're back online.";
+    retry.hidden = false;
+    home.textContent = 'Home';
+    if (online && wasOffline) {
+      note.hidden = false;
+      note.textContent = "You're back online. Press Try again to open the page (your game isn't interrupted until you do).";
+    } else {
+      note.hidden = true;
+    }
+    if (!online) wasOffline = true;
+  }
+  retry.addEventListener('click', function () { location.reload(); });
+  window.addEventListener('online', describe);
+  window.addEventListener('offline', describe);
+  describe();
+
+  /* ---------- the game (from Neon Runner in my Neon Arcade project) ---------- */
+  var W = 640, H = 240, GROUND = 206;
+  var GRAVITY = 2400, JUMP = 780, JUMP_CUT = 0.45;
+  var SPEED = 290, ACCEL = 9, MAX = 650, DRONES = 0.18;
+  var COL = { red: '#ff3b5c', teal: '#27f4d2', yellow: '#ffd23f', violet: '#a78bfa', orange: '#ff8a3d', text: '#f5f5f7' };
+
+  var canvas = $('c'), overlay = $('overlay'), oTitle = $('oTitle'), oText = $('oText'), oBtn = $('oBtn');
+  var distEl = $('dist'), coinsEl = $('coins'), bestEl = $('best'), live = $('live');
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  var best = 0;
+  try { best = parseInt(localStorage.getItem('dash-best') || '0', 10) || 0; } catch (e) { best = 0; }
+  function saveBest() { try { localStorage.setItem('dash-best', String(best)); } catch (e) { /* storage can be blocked */ } }
+
+  var g = {}, raf = 0, last = 0;
+  var rand = function (a, b) { return a + Math.random() * (b - a); };
+
+  function meta() {
+    distEl.textContent = Math.floor(g.dist) + ' m';
+    coinsEl.textContent = g.coins;
+    bestEl.textContent = best ? best + ' m' : '—';
+  }
+
+  function reset() {
+    g = {
+      state: 'ready', t: 0, speed: SPEED, dist: 0, coins: 0, gap: 500, scroll: 0,
+      p: { x: 74, y: GROUND - 36, w: 28, h: 36, vy: 0, onGround: true, coyote: 0 },
+      held: false, buffer: 0, obstacles: [], coinList: [], floats: [], flash: 0
+    };
+    meta();
+    show('Endless Dash', 'Jump over the blocks and don’t jump into a drone.', 'Play');
+    draw();
+  }
+
+  function show(t, html, btn) {
+    overlay.hidden = false;
+    oTitle.textContent = t;
+    oText.innerHTML = html;
+    oBtn.textContent = btn;
+  }
+
+  function begin() {
+    if (g.state === 'over') reset();
+    g.state = 'play';
+    overlay.hidden = true;
+    last = 0;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(frame);
+  }
+  function pause() {
+    if (g.state !== 'play') return;
+    g.state = 'paused';
+    g.held = false;
+    cancelAnimationFrame(raf);
+    show('Paused', 'The track will wait for you.', 'Resume');
+  }
+  function resume() {
+    g.state = 'play';
+    overlay.hidden = true;
+    last = 0;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(frame);
+  }
+
+  function press() {
+    if (g.state === 'ready' || g.state === 'over') { begin(); return; }
+    if (g.state === 'paused') { resume(); return; }
+    g.held = true;
+    g.buffer = 0.12; // a press just before landing still counts
+  }
+  function release() { g.held = false; }
+
+  function addCoins(x, y, n, arc) {
+    for (var i = 0; i < n; i++) {
+      var k = n > 1 ? i / (n - 1) : 0;
+      g.coinList.push({ x: x + i * 24, y: y - Math.sin(k * Math.PI) * arc, taken: false });
+    }
+  }
+  function spawn() {
+    var x = W + 20, r = Math.random();
+    if (r < DRONES) {
+      // drones fly at head height: running under is safe, jumping into them is not
+      g.obstacles.push({ type: 'drone', x: x, y: rand(118, 136), w: 34, h: 18 });
+      if (Math.random() < 0.5) addCoins(x - 10, GROUND - 22, 4, 0);
+      return;
+    }
+    var kind = Math.random();
+    if (kind < 0.5) {
+      var w = rand(22, 38), h = rand(28, 46);
+      g.obstacles.push({ type: 'block', x: x, y: GROUND - h, w: w, h: h });
+      if (Math.random() < 0.45) addCoins(x - 30, GROUND - h - 50, 5, 30);
+    } else if (kind < 0.78) {
+      var h2 = rand(26, 36);
+      g.obstacles.push({ type: 'block', x: x, y: GROUND - h2, w: 22, h: h2 });
+      g.obstacles.push({ type: 'block', x: x + 28, y: GROUND - h2 - 10, w: 22, h: h2 + 10 });
+    } else {
+      g.obstacles.push({ type: 'tall', x: x, y: GROUND - 60, w: 18, h: 60 });
+      if (Math.random() < 0.5) addCoins(x - 34, GROUND - 120, 5, 26);
+    }
+  }
+
+  function overlap(a, b, pad) {
+    return a.x + pad < b.x + b.w && a.x + a.w - pad > b.x && a.y + pad < b.y + b.h && a.y + a.h - pad > b.y;
+  }
+
+  function step(dt) {
+    var p = g.p;
+    g.t += dt;
+    g.speed = Math.min(MAX, g.speed + ACCEL * dt);
+    var dx = g.speed * dt;
+    g.dist += dx / 30;
+    g.scroll += dx;
+    g.buffer = Math.max(0, g.buffer - dt);
+    p.coyote = p.onGround ? 0.08 : Math.max(0, p.coyote - dt);
+
+    if (g.buffer > 0 && (p.onGround || p.coyote > 0)) {
+      p.vy = -JUMP; p.onGround = false; p.coyote = 0; g.buffer = 0;
+    }
+    if (!g.held && p.vy < -JUMP * JUMP_CUT) p.vy = -JUMP * JUMP_CUT; // let go early = shorter hop
+    p.vy += GRAVITY * dt;
+    p.y += p.vy * dt;
+    if (p.y >= GROUND - p.h) { p.y = GROUND - p.h; p.vy = 0; p.onGround = true; } else { p.onGround = false; }
+
+    g.gap -= dx;
+    if (g.gap <= 0) {
+      spawn();
+      var min = g.speed * 0.6 + 140;
+      g.gap = rand(min, min + 280);
+    }
+    g.obstacles.forEach(function (o) { o.x -= dx; });
+    g.coinList.forEach(function (c) { c.x -= dx; });
+    g.obstacles = g.obstacles.filter(function (o) { return o.x + o.w > -20; });
+    g.coinList = g.coinList.filter(function (c) { return c.x > -20 && !c.taken; });
+    g.floats.forEach(function (f) { f.life -= dt; f.y -= dt * 40; f.x -= dx * 0.3; });
+    g.floats = g.floats.filter(function (f) { return f.life > 0; });
+
+    g.coinList.forEach(function (c) {
+      if (!c.taken && overlap(p, { x: c.x - 8, y: c.y - 8, w: 16, h: 16 }, 0)) {
+        c.taken = true; g.coins++;
+        g.floats.push({ x: c.x, y: c.y - 8, text: '+1', life: 0.6 });
+      }
+    });
+    for (var i = 0; i < g.obstacles.length; i++) {
+      if (overlap(p, g.obstacles[i], 5)) { crash(g.obstacles[i]); return; } // 5px of forgiveness on every side
+    }
+    meta();
+  }
+
+  function crash(o) {
+    g.state = 'over';
+    g.flash = 1;
+    cancelAnimationFrame(raf);
+    draw();
+    var d = Math.floor(g.dist);
+    var record = d > best;
+    if (record) { best = d; saveBest(); }
+    meta();
+    var msg = (o.type === 'drone' ? 'You jumped into a drone.' : 'You hit a wall.') +
+      '<br>Distance <b>' + d + ' m</b> · Coins <b>' + g.coins + '</b>' + (record && d > 0 ? '<br>New best!' : '');
+    show('Crashed!', msg, 'Run again');
+    live.textContent = 'Crashed. You ran ' + d + ' metres and grabbed ' + g.coins + ' coins.' + (record && d > 0 ? ' New best.' : '');
+    oBtn.focus({ preventScroll: true });
+  }
+
+  function frame(now) {
+    if (g.state !== 'play') return;
+    if (!last) last = now;
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    step(dt);
+    if (g.state === 'play') { draw(); raf = requestAnimationFrame(frame); }
+  }
+
+  /* ---------- drawing ---------- */
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#15151e';
+    ctx.fillRect(0, 0, W, H);
+
+    // far skyline, slowly scrolling
+    var farOff = (g.scroll * 0.12) % 160;
+    ctx.fillStyle = 'rgba(245,245,247,0.045)';
+    for (var x = -farOff - 160; x < W + 160; x += 160) {
+      ctx.fillRect(x + 10, GROUND - 90, 38, 90);
+      ctx.fillRect(x + 56, GROUND - 130, 30, 130);
+      ctx.fillRect(x + 96, GROUND - 70, 44, 70);
+    }
+    // near skyline with a few lit windows
+    var nearOff = (g.scroll * 0.3) % 200;
+    ctx.fillStyle = 'rgba(39,244,210,0.07)';
+    for (var y = -nearOff - 200; y < W + 200; y += 200) {
+      ctx.fillRect(y + 20, GROUND - 56, 44, 56);
+      ctx.fillRect(y + 110, GROUND - 78, 36, 78);
+    }
+
+    // track: glowing racing-red line with moving dashes
+    ctx.fillStyle = 'rgba(8,8,14,0.85)';
+    ctx.fillRect(0, GROUND, W, H - GROUND);
+    ctx.save();
+    ctx.shadowColor = '#e8002d'; ctx.shadowBlur = 12;
+    ctx.fillStyle = '#e8002d';
+    ctx.fillRect(0, GROUND, W, 3);
+    ctx.restore();
+    ctx.fillStyle = 'rgba(232,0,45,0.4)';
+    var off = g.scroll % 48;
+    for (var a = -off; a < W; a += 48) ctx.fillRect(a, GROUND + 14, 24, 2);
+    ctx.fillStyle = 'rgba(232,0,45,0.18)';
+    var off2 = (g.scroll * 1.3) % 64;
+    for (var b = -off2; b < W; b += 64) ctx.fillRect(b, GROUND + 26, 36, 2);
+
+    // coins
+    g.coinList.forEach(function (c) {
+      var squash = Math.abs(Math.cos(g.t * 5 + c.x * 0.05));
+      ctx.save();
+      ctx.shadowColor = COL.yellow; ctx.shadowBlur = 10;
+      ctx.fillStyle = COL.yellow;
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, 7 * Math.max(0.25, squash), 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // obstacles
+    g.obstacles.forEach(function (o) {
+      if (o.type === 'drone') {
+        ctx.save();
+        ctx.shadowColor = COL.violet; ctx.shadowBlur = 12;
+        ctx.fillStyle = COL.violet;
+        ctx.beginPath();
+        ctx.ellipse(o.x + o.w / 2, o.y + o.h / 2 + 2, o.w / 2, o.h / 2 - 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = COL.text;
+        var spin = Math.sin(g.t * 40) * 9 + 10;
+        ctx.fillRect(o.x + 4, o.y - 1, spin, 2);
+        ctx.fillRect(o.x + o.w - 4 - spin, o.y - 1, spin, 2);
+        ctx.fillStyle = Math.sin(g.t * 8) > 0 ? COL.red : '#5a1a24';
+        ctx.beginPath();
+        ctx.arc(o.x + o.w / 2, o.y + o.h / 2 + 2, 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        var col = o.type === 'tall' ? COL.red : COL.orange;
+        ctx.save();
+        ctx.shadowColor = col; ctx.shadowBlur = 10;
+        ctx.strokeStyle = col; ctx.lineWidth = 2;
+        ctx.strokeRect(o.x + 1, o.y + 1, o.w - 2, o.h - 2);
+        ctx.restore();
+        ctx.fillStyle = col + '33';
+        ctx.fillRect(o.x + 1, o.y + 1, o.w - 2, o.h - 2);
+        ctx.fillStyle = col;
+        for (var yy = o.y + 8; yy < o.y + o.h - 4; yy += 10) ctx.fillRect(o.x + 5, yy, o.w - 10, 2);
+      }
+    });
+
+    // the runner: a little teal robot
+    var p = g.p;
+    var legPhase = p.onGround && g.state === 'play' ? Math.sin(g.t * 22) * 5 : 3;
+    ctx.fillStyle = COL.teal;
+    ctx.fillRect(p.x + 6, p.y + p.h - 8, 6, 8 - Math.max(0, legPhase) * 0.6);
+    ctx.fillRect(p.x + p.w - 12, p.y + p.h - 8, 6, 8 - Math.max(0, -legPhase) * 0.6);
+    ctx.save();
+    ctx.shadowColor = COL.teal; ctx.shadowBlur = 14;
+    ctx.fillStyle = COL.teal;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(p.x, p.y, p.w, p.h - 8, 6); else ctx.rect(p.x, p.y, p.w, p.h - 8);
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = '#0a1418';
+    ctx.fillRect(p.x + 9, p.y + 7, p.w - 12, 9);
+    ctx.fillStyle = COL.red;
+    ctx.fillRect(p.x + p.w - 9, p.y + 9, 4, 4);
+    ctx.fillStyle = COL.yellow;
+    ctx.fillRect(p.x + p.w / 2 - 1, p.y - 6, 2, 6);
+
+    // floating +1s
+    ctx.font = '700 16px ui-monospace, Menlo, Consolas, monospace';
+    ctx.textAlign = 'center';
+    g.floats.forEach(function (f) {
+      ctx.globalAlpha = Math.min(1, f.life * 2);
+      ctx.fillStyle = COL.yellow;
+      ctx.fillText(f.text, f.x, f.y);
+    });
+    ctx.globalAlpha = 1;
+
+    // distance in the corner
+    ctx.font = '700 18px ui-monospace, Menlo, Consolas, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(245,245,247,0.85)';
+    ctx.fillText(Math.floor(g.dist) + ' m', W - 12, 24);
+
+    if (g.flash > 0) {
+      ctx.fillStyle = 'rgba(232,0,45,' + g.flash * 0.3 + ')';
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  /* ---------- controls ---------- */
+  oBtn.addEventListener('click', function () { if (g.state === 'paused') resume(); else begin(); });
+  canvas.addEventListener('pointerdown', function (ev) { ev.preventDefault(); press(); });
+  canvas.addEventListener('pointerup', release);
+  canvas.addEventListener('pointercancel', release);
+  canvas.addEventListener('pointerleave', release);
+  var isJump = function (k) { return k === ' ' || k === 'ArrowUp' || k === 'w' || k === 'W'; };
+  document.addEventListener('keydown', function (ev) {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    var onButton = document.activeElement && document.activeElement.tagName === 'BUTTON' || document.activeElement && document.activeElement.tagName === 'A';
+    if (isJump(ev.key)) {
+      if (onButton && g.state !== 'play') return; // a focused button handles its own Space/Enter
+      ev.preventDefault();
+      if (ev.repeat) return;
+      press();
+    } else if (ev.key === 'p' || ev.key === 'P') {
+      if (g.state === 'play') pause(); else if (g.state === 'paused') resume();
+    }
+  });
+  document.addEventListener('keyup', function (ev) { if (isJump(ev.key)) release(); });
+  // A hidden tab or a phone call shouldn't leave the runner running into a wall
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
+  window.addEventListener('blur', pause);
+
+  reset();
+})();
+</script>
+</body>
+</html>

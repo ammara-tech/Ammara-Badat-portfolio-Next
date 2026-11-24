@@ -13,6 +13,7 @@ import BackToTop from "@/components/BackToTop";
 import MoreBelow from "@/components/MoreBelow";
 import PageProgress from "@/components/PageProgress";
 import LighthouseBadge from "@/components/LighthouseBadge";
+import RegisterServiceWorker from "@/components/RegisterServiceWorker";
 import { about } from "@/content/about";
 import { certificationGroups } from "@/content/certifications";
 import { themeScript } from "@/lib/theme";
@@ -142,6 +143,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Progress bar on long pages (components/PageProgress.tsx) and the background glow (see globals.css) */}
         <PageProgress />
+        {/* Shows my Endless Dash game if a page can't load (components/RegisterServiceWorker.tsx) */}
+        <RegisterServiceWorker />
         <div aria-hidden="true" className="site-backdrop" />
 
         <Navbar />

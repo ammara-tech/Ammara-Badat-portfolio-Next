@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   // It's saved once at build time, so it shows the deploy, not the moment a page was refreshed.
   env: { BUILT_AT: new Date().toISOString() },
   // Security headers on every page and file (lib/security-headers.ts explains each one)
+  // My offline game lives at /dash-game (the file is public/dash.html, which the service worker keeps for offline use)
+  async rewrites() {
+    return [{ source: "/dash-game", destination: "/dash.html" }];
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
