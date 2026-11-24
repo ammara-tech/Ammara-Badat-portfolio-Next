@@ -71,6 +71,11 @@
     outline-offset: 3px;
   }
 
+  /* Animations off (a device setting, or the switch in the top bar).
+     Not "everything instant": that felt stiff. Colours, fades and shadows still ease in over 0.2 s,
+     so hovers and the light/dark switch stay smooth. Only movement is removed: nothing slides,
+     grows, spins or scrolls. (The entrance and looping animations are handled in the Motion
+     section below, in a way that doesn't replay them when animations are switched back on.) */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -79,8 +84,10 @@
     *,
     *::before,
     *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, outline-color !important;
+      transition-duration: 0.2s !important;
+      transition-timing-function: ease-out !important;
+      transition-delay: 0s !important;
     }
   }
 
@@ -92,8 +99,10 @@
   html[data-motion="reduced"] *,
   html[data-motion="reduced"] *::before,
   html[data-motion="reduced"] *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, outline-color !important;
+    transition-duration: 0.2s !important;
+    transition-timing-function: ease-out !important;
+    transition-delay: 0s !important;
   }
 }
 
@@ -359,24 +368,34 @@ html.fx-io .fx-reveal.is-visible {
   }
 }
 
+/* How "animations off" works, so that switching them back ON doesn't glitch:
+   - one-shot entrance animations (the terminal typing in, things sliding up, the loading bar) finish
+     at once and rest in their final place. They are NOT set to "none": taking "none" away again
+     would play them all from the start, blanking the terminal and making the page jump.
+   - looping ones (the glow, the live dot, the blinking cursor, loading shimmer) are paused where they are.
+   - the tech strip and scroll-in effects become a plain list / are shown straight away. */
 @media (prefers-reduced-motion: reduce) {
-  .fx-live,
-  .fx-shimmer,
-  .fx-page,
-  .fx-sweep,
-  .fx-zoom,
-  .fx-rise,
-  .fx-type,
-  .fx-cursor,
-  .fx-underline,
-  .fx-glow,
-  .fx-marquee,
-  .fx-reveal {
+  :is(.fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-underline) {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+  }
+
+  :is(.fx-live, .fx-cursor, .fx-glow, .fx-shimmer) {
+    animation-play-state: paused !important;
+  }
+
+  .animate-ping,
+  .animate-pulse {
     animation: none !important;
   }
 
-  .fx-sweep {
-    display: none !important;
+  .animate-ping {
+    opacity: 0;
+  }
+
+  .fx-marquee,
+  .fx-reveal {
+    animation: none !important;
   }
 
   html.fx-io .fx-reveal {
@@ -402,12 +421,25 @@ html[data-motion="reduced"] .fx-marquee > [aria-hidden="true"] {
   display: none;
 }
 
-html[data-motion="reduced"] :is(.fx-live, .fx-shimmer, .fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-cursor, .fx-underline, .fx-glow, .fx-marquee, .fx-reveal) {
+html[data-motion="reduced"] :is(.fx-page, .fx-sweep, .fx-zoom, .fx-rise, .fx-type, .fx-underline) {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
+}
+
+html[data-motion="reduced"] :is(.fx-live, .fx-cursor, .fx-glow, .fx-shimmer) {
+  animation-play-state: paused !important;
+}
+
+html[data-motion="reduced"] :is(.animate-ping, .animate-pulse) {
   animation: none !important;
 }
 
-html[data-motion="reduced"] .fx-sweep {
-  display: none !important;
+html[data-motion="reduced"] .animate-ping {
+  opacity: 0;
+}
+
+html[data-motion="reduced"] :is(.fx-marquee, .fx-reveal) {
+  animation: none !important;
 }
 
 html[data-motion="reduced"].fx-io .fx-reveal {
