@@ -81,6 +81,16 @@ export default function Navbar() {
           <div className="hidden md:block">
             <MotionToggle />
           </div>
+          {/* My Endless Dash game (public/dash.html). It's the same game that shows if a page can't load.
+              A plain link, not next/link: it's a separate page, not part of the Next.js app. */}
+          <a
+            href="/dash-game"
+            aria-label="Play Endless Dash, my little game"
+            title="Play Endless Dash"
+            className="hidden rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal md:block"
+          >
+            <Icon name="gamepad" className="h-4 w-4" />
+          </a>
           <button
             className="relative h-8 w-8 md:hidden"
             onClick={() => setOpen(!open)}
@@ -138,6 +148,12 @@ export default function Navbar() {
           </li>
           <li className="border-t border-line pt-5 md:hidden">
             <MotionToggle variant="switch" />
+          </li>
+          <li className="md:hidden">
+            <a href="/dash-game" className="inline-flex items-center gap-2 text-mist transition hover:text-snow">
+              <Icon name="gamepad" className="h-4 w-4" />
+              Play Endless Dash
+            </a>
           </li>
         </ul>
       </nav>
