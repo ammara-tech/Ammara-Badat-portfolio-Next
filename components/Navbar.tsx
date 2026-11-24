@@ -115,7 +115,7 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:ml-0 lg:gap-6 xl:gap-7 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:items-center md:gap-3 lg:ml-0 lg:gap-6 xl:gap-7 md:border-0 md:bg-transparent md:p-0`}
         >
           <li className="border-b border-line pb-5 md:hidden">
             <NavArrows variant="menu" onUse={() => setOpen(false)} />
