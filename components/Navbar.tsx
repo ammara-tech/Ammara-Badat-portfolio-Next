@@ -64,7 +64,7 @@ export default function Navbar() {
 
         {/* Light/dark switch and, on phones, the menu button.
             It comes before the links in the code so Tab goes button → links. */}
-        <div className="flex items-center gap-3 md:order-last md:ml-4 md:gap-2 lg:ml-6 lg:gap-3">
+        <div className="flex items-center gap-3 md:order-last md:ml-4 md:gap-2 lg:ml-6 lg:gap-3 xl:gap-2">
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("palette:open"))}
@@ -82,12 +82,13 @@ export default function Navbar() {
             <MotionToggle />
           </div>
           {/* My Endless Dash game (public/dash.html). It's the same game that shows if a page can't load.
-              A plain link, not next/link: it's a separate page, not part of the Next.js app. */}
+              A plain link, not next/link: it's a separate page, not part of the Next.js app.
+              Only on wide screens, where there is room (the footer has a link for tablets). */}
           <a
             href="/dash-game"
             aria-label="Play Endless Dash, my little game"
             title="Play Endless Dash"
-            className="hidden rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal md:block"
+            className="hidden rounded-full border border-line-strong p-2 text-mist transition hover:border-teal hover:text-teal xl:block"
           >
             <Icon name="gamepad" className="h-4 w-4" />
           </a>
@@ -113,7 +114,7 @@ export default function Navbar() {
 
         <ul
           id="site-menu"
-          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-7 md:border-0 md:bg-transparent md:p-0`}
+          className={`${open ? "flex" : "hidden"} absolute left-0 top-full w-full flex-col gap-5 border-b border-line bg-ink px-4 py-6 font-mono text-xs uppercase tracking-widest md:static md:ml-auto md:pl-3 md:tracking-wider lg:pl-0 lg:tracking-widest md:flex md:w-auto md:flex-row md:gap-3 lg:gap-6 xl:gap-5 md:border-0 md:bg-transparent md:p-0`}
         >
           <li className="border-b border-line pb-5 md:hidden">
             <NavArrows variant="menu" onUse={() => setOpen(false)} />
