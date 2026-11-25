@@ -12,10 +12,12 @@ import { Accent, Eyebrow, SmartLink, btnGhost, btnIcon, btnPrimary, card } from 
 import CopyLink from "@/components/CopyLink";
 import ShareButton from "@/components/ShareButton";
 import HowItWorks from "@/components/HowItWorks";
+import AppStory from "@/components/AppStory";
 import BeforeAfter from "@/components/BeforeAfter";
 import { thenAndNow } from "@/content/then-and-now";
 import { demoUrl, demos } from "@/content/demos";
 import { architectures } from "@/content/architecture";
+import { appStories } from "@/content/app-stories";
 import OnThisPage from "@/components/OnThisPage";
 import { onThisPage } from "@/lib/page-nav";
 
@@ -68,6 +70,7 @@ export default async function ProjectPage({ params }: Props) {
   const sections = onThisPage([
     { id: "then-title", label: "Then and now", show: Boolean(thenAndNow[slug]) },
     { id: "how-title", label: "How it works", show: Boolean(architectures[slug]) },
+    { id: "story-title", label: "The thinking behind it", show: Boolean(appStories[slug]) },
     { id: "more-title", label: "More projects", show: more.length > 0 },
   ]);
 
@@ -227,6 +230,9 @@ export default async function ProjectPage({ params }: Props) {
 
       {/* How it works: a diagram for my bigger apps (content/architecture.ts) */}
       {architectures[slug] && <HowItWorks architecture={architectures[slug]} />}
+
+      {/* The thinking behind it: problem, decisions and what I'd do differently (content/app-stories.ts) */}
+      {appStories[slug] && <AppStory story={appStories[slug]} />}
 
       {/* More projects */}
       {more.length > 0 && (

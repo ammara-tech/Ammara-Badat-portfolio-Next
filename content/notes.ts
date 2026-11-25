@@ -31,6 +31,58 @@ export type Note = {
 
 export const notes: Note[] = [
   {
+    slug: "a-game-when-a-page-cant-load",
+    title: "A game when a page can't load",
+    description:
+      "When a page can't load, my site shows a small game instead of an error. Here's the service worker, the 6-second timeout and what it never touches.",
+    date: "2026-11-25",
+    tags: ["Next.js", "Offline", "JavaScript"],
+    body: [
+      {
+        type: "p",
+        text: "When Chrome has no internet it shows a little dinosaur you can play. I wanted my portfolio to do the same, so if a visitor is offline, or my site is taking too long to answer on a bad connection, they get Endless Dash instead of the browser's error page. It's the runner from my Neon Arcade project, redrawn in this site's colours. You can also play it any time from the controller button in the top bar.",
+      },
+      { type: "h2", text: "A service worker, kept small" },
+      {
+        type: "p",
+        text: "A service worker is a script the browser keeps for my site and runs in the background. Mine does one job. The first time someone visits, it saves a copy of the game page in their browser. After that, whenever they open one of my pages, it asks the network for it as normal, and only steps in if the answer doesn't come.",
+      },
+      {
+        type: "code",
+        lang: "js",
+        code: "const res = await Promise.race([fetch(req), tooSlow]);\nif (res) return res;            // the page came back: show it\nreturn (await game()) || fetch(req); // too slow: show the game",
+      },
+      { type: "h2", text: "Offline, or just too slow" },
+      {
+        type: "p",
+        text: "No internet makes the request fail straight away, which is easy. A very slow connection is harder, because nothing fails; the page just doesn't arrive. So the worker waits 6 seconds, and if there's no answer it shows the game with a \"Try again\" button. The game page also says which case it is: \"You're offline\" or \"That page is slow\".",
+      },
+      { type: "h2", text: "What it never touches" },
+      {
+        type: "ul",
+        items: [
+          "A page that loads normally. If the network answers in time, the visitor never knows the worker is there.",
+          "The admin area and the API. Signing in or saving something must never be swapped for a game, so those requests go straight to the network.",
+          "Images, scripts and data. Only a visitor opening a page is looked at.",
+        ],
+      },
+      { type: "h2", text: "The game has to stand alone" },
+      {
+        type: "p",
+        text: "When the network is gone, nothing else can be fetched, so the game is one file with its style, code and icon inside it. No fonts, images or scripts come from anywhere else. It's registered once the page has finished loading and the browser is idle, so it doesn't slow the first visit, and only on the live site, so a saved copy never gets in the way while I'm working.",
+      },
+      { type: "h2", text: "A bug I'd have missed" },
+      {
+        type: "p",
+        text: "I tested it in a real browser with the network switched off, and found my \"Try again\" button showing even on the normal game page. My button style said \"display: flex\", which quietly beat the browser's rule for hiding an element. A one-line fix, but I only saw it because I looked at the page offline, not just at the code.",
+      },
+      {
+        type: "tip",
+        text: "A page can only be shown offline after the browser has visited the site once, because that's when the copy is saved. A visitor who is already offline on their first ever visit still sees the browser's own error page.",
+      },
+    ],
+  },
+  {
     slug: "one-vote-per-person-and-nobody-types-a-number",
     title: "One vote per person, and nobody can type in a number",
     description:

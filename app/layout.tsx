@@ -178,6 +178,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   Guestbook
                 </Link>
                 {" · "}
+                <Link href="/how-its-built" className="underline-offset-2 hover:text-teal hover:underline">
+                  How it&apos;s built
+                </Link>
+                {" · "}
                 {/* A plain link: the game is a separate page (public/dash.html) */}
                 <a href="/dash-game" className="underline-offset-2 hover:text-teal hover:underline">
                   Play Endless Dash

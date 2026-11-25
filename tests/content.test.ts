@@ -18,6 +18,8 @@ import { breadcrumbs, pageMetadata } from "@/lib/seo";
 import { projectStat } from "@/lib/stats";
 import { filterButtons, relatedNotes, tagCounts, withTag } from "@/lib/note-tags";
 import { about } from "@/content/about";
+import { appStories } from "@/content/app-stories";
+import { howBuilt } from "@/content/how-built";
 import { shareLinks, prefersNativeShare } from "@/lib/share";
 import { scoreWords } from "@/components/LighthouseBadge";
 import { lastChangeUrl, lastUpdatedLabel } from "@/lib/last-updated";
@@ -420,5 +422,51 @@ describe("the counting numbers on the About page", () => {
   it("shows a year or words as they are, without counting", () => {
     expect(splitCount("2026")).toBeNull(); // used to count up to 202 and add a "6"
     expect(splitCount("Gauteng")).toBeNull();
+  });
+});
+
+describe("the thinking behind my apps (case studies)", () => {
+  it("only exist for apps that have a how-it-works diagram", () => {
+    for (const slug of Object.keys(appStories)) expect(architectures[slug]).toBeTruthy();
+  });
+
+  it("each have a problem, two to four decisions and something I'd do differently", () => {
+    for (const [slug, story] of Object.entries(appStories)) {
+      expect(story.problem.length, `${slug} problem`).toBeGreaterThan(80);
+      expect(story.decisions.length, `${slug} decisions`).toBeGreaterThanOrEqual(2);
+      expect(story.decisions.length, `${slug} decisions`).toBeLessThanOrEqual(4);
+      for (const d of story.decisions) {
+        expect(d.title.length, `${slug}: ${d.title}`).toBeLessThanOrEqual(60);
+        expect(d.text.length, `${slug}: ${d.title}`).toBeGreaterThan(60);
+      }
+      expect(story.different.length, `${slug} different`).toBeGreaterThanOrEqual(2);
+    }
+  });
+});
+
+describe("the How this site is built page", () => {
+  it("has sections with unique ids and some proof links each", () => {
+    const ids = howBuilt.sections.map((s) => s.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const s of howBuilt.sections) {
+      expect(s.text.length, s.id).toBeGreaterThan(40);
+      expect(s.links.length, s.id).toBeGreaterThan(0);
+    }
+  });
+
+  it("only links to dev notes that exist, and to my own pages or the game", () => {
+    const slugs = new Set(notes.map((n) => n.slug));
+    for (const s of howBuilt.sections) {
+      for (const link of s.links) {
+        expect(link.label.length, link.href).toBeGreaterThan(3);
+        if (link.href.startsWith("/notes/")) expect(slugs.has(link.href.slice("/notes/".length)), link.href).toBe(true);
+        else expect(["/status", "/dash-game"], link.href).toContain(link.href);
+      }
+    }
+  });
+
+  it("the game it links to is a real file the offline worker keeps", () => {
+    expect(existsSync(join(process.cwd(), "public", "dash.html"))).toBe(true);
+    expect(existsSync(join(process.cwd(), "public", "sw.js"))).toBe(true);
   });
 });
