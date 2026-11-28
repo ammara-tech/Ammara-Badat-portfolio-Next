@@ -20,4 +20,69 @@ export const lighthouseScores: Record<string, SiteScores> = {
     laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
     checked: "2026-11-08",
   },
+  "nextjs-dashboard": {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  papertrail: {
+    phone: { performance: 97, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 98, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  ticklist: {
+    phone: { performance: 96, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 99, accessibility: 95, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  rememba: {
+    phone: { performance: 98, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  stokvelbook: {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  colourcheck: {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  cvcraft: {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  bookme: {
+    phone: { performance: 98, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 98, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  randwise: {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  rsvpme: {
+    phone: { performance: 98, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  "fixmystreet-sa": {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  queueup: {
+    phone: { performance: 96, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
+  powerplan: {
+    phone: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    laptop: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 },
+    checked: "2026-11-28",
+  },
 };
